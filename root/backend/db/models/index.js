@@ -1,6 +1,7 @@
 'use strict';
 
 require('dotenv').config();
+const { applyAssociations } = require('./associations');
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -16,14 +17,7 @@ if (config.use_env_variable) {
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
-//Test DB Connection
-try {
-  (async () => {await sequelize.authenticate()})();
-  console.log("Connection has been established successfully.");
-} catch (error) {
-  console.error("Unable to connect to the database: ", error);
-}
-//
+
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -38,6 +32,8 @@ fs
     const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
   });
+
+applyAssociations(sequelize);
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
