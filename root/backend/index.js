@@ -1,16 +1,28 @@
-"use strict";
 require("dotenv").config();
-const cors          = require('cors');
-const express       = require("express");
-const app           = express();
-app.use(cors());
-app.use(express.json());
-const productRoute  = require("./routes/product");
-app.use('/produto' , productRoute); //for express.Route() handling
-const db            = require('./db/models/index');
 
-//Listen
-app.listen(process.env.PORT, () => {
-    console.log(`App listening on http://localhost:${process.env.PORT}`);
-});
-//
+const app = require('./express/app');
+const db = require('./db/models/index');
+
+async function assertDatabaseConnectionOk() {
+	console.log(`Checking database connection...`);
+	try {
+		await db.sequelize.authenticate();
+		console.log('Database connection OK!');
+	} catch (error) {
+		console.log('Unable to connect to the database:');
+		console.log(error.message);
+		process.exit(1);
+	}
+}
+
+async function init() {
+	await assertDatabaseConnectionOk();
+
+	console.log(`Inicializando app na porta ${process.env.PORT}...`);
+
+	app.listen(process.env.PORT, () => {
+        console.log(`App escutando em http://localhost:${process.env.PORT}`);
+    });
+}
+
+init();

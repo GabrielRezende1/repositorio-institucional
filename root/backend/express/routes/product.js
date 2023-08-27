@@ -1,7 +1,9 @@
-const db = require("../db/models/index");
+const express = require("express");
+const router = express.Router();
+const db = require("../../db/models/index");
 
 //GET /product
-const getAllProducts = async (req, res) => {
+router.get("/", getAll = async (req, res) => {
     console.log("Rota GET /produto alcançada!");
 
     //Limit the amount of products shown on page
@@ -49,10 +51,10 @@ const getAllProducts = async (req, res) => {
     } else {
         res.status(400).json({ erro: "Não foi possível recuperar os dados!" });
     }
-};
+});
 
 //GET /product/:id
-const getProductById = async (req, res) => {
+router.get("/:id", getById = async (req, res) => {
     console.log("Rota GET /produto/:id alcançada!");
 
     const id = req.params.id;
@@ -70,10 +72,10 @@ const getProductById = async (req, res) => {
     } else {
         res.status(400).json({ erro: "Não foi possível recuperar os dados!" });
     }
-};
+});
 
-//POST /product
-const newProduct = async (req, res) => {
+//POST /produto
+router.post("/", create = async (req, res) => {
     console.log("Rota POST /produto alcançada!");
 
     //const dados = req.body; //req.body only because it's json content-type (nome / sobrenome / empresa)
@@ -95,27 +97,10 @@ const newProduct = async (req, res) => {
             res.statusCode = 500;
             res.json({ error: err });
         });
-};
+});
 
-//GET /product/:id
-const deleteProductById = async (req, res) => {
-    const id = req.params.id;
-
-    await db.Product.destroy({
-        where: { id: id },
-    })
-        .then((results) => {
-            res.statusCode = 200;
-            res.json({ mensagem: "Produto apagado!", deletado: results });
-        })
-        .catch((err) => {
-            res.statusCode = 500;
-            res.json({ error: err });
-        });
-};
-
-//PUT /product/:id
-const changeProduct = async (req, res) => {
+//PUT /produto/:id
+router.put("/:id", update = async (req, res) => {
     const id = req.params.id;
     const nome = req.body.nome;
     const sobrenome = req.body.sobrenome;
@@ -138,12 +123,23 @@ const changeProduct = async (req, res) => {
         .catch((err) => {
             res.status(500).json({ error: err });
         });
-};
+});
 
-module.exports = {
-    getAllProducts,
-    getProductById,
-    newProduct,
-    deleteProductById,
-    changeProduct,
-};
+//DELETE /produto/:id
+router.delete("/:id", remove = async (req, res) => {
+    const id = req.params.id;
+
+    await db.Product.destroy({
+        where: { id: id },
+    })
+        .then((results) => {
+            res.statusCode = 200;
+            res.json({ mensagem: "Produto apagado!", deletado: results });
+        })
+        .catch((err) => {
+            res.statusCode = 500;
+            res.json({ error: err });
+        });
+});
+
+module.exports = router;
