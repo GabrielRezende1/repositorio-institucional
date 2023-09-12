@@ -1,7 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../../db/models/index");
-
+/*
+/
+/:categoria
+/:categoria/:subcategoria/...
+/produto/:id
+*/
 //GET /product
 router.get("/", getAll = async (req, res) => {
     console.log("Rota GET /produto alcançada!");
