@@ -1,24 +1,18 @@
 <script>
-import HeaderPartial from '../components/HeaderPartial.vue';
-import FooterPartial from '../components/FooterPartial.vue';
 export default {
   data() {
     
   },
 
   components: {
-    HeaderPartial,
-    FooterPartial
   }
 }
 </script>
 
 <template>
-  <main>
-    <HeaderPartial />
+  <section>
 
-    <FooterPartial />
-  </main>
+  </section>
 </template>
 
 <style scoped>
