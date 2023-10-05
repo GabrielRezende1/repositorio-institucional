@@ -23,3 +23,5 @@ router.post('/cadastro', async (req, res) => {
 
     res.redirect('/'); //redir to home pg ('/') if success
 });
+
+module.exports = router;

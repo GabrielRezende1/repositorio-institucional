@@ -2,6 +2,7 @@
 import IconMenu from './icons/IconMenu.vue'
 import IconCart from './icons/IconCart.vue';
 import IconFavorites from "./icons/IconFavorites.vue";
+import IconUser from './icons/IconUser.vue';
 /* import { RouterLink } from 'vue-router'; */
 export default {
   // Properties returned from data() become reactive state
@@ -9,7 +10,8 @@ export default {
   data() {
     return {
       imgLogo: '',
-      searchInput: ''
+      searchInput: '',
+      disconnected: true
     }
   },
   // Methods are functions that mutate state and trigger updates.
@@ -21,7 +23,8 @@ export default {
   components: {
     IconMenu,
     IconCart,
-    IconFavorites
+    IconFavorites,
+    IconUser
   },
   // Lifecycle hooks are called at different stages
   // of a component's lifecycle.
@@ -38,7 +41,7 @@ export default {
 
         <div class="flex"> 
           <div class="logo">
-            <a href="/"><img alt="logo do site" src="@/assets/logo.svg" width="125" height="125" /></a>
+            <a href="/"><img alt="logo do site" src="@/assets/logo.svg"/></a>
           </div><!--logo-->
 
           <div class="search-bar">
@@ -48,10 +51,12 @@ export default {
           </div><!--search-bar-->
 
           <div class="user-account">
-            <img :src="x" alt="foto do usuário"><!--add login img-->
-            <a href="/login">Login</a>
-            <a href="/cadastro">Cadastro</a>
-          </div><!--user-account-->
+            <a href="/minha-conta"><IconUser /></a><!--add login img-->
+            <div v-if="disconnected">
+              <a href="/login">Login</a>
+              <a href="/cadastro">Cadastro</a>
+            </div><!--disconnected-->
+          </div><!--v-if disconnected then don't show login/cadastro options-->
 
           <div class="user-options">
             <nav>
@@ -75,7 +80,14 @@ header {
   height: 150px;
   padding: 0 2rem;
   background-color: var(--blue);
-  color: var(--light-blue);
+}
+
+a {
+  color: var(--yellow);
+}
+
+a:hover {
+  background-color: var(--light-blue);
 }
 
 div:nth-child(1) > a:hover { /* Logo img */
@@ -105,6 +117,10 @@ div.logo {
   width: 15%;
 }
 
+div.logo > a img {
+  width: 80%;
+}
+
 div.search-bar {
   width: 45%;
 }
@@ -121,6 +137,21 @@ div.user-account, div.user-options {
   width: 20%;
 }
 
+div.user-account {
+  text-align: center;
+}
+
+div.user-account > a:first-child {
+  background-color: var(--light-blue);
+  padding-top: 16px;
+  border-radius: 50%;
+}
+
+div.user-account > a, div.user-account > div > a {
+  padding: 0 0.5rem;
+  font-weight: bold;
+}
+
 nav li {
   list-style-type: none;
   display: inline-block;
@@ -130,18 +161,30 @@ nav li {
 nav a {
   display: inline-block;
   padding: 0 1rem;
-  border-left: 1px solid var(--yellow);
+  border-radius: 4px;
 }
 
 nav a:first-of-type {
   border: 0;
 }
 
+/* svg {
+  width: 100%;
+} */
+
 @media screen and (max-width: 1200px) {
-  div.logo img {
-    width: 100px;
-    height: 100px;
+/**DOESN'T WORK? */
+  /*   .logo {
+    width: 10%;
   }
+
+  .search-bar {
+    width: 30%;
+  }
+
+  .user-account, .user-options {
+    width: 30%;
+  } */
 }
 
 </style>

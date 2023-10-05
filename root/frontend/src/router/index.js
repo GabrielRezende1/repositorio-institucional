@@ -9,6 +9,7 @@ import PedidosView from '../views/HomeView.vue'
 import AvaliacoesView from '../views/HomeView.vue'
 import PagamentoView from '../views/HomeView.vue'
 import ConfirmacaoView from '../views/HomeView.vue'
+import MinhaContaView from '../views/MinhaContaView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,6 +38,11 @@ const router = createRouter({
       path: '/carrinho',
       name: 'carrinho',
       component: CarrinhoView
+    },
+    {
+      path: '/minha-conta',
+      name: 'minha-conta',
+      component: MinhaContaView
     },
     {
       path: '/minha-conta/favoritos',
