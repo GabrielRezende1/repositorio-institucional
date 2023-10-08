@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Carrinho extends Model {
+  class Usuario_pagamento extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,31 +11,45 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Carrinho.belongsTo(models.Usuario, {
+      Usuario_pagamento.belongsTo(models.Usuario, {
         foreignKey: {
           name: 'fk_id_usuario',
           allowNull: false
         }
-      });
-      Carrinho.hasMany(models.Carrinho_item, {
+      })
+      Usuario_pagamento.belongsTo(models.Pagamento_tipo, {
         foreignKey: {
-          name: 'fk_id_carrinho',
+          name: 'fk_id_pagamentoTipo',
           allowNull: false
         }
       })
     }
   }
-  Carrinho.init({
-    id_carrinho: {
+  Usuario_pagamento.init({
+    id_usuarioPagamento: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
+    },
+    fornecedor: {
+      allowNull: false,
+      type: DataTypes.ENUM({
+        values: ['M', 'V', 'P']
+      })
+    },
+    numero: {
+      allowNull: false,
+      type: DataTypes.INTEGER
+    },
+    dataExpiracao: {
+      allowNull: false,
+      type: DataTypes.STRING
     }
   }, {
     sequelize,
-    modelName: 'Carrinho',
+    modelName: 'Usuario_pagamento',
     timestamps: false,
     freezeTableName: true
   });
-  return Carrinho;
+  return Usuario_pagamento;
 };

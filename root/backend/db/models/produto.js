@@ -11,9 +11,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Produto.belongsTo(models.Produto_categoria, {
+        foreignKey: {
+          name: 'fk_id_categoria',
+          allowNull: false
+        }
+      })
+      Produto.hasMany(models.Produto_item, {
+        foreignKey: {
+          name: 'fk_id_produto',
+          allowNull: false
+        }
+      })
     }
   }
   Produto.init({
+    id_produto: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     nome: {
       allowNull: false,
       type: DataTypes.STRING
@@ -22,22 +39,15 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.STRING
     },
-    precoPraticado: {
-      allowNull: false,
-      type: DataTypes.DECIMAL
-    },
     imagem: {
       allowNull: false,
-      type: DataTypes.BLOB,
-    },
-    categoria: {
-      type: DataTypes.ENUM({
-        values: ['Eletrônico', 'Casa', 'Entretenimento', 'Esporte', 'Beleza', 'Segurança']
-      })
+      type: DataTypes.BLOB
     }
   }, {
     sequelize,
     modelName: 'Produto',
+    timestamps: false,
+    freezeTableName: true
   });
   return Produto;
 };

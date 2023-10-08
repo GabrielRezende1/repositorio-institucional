@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Carrinho extends Model {
+  class Pedido_linha extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,31 +11,45 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Carrinho.belongsTo(models.Usuario, {
+      Pedido_linha.hasMany(models.Usuario_avaliacao, {
         foreignKey: {
-          name: 'fk_id_usuario',
+          name: 'fk_id_pedidoLinha',
           allowNull: false
         }
-      });
-      Carrinho.hasMany(models.Carrinho_item, {
+      })
+      Pedido_linha.belongsTo(models.Pedido_compra, {
         foreignKey: {
-          name: 'fk_id_carrinho',
+          name: 'fk_id_pedidoCompra',
+          allowNull: false
+        }
+      })
+      Pedido_linha.belongsTo(models.Produto_item, {
+        foreignKey: {
+          name: 'fk_id_produtoItem',
           allowNull: false
         }
       })
     }
   }
-  Carrinho.init({
-    id_carrinho: {
+  Pedido_linha.init({
+    id_pedidoLinha: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
+    },
+    quantidade: {
+        allowNull: false,
+        type: DataTypes.INTEGER
+    },
+    preco: {
+        allowNull: false,
+        type: DataTypes.DECIMAL(7,2)
     }
   }, {
     sequelize,
-    modelName: 'Carrinho',
+    modelName: 'Pedido_linha',
     timestamps: false,
     freezeTableName: true
   });
-  return Carrinho;
+  return Pedido_linha;
 };

@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Usuario extends Model {
+  class Produto_item extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,56 +11,49 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Usuario.belongsToMany(models.Endereco, {
-        through: models.Endereco_usuario,
+      Produto_item.belongsTo(models.Produto, {
         foreignKey: {
-          name: 'fk_id_usuario',
+          name: 'fk_id_produto',
           allowNull: false
         }
       })
-      Usuario.hasMany(models.Usuario_avaliacao, {
+      Produto_item.hasMany(models.Carrinho_item, {
         foreignKey: {
-          name: 'fk_id_usuario',
+          name: 'fk_id_produtoItem',
           allowNull: false
         }
       })
-      Usuario.hasMany(models.Usuario_pagamento, {
+      Produto_item.hasMany(models.Pedido_linha, {
         foreignKey: {
-          name: 'fk_id_usuario',
-          allowNull: false
-        }
-      })
-      Usuario.hasMany(models.Carrinho, {
-        foreignKey: {
-          name: 'fk_id_usuario',
+          name: 'fk_id_produtoItem',
           allowNull: false
         }
       })
     }
   }
-  Usuario.init({
-    id_usuario: {
+  Produto_item.init({
+    id_produtoItem: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    nome: {
-        allowNull: false,
-        type: DataTypes.STRING
-    },
-    email: {
+    sku: {
       allowNull: false,
       type: DataTypes.STRING
-  },
-    senha: {
+    },
+    quantidadeEstoque: {
         allowNull: false,
-        type: DataTypes.STRING
-    }
+        type: DataTypes.INTEGER
+    },
+    preco: {
+      allowNull: false,
+      type: DataTypes.DECIMAL(7,2)
+  }
   }, {
     sequelize,
-    modelName: 'Usuario',
+    modelName: 'Produto_item',
     timestamps: false,
     freezeTableName: true
   });
-  return Usuario;
+  return Produto_item;
 };
