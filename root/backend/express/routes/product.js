@@ -7,7 +7,7 @@ const db = require("../../db/models/index");
 /:categoria/:subcategoria/...
 /produto/:id
 */
-//GET /product
+//GET /produto
 router.get("/", getAll = async (req, res) => {
     console.log("Rota GET /produto alcançada!");
 
@@ -16,7 +16,7 @@ router.get("/", getAll = async (req, res) => {
     console.log("Page: " + page);
     const limit = 2; //Ideal is 40
     let lastPage = 1;
-    const countProduct = await db.Product.count();
+    const countProduct = await db.Produto.count();
     console.log("Product quantity: " + countProduct);
 
     if (countProduct !== 0) {
@@ -29,7 +29,7 @@ router.get("/", getAll = async (req, res) => {
     console.log(page * limit - limit);
 
     //Retrieve all products stored in the database using Sequelize
-    const produtos = await db.Product.findAll({
+    const produtos = await db.Produto.findAll({
         attributes: ["id", "nome", "sobrenome", "empresa"], //Choose which column to show
         order: [["id", "ASC"]], //Choose order
         //Return the specific startpoint of products and the limit of them on the page
@@ -58,13 +58,13 @@ router.get("/", getAll = async (req, res) => {
     }
 });
 
-//GET /product/:id
+//GET /produto/:id
 router.get("/:id", getById = async (req, res) => {
     console.log("Rota GET /produto/:id alcançada!");
 
     const id = req.params.id;
 
-    const produto = await db.Product.findOne({
+    const produto = await db.Produto.findOne({
         attributes: ["nome", "sobrenome", "empresa"],
         where: { id: id },
     });
@@ -89,7 +89,7 @@ router.post("/", create = async (req, res) => {
     const sobrenome = req.body.sobrenome;
     const empresa = req.body.empresa;
 
-    await db.Product.create({
+    await db.Produto.create({
         nome,
         sobrenome,
         empresa,
@@ -111,7 +111,7 @@ router.put("/:id", update = async (req, res) => {
     const sobrenome = req.body.sobrenome;
     const empresa = req.body.empresa;
 
-    await db.Product.update(
+    await db.Produto.update(
         {
             nome: nome,
             sobrenome: sobrenome,
@@ -134,7 +134,7 @@ router.put("/:id", update = async (req, res) => {
 router.delete("/:id", remove = async (req, res) => {
     const id = req.params.id;
 
-    await db.Product.destroy({
+    await db.Produto.destroy({
         where: { id: id },
     })
         .then((results) => {

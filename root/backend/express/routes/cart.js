@@ -28,3 +28,5 @@ router.post('/pagamento', async (req, res) => {
 router.get('/confirmacao', async (req, res) => {
 
 });
+
+module.exports = router;

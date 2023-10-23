@@ -8,7 +8,7 @@ async function assertDatabaseConnectionOk() {
 	try {
 		await db.sequelize.authenticate();
 		console.log('Database connection OK!');
-		await db.sequelize.sync();
+		//await db.sequelize.sync();
 		console.log('Database models OK!');
 	} catch (error) {
 		console.log('Unable to connect to the database:');

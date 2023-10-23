@@ -11,3 +11,5 @@ const db = require("../../db/models/index");
 router.get('/', async (req, res) => {
 
 });
+
+module.exports = router;
