@@ -3,7 +3,6 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      nome: '',
       email: '',
       senha: ''
     }
@@ -12,11 +11,20 @@ export default {
   methods: {
     logInUser() {
       axios
-      .get('http://localhost:3000/login')
+      .post('http://localhost:3000/login', {
+        email: this.email,
+        senha: this.senha
+      })
       .then(response => {
         if(response.status == 200) {
-          console.log('Usuário cadastrado!');
+          console.log('Usuário logado!');
+        } else {
+          console.log('Usuário ou senha incorretos!')
         }
+      })
+      .catch(err => {
+        console.log('erro: ');
+        console.log(err);
       })
     }
   },
@@ -30,12 +38,12 @@ export default {
   <section>
     <form action="" method="get">
       <label for="email">E-MAIL:</label>
-      <input type="text" id="nome" :value="email" placeholder="Insira seu e-mail..."/>
+      <input type="text" id="email" v-model="email" placeholder="Insira seu e-mail..."/>
 
       <label for="senha">SENHA:</label>
-      <input type="password" id="senha" :value="senha" placeholder="Insira seu e-mail...">
+      <input type="password" id="senha" v-model="senha" placeholder="Insira seu e-mail...">
 
-      <input type="submit" value="LOGAR"/>
+      <input type="submit" @click="logInUser()" value="LOGAR"/>
       <a href="/cadastro">Não possui conta? Então cadastre-se</a>
     </form>
   </section>

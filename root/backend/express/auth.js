@@ -1,21 +1,15 @@
-let jwt = require('jsonwebtoken');
-let authSecret = "jwtSecret";
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+module.exports = function (req, res, next) {
+    const token = req.cookies.token;
 
-module.exports = function(req, res, next) {
-    let token = req.body.token;
+    if (token == undefined) return res.status(401).json({ err: "token inválido1", token: token});
 
-    if(token != undefined) {
-        jwt.verify(token, authSecret, (err, data) => {
-            if(err) {
-                res.statusCode = 403;
-                res.json({err: 'token inválido1'});
-            }else {
-                console.log(data);
-                next();
-            }
-        })
-    }else {
-        res.statusCode = 403;
-        res.json({err: 'token inválido2'});
-    }
-}
+    jwt.verify(token, process.env.JWT_SECRET, (err, data) => {
+        if (err) {
+            res.clearCookie('token');
+            return res.status(403).json({ msg: "token inválido2", err: err, data: data });
+        }
+        next();
+    });
+};
