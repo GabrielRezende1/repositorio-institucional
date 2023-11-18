@@ -16,9 +16,9 @@ export default defineConfig({
   },
   server: {
     cors: true,
-    https: {
-      key: readFileSync('../localhost-key.pem', 'utf-8'),
-      cert: readFileSync('../localhost.pem', 'utf-8')
+    https: { // .pem is outside of project for safety
+      key: readFileSync('../../../localhost-key.pem', 'utf-8'),
+      cert: readFileSync('../../../localhost.pem', 'utf-8')
     }
   }
 })

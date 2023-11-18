@@ -1,13 +1,12 @@
 require("dotenv").config();
 const fs = require('fs');
-const path = require('path');
 
 const app = require('./express/app');
 const db = require('./db/models/index');
-//TODO use desktop path to locate .pem
-const options = {
-	key: fs.readFileSync('../localhost-key.pem', 'utf-8'),
-	cert: fs.readFileSync('../localhost.pem', 'utf-8')
+
+const options = { // .pem is outside of project for safety
+	key: fs.readFileSync('../../../localhost-key.pem', 'utf-8'),
+	cert: fs.readFileSync('../../../localhost.pem', 'utf-8')
 }
 const https = require('https');
 const server = https.createServer(options, app);
