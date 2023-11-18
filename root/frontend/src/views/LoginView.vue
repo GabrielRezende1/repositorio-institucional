@@ -11,15 +11,15 @@ export default {
   methods: {
     logInUser() {
       axios
-      .post('http://localhost:3000/login', {
+      .post('https://localhost:3000/login', {
         email: this.email,
         senha: this.senha
-      })
+      }, { withCredentials: true })
       .then(response => {
         if(response.status == 200) {
           console.log('Usuário logado!');
         } else {
-          console.log('Usuário ou senha incorretos!')
+          console.log('Usuário ou senha incorretos!');
         }
       })
       .catch(err => {

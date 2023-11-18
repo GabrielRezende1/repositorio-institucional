@@ -25,7 +25,9 @@ router.post('/login', async (req, res) => {
                 const token = jwt.sign({email: email}, process.env.JWT_SECRET, {expiresIn: 60});
                 res.cookie('token', token, {
                     httpOnly: true,
-                    sameSite: 'lax'
+                    sameSite: 'none',
+                    secure: true,
+                    maxAge: 1000 * 60 // Same as jwt "expiresIn"
                 });
                 res.json({msg: 'Você está logado', token: token});
                 //res.redirect('/'); //redir to home pg if success

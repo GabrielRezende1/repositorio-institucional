@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
@@ -11,6 +12,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  },
+  server: {
+    cors: true,
+    https: {
+      key: readFileSync('../localhost-key.pem', 'utf-8'),
+      cert: readFileSync('../localhost.pem', 'utf-8')
     }
   }
 })
