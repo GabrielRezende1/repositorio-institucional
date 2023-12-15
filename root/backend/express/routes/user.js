@@ -6,9 +6,6 @@ const jwt = require('jsonwebtoken');
 /* 
 /minha-conta
 /minha-conta/meus-dados
-/minha-conta/favoritos
-/minha-conta/meus-pedidos
-/minha-conta/avaliacoes
 */
 //GET /minha-conta
 router.get('/minha-conta', authToken, async (req, res) => {
@@ -33,18 +30,6 @@ router.get('/minha-conta', authToken, async (req, res) => {
 });
 //GET /minha-conta/meus-dados
 router.get('/minha-conta/meus-dados', authToken, async (req, res) => {
-    res.status(200).json({msg: 'Path /minha-conta reached!'});
-});
-//GET /minha-conta/favoritos
-router.get('/minha-conta/meus-pedidos', authToken, async (req, res) => {
-    res.status(200).json({msg: 'Path /minha-conta reached!'});
-});
-//GET /minha-conta/meus-pedidos
-router.get('/minha-conta/meus-pedidos', authToken, async (req, res) => {
-    res.status(200).json({msg: 'Path /minha-conta reached!'});
-});
-//GET /minha-conta/avaliacoes
-router.get('/minha-conta/avaliacoes', authToken, async (req, res) => {
     res.status(200).json({msg: 'Path /minha-conta reached!'});
 });
 

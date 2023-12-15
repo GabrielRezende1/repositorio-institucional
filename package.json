@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GabrielRezende1/e-commerce.git"
+    "url": "git+https://github.com/GabrielRezende1/repositorio-institucional.git"
   },
   "author": "Gabriel Santos Rezende",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/GabrielRezende1/e-commerce/issues"
+    "url": "https://github.com/GabrielRezende1/repositorio-institucional/issues"
   },
-  "homepage": "https://github.com/GabrielRezende1/e-commerce#readme",
+  "homepage": "https://github.com/GabrielRezende1/repositorio-institucional#readme",
   "devDependencies": {
     "concurrently": "^8.2.0"
   }
