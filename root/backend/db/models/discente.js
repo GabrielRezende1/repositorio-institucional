@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Usuario extends Model {
+  class Discente extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,13 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Usuario.hasOne(models.Discente, {
+      Discente.hasMany(models.Documento, {
         foreignKey: {
-          name: 'fk_id_usuario',
-          allowNull: false
+          name: 'fk_id_discente',
+          allowNull: true //Can be null so a document can be a tutorial or politics
         }
       }),
-      Usuario.hasOne(models.Docente, {
+      Discente.belongsTo(models.Usuario, {
         foreignKey: {
           name: 'fk_id_usuario',
           allowNull: false
@@ -25,25 +25,36 @@ module.exports = (sequelize, DataTypes) => {
       })
     }
   }
-  Usuario.init({
-    id_usuario: {
+  Discente.init({
+    id_discente: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    email: {
+    matricula: {
+      type: DataTypes.INTEGER,
+    },
+    nome: {
       allowNull: false,
       type: DataTypes.STRING
     },
-    senha: {
+    curso: {
+        allowNull: true,
+        type: DataTypes.ENUM({
+            values: ['GA', 'SI']
+        })
+    },
+    turno: {
         allowNull: false,
-        type: DataTypes.STRING
+        type: DataTypes.ENUM({
+            values: ['Manhã', 'Noite']
+        })
     }
   }, {
     sequelize,
-    modelName: 'Usuario',
+    modelName: 'Discente',
     timestamps: false,
     freezeTableName: true
   });
-  return Usuario;
+  return Discente;
 };
