@@ -45,12 +45,11 @@ router.post('/login', async (req, res) => {
         res.status(501).json({errAlt: 'Error, see terminal log if no err', err: err});
     });
 });
-
 //POST /cadastro
 router.post('/cadastro', async (req, res) => {
-    const nome = req.body.nome;
     const email = req.body.email;
     const senha = req.body.senha;
+    //TODO implementar o confirmeSenha
     const confirmeSenha = req.body.confirmeSenha;
     // Check if email already exists before creating user
     const user = await db.Usuario.findOne({
@@ -58,7 +57,7 @@ router.post('/cadastro', async (req, res) => {
     });
     // Regex email and senha
     const passwordRegex = senha.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/);
-    const emailRegex = email.match(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/);
+    const emailRegex = email.match(/([a-z]+\.[a-z]+\.[0-9]+(ga|si))@(aluno|prof).faeterj-prc.faetec.rj.gov.br/g);
     //
 
     if (user) { // If user exists, doesn't create one (user = email)
@@ -87,7 +86,6 @@ router.post('/cadastro', async (req, res) => {
         const hash = bcryptjs.hashSync(senha, salt);
 
         await db.Usuario.create({
-            nome,
             email,
             senha: hash,
         })
@@ -105,7 +103,7 @@ router.post('/cadastro', async (req, res) => {
 });
 //DELETE /logout
 router.delete('/logout', async (req, res) => {
-    
+    if (!(token == undefined)) res.clearCookie('token');
 })
 
 module.exports = router;

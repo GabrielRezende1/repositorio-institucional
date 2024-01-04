@@ -3,7 +3,6 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      nome: '',
       email: '',
       senha: ''
     }
@@ -13,7 +12,6 @@ export default {
     createAccount() {
       axios
       .post('http://localhost:3000/cadastro', {
-        nome: this.nome,
         email: this.email,
         senha: this.senha
       })
@@ -35,10 +33,7 @@ export default {
 
 <template>
   <section>
-    <form action="HomeView.vue" method="post">
-      <label for="nome">NOME COMPLETO:</label>
-      <input type="text" id="nome" :value="nome" placeholder="Insira seu nome..."/>
-
+    <form method="post">
       <label for="email">EMAIL:</label>
       <input type="text" id="nome" :value="email" placeholder="Insira seu e-mail..."/>
 
