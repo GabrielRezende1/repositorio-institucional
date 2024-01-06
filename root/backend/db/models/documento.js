@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true
     },
     data: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false
     }
   }, {

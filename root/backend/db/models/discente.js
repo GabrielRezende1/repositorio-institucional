@@ -32,23 +32,18 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true
     },
     matricula: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(15),
+      allowNull: false
     },
     nome: {
-      allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.STRING(100),
+      allowNull: false
     },
     curso: {
-        allowNull: true,
-        type: DataTypes.ENUM({
-            values: ['GA', 'SI']
-        })
-    },
-    turno: {
-        allowNull: false,
-        type: DataTypes.ENUM({
-            values: ['Manhã', 'Noite']
-        })
+      type: DataTypes.ENUM({
+          values: ['GA', 'SI']
+      }),
+      allowNull: false
     }
   }, {
     sequelize,
