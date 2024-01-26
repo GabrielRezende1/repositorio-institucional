@@ -18,14 +18,15 @@ let storage = multer.diskStorage({
                 console.log("while: " + i);
             }
         }
-        if (i == 0) {
-            console.log('Nome do arquivo: ' + file.originalname);
-            cb(null, file.originalname);
-        }else {
+
+        if (i !== 0) {
             file.originalname = file.originalname.replace(".pdf", `(${i}).pdf`);
             console.log('Nome do arquivo: ' + file.originalname);
             cb(null, file.originalname);
+            return;
         }
+        console.log('Nome do arquivo: ' + file.originalname);
+        cb(null, file.originalname);
     }
 });
 

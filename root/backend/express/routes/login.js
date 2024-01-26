@@ -18,27 +18,27 @@ router.post('/login', async (req, res) => {
         where: {email: email}
     })
     .then(user => {
-        if(user != undefined) {
-            let correctPassword = bcryptjs.compareSync(senha, user.senha);
-            
-            if(correctPassword) {
-                const token = jwt.sign({email: email}, process.env.JWT_SECRET, {expiresIn: 60});
-                res.cookie('token', token, {
-                    httpOnly: true,
-                    sameSite: 'none',
-                    secure: true,
-                    maxAge: 1000 * 60 // Same as jwt "expiresIn"
-                });
-                res.json({msg: 'Você está logado', token: token});
-                //res.redirect('/'); //redir to home pg if success
-            }else {
-                res.statusCode = 403;
-                res.json({err: 'Senha incorreta', correctPassword: correctPassword, user: user});
-            }
-        }else {
-            res.statusCode = 403;
-            res.json({err: 'Nenhuma conta cadastrada com esse email'});
+        if(user == undefined) {
+            res.status(403).json({err: 'Nenhuma conta cadastrada com esse email'});
+            return;
         }
+
+        let correctPassword = bcryptjs.compareSync(senha, user.senha);
+
+        if(!correctPassword) {
+            res.status(403).json({err: 'Senha incorreta', correctPassword: correctPassword, user: user});
+            return;
+        }
+
+        const token = jwt.sign({email: email}, process.env.JWT_SECRET, {expiresIn: 60});
+        res.cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+            maxAge: 1000 * 60 // Same as jwt "expiresIn"
+        });
+        res.json({msg: 'Você está logado', token: token});
+        //res.redirect('/'); //redir to home pg if success
     })
     .catch(err => {
         console.log(err);
@@ -60,25 +60,22 @@ router.post('/cadastro', async (req, res) => {
     const emailRegex = email.match(/([a-z]+\.[a-z]+\.[0-9]+(ga|si))@(aluno|prof).faeterj-prc.faetec.rj.gov.br/g);
     //
 
-    if (user) { // If user exists, doesn't create one (user = email)
-        res.statusCode = 400;
-        res.json({ errorAlt: 'Email já cadastrado!' });
-    } else {
+    if (!user) { // If user doesn't exist, create one (user = email)
         if (!emailRegex) {
-            res.statusCode = 403;
-            res.json({ msg: "Email não existe!" });
+            res.status(403).json({ msg: "Email não existe!" });
             return;
         }
 
         if (!passwordRegex) {
-            res.statusCode = 403;
-            res.json({ msg: "Senha não atende aos requisitos mínimos!", 
-            requisitos: [
-                'No mínimo 8 caracteres',
-                '1 letra maiúscula',
-                '1 letra minúscula',
-                '1 caractere especial'
-            ]});
+            res.status(403).json({
+                msg: "Senha não atende aos requisitos mínimos!", 
+                requisitos: [
+                    'No mínimo 8 caracteres',
+                    '1 letra maiúscula',
+                    '1 letra minúscula',
+                    '1 caractere especial'
+                ]
+            });
             return;
         }
 
@@ -90,20 +87,27 @@ router.post('/cadastro', async (req, res) => {
             senha: hash,
         })
             .then((results) => {
-                res.statusCode = 201;
-                res.json({ mensagem: "Usuário cadastrado!", cadastro: results });
+                res.status(201).json({
+                    mensagem: "Usuário cadastrado!",
+                    cadastro: results
+                });
+                return;
             })
             .catch((err) => {
-                res.statusCode = 500;
-                res.json({ error: err, errorAlt: 'Não foi possível cadastrar o usuário!' });
+                res.status(500).json({
+                    error: err,
+                    errorAlt: 'Não foi possível cadastrar o usuário!'
+                });
+                return;
             });
     }
 
+    res.status(400).json({ errorAlt: 'Email já cadastrado!' });
     //res.redirect('/'); //redir to home pg ('/') if success
 });
 //DELETE /logout
 router.delete('/logout', async (req, res) => {
-    if (!(token == undefined)) res.clearCookie('token');
+    if (token !== undefined) res.clearCookie('token');
 })
 
 module.exports = router;

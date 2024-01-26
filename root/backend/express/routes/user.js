@@ -43,7 +43,7 @@ router.get('/minha-conta', authToken, async (req, res) => {
 });
 //Criação de discente/docente de acordo com email pelo db
 //POST /minha-conta
-router.post('/minha-conta', authToken, async (req, res) => {
+router.post("/minha-conta", authToken, async (req, res) => {
     const nome = req.body.nome;
     const matricula = req.body.matricula; //Para discente
     const curso = req.body.curso; //Para discente
@@ -54,66 +54,88 @@ router.post('/minha-conta', authToken, async (req, res) => {
         const token = req.cookies.token;
         const decoded = jwt.decode(token);
         const email = decoded.email;
-    
+
         const user = await db.Usuario.findOne({
-            where: {email}
+            where: { email },
         });
         const userId = user.id_usuario;
         const userEmail = user.email;
 
-        const isStudent = userEmail.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
+        const isStudent = userEmail.match(
+            /@(aluno).faeterj-prc.faetec.rj.gov.br/g
+        );
 
         let student;
         let teacher;
 
-        if (isStudent) {
-            const exists = await db.Discente.findOne({
-                where: {fk_id_usuario: userId}
-            });
-
-            if(exists) {
-                student = await db.Discente.update({
-                    matricula,
-                    nome,
-                    curso
-                }, {
-                    where: {fk_id_usuario: exists.id_discente}
-                });
-            }else {
-                student = await db.Discente.create({
-                    matricula,
-                    nome,
-                    curso,
-                    fk_id_usuario: userId
-                });
-            }
-        }else {
+        if (!isStudent) {
             const exists = await db.Docente.findOne({
-                where: {fk_id_usuario: userId}
+                where: { fk_id_usuario: userId },
             });
 
-            if(exists) {
-                teacher = await db.Docente.update({
-                        id_funcional,
-                        nome,
-                        graduacao
-                }, {
-                    where: {fk_id_usuario: exists.id_docente}
-                });
-            }else {
+            if (!exists) {
                 teacher = await db.Docente.create({
                     id_funcional,
                     nome,
                     graduacao,
-                    fk_id_usuario: userId
+                    fk_id_usuario: userId,
                 });
+                res.status(200).json({
+                    msg: "Professor criado!",
+                    user,
+                    teacher,
+                });
+                return;
             }
+            teacher = await db.Docente.update(
+                {
+                    id_funcional,
+                    nome,
+                    graduacao,
+                },
+                {
+                    where: { fk_id_usuario: exists.id_docente },
+                }
+            );
+            res.status(200).json({
+                msg: "Professor atualizado!",
+                user,
+                teacher,
+            });
+            return;
         }
-        
-        res.status(200).json({msg: "Path /minha-conta reached!", user, student, teacher});
+
+        const exists = await db.Discente.findOne({
+            where: { fk_id_usuario: userId },
+        });
+
+        if (!exists) {
+            student = await db.Discente.create({
+                matricula,
+                nome,
+                curso,
+                fk_id_usuario: userId,
+            });
+            res.status(200).json({ msg: "Estudante criado!", user, student });
+            return;
+        }
+
+        student = await db.Discente.update(
+            {
+                matricula,
+                nome,
+                curso,
+            },
+            {
+                where: { fk_id_usuario: exists.id_discente },
+            }
+        );
+
+        res.status(200).json({ msg: "Estudante atualizado!", user, student });
+        return;
     } catch (error) {
         console.log(error);
-        res.status(401).json({msg: "Erro401", error});
+        res.status(401).json({ msg: "Erro401", error });
     }
 });
 //GET /minha-conta/meus-documentos
@@ -132,15 +154,7 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
         let checkedUser;
         let docs;
         //Check if it's student or teacher
-        if (isStudent) {
-            checkedUser = await db.Discente.findOne({
-                where: {fk_id_usuario: userId}
-            });
-            //Retrieve user's documents
-            docs = await db.Documento.findAll({
-                where: {fk_id_disente: userId}
-            });
-        }else {
+        if (!isStudent) {
             checkedUser = await db.Docente.findOne({
                 where: {fk_id_usuario: userId}
             });
@@ -148,9 +162,18 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
             docs = await db.Documento.findAll({
                 where: {fk_id_docente: userId}
             });
+            res.status(200).json({msg: 'Documentos do Professor', userId, docs});
+            return;
         }
 
-        res.status(200).json({msg: 'Path /minha-conta/meus-documentos reached!', userId, docs});
+        checkedUser = await db.Discente.findOne({
+            where: {fk_id_usuario: userId}
+        });
+        //Retrieve user's documents
+        docs = await db.Documento.findAll({
+            where: {fk_id_disente: userId}
+        });
+        res.status(200).json({msg: 'Documentos do Estudante', userId, docs});
     } catch (error) {
         console.log(error);
         res.status(401).json({msg: "Erro401", error});
