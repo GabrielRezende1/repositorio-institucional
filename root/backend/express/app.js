@@ -2,6 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
+global.__basedir = __dirname;
+corsOptions = {
+	origin: 'https://localhost:5173',
+	credentials: true
+};
+
 const routes = {
 	document: require("./routes/document"),
 	home: require('./routes/home'),
@@ -12,7 +18,7 @@ const routes = {
 
 const app = express();
 
-app.use(cors({origin: 'https://localhost:5173', credentials: true}));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));

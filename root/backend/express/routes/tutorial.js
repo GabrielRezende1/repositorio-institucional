@@ -5,6 +5,7 @@ const db = require("../../db/models/index");
 /**
     /tutorial/geral
     /tutorial/documentos (talvez usar outro nome?)
+    /tutorial/documentos/:id
  */
 //TODO simples apresentação em html: regras de login e formatação (em pdf)/tamanho do documento
 //GET /tutorial/geral
@@ -16,5 +17,8 @@ router.get("/tutorial/geral", async (req, res) => {
 router.get("/tutorial/documentos", async (req, res) => {
     res.json({msg: "Rota '/tutorial/documentos' alcançada!"});
 });
-
+//GET /tutorial/documentos/:id
+router.get("/tutorial/documentos/:id", async (req, res) => {
+    res.json({msg: "Rota '/tutorial/documentos' alcançada!"});
+});
 module.exports = router;

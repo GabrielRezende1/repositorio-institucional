@@ -1,14 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../../db/models/index");
+const fileCtrl = require("../middlewares/file.controller");
 /*
 /documento
 /documento/:tipo
-/documento/:tipo/:id
-/documento/:tipo/:id/:pdf
+/documento/:id
+/documento/:id/:nome
 */
 //GET /documento
-router.get("/documento", getAll = async (req, res) => {
+router.get("/documento", async (req, res) => {
     console.log("Rota GET /documento alcançada!");
 
     //Limit the amount of documents shown on page
@@ -16,7 +17,7 @@ router.get("/documento", getAll = async (req, res) => {
     console.log("Page: " + page);
     const limit = 2; //Ideal is 40
     let lastPage = 1;
-    const countDocument = await db.Documento.count();
+    const countDocument = await db.Documento.count(); // .findAndCountAll()
     console.log("Document quantity: " + countDocument);
 
     if (countDocument !== 0) {
@@ -31,7 +32,7 @@ router.get("/documento", getAll = async (req, res) => {
 
     //Retrieve all documents stored in the database using Sequelize
     const documentos = await db.Documento.findAll({
-        attributes: ["id_documento", "nome", "resumo", "data"], //Choose which column to show
+        attributes: ["id_documento", "nome_doc", "nome_arq", "resumo", "data"], //Choose which column to show
         order: [["id_documento", "ASC"]], //Choose order
         //Return the specific startpoint of documents and the limit of them on the page
         offset: Number(page * limit - limit),
@@ -52,7 +53,7 @@ router.get("/documento", getAll = async (req, res) => {
         res.status(200).json({
             mensagem: "Rota documento alcançada!",
             data: documentos,
-            pagination: pagination,
+            pagination,
         });
     } else {
         res.status(400).json({ erro: "Não foi possível recuperar os dados!" });
@@ -60,13 +61,13 @@ router.get("/documento", getAll = async (req, res) => {
 });
 //TODO alterar função para se adequar ao de uma requisição de documento de tipo específico
 //GET /documento/:tipo
-router.get("/documento/:tipo", getById = async (req, res) => {
+router.get("/documento/:tipo", async (req, res) => {
     console.log("Rota GET /documento/:id alcançada!");
 
     const id = req.params.id;
 
     const documento = await db.Documento.findOne({
-        attributes: ["nome", "resumo", "data"],
+        attributes: ["nome_doc", "nome_arq", "resumo", "data"],
         where: { id_documento: id },
     });
 
@@ -80,14 +81,14 @@ router.get("/documento/:tipo", getById = async (req, res) => {
     }
 });
 //TODO alterar função para se adequar ao de uma requisição de documento específico
-//GET /documento/:tipo/:id
-router.get("/documento/:tipo/:id", getById = async (req, res) => {
+//GET /documento/:id
+router.get("/documento/:id", async (req, res) => {
     console.log("Rota GET /documento/:id alcançada!");
 
     const id = req.params.id;
 
     const documento = await db.Documento.findOne({
-        attributes: ["nome", "resumo", "data"],
+        attributes: ["nome_doc", "nome_arq", "resumo", "data"],
         where: { id_documento: id },
     });
 
@@ -100,9 +101,38 @@ router.get("/documento/:tipo/:id", getById = async (req, res) => {
         res.status(400).json({ erro: "Não foi possível recuperar os dados!" });
     }
 });
+// Download do documento específico
+//GET /documento/:id/:nome
+router.get("/documento/:id/:nome", async (req, res) => {
+    console.log("Rota GET /documento/:id/:nome alcançada!");
+
+    const id = req.params.id;
+    const fileName = req.params.nome;
+
+    const documento = await db.Documento.findOne({
+        attributes: ["nome_doc", "nome_arq", "resumo", "data"],
+        where: { 
+            id_documento: id,
+            nome_arq: fileName
+        }
+    });
+
+    if (documento) {
+        const directoryPath = __basedir + "../../db/documents/";
+        res.download(directoryPath + fileName, fileName, (err) => {
+            if (err) {
+                res.status(500).send({
+                    message: "There was an issue in downloading the file. " + err,
+                });
+            }
+        });
+    } else {
+        res.status(400).json({ erro: "Não foi possível recuperar os dados!" });
+    }
+});
 //TODO alterar função para se adequar ao de uma inserção de documento
 //POST /documento
-router.post("/documento", create = async (req, res) => {
+router.post("/documento", async (req, res) => {
     console.log("Rota POST /documento alcançada!");
 
     //const dados = req.body; //req.body only because it's json content-type (nome / resumo / data)
@@ -127,7 +157,7 @@ router.post("/documento", create = async (req, res) => {
 });
 //TODO alterar função para se adequar ao de uma requisição de alteração de documento
 //PUT /documento/:id
-router.put("/:id", update = async (req, res) => {
+router.put("/:id", async (req, res) => {
     const id = req.params.id;
     const nome = req.body.nome;
     const sobrenome = req.body.sobrenome;
@@ -152,7 +182,7 @@ router.put("/:id", update = async (req, res) => {
         });
 });
 //DELETE /documento/:id
-router.delete("documento/:id", remove = async (req, res) => {
+router.delete("documento/:id", async (req, res) => {
     const id = req.params.id;
 
     await db.Documento.destroy({

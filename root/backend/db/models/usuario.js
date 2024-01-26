@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     senha: {
         allowNull: false,
-        type: DataTypes.STRING(25)
+        type: DataTypes.STRING(150)
     }
   }, {
     sequelize,

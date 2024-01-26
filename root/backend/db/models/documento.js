@@ -43,9 +43,13 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    nome: {
+    nome_doc: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    nome_arq: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
     resumo: {
         type: DataTypes.TEXT,

@@ -31,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
+    id_funcional: {
+      type: DataTypes.STRING(50),
+      allowNull: false
+    },
     nome: {
         type: DataTypes.STRING(100),
         allowNull: false
