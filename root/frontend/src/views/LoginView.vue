@@ -17,7 +17,7 @@ export default {
       }, { withCredentials: true })
       .then(response => {
         if(response.status == 200) {
-          console.log('Usuário logado!');
+          console.log(response.data);
         } else {
           console.log('Usuário ou senha incorretos!');
         }
@@ -42,7 +42,7 @@ export default {
 
       <label for="senha">SENHA:</label>
       <input type="password" id="senha" v-model="senha" placeholder="Insira seu e-mail...">
-
+      <!--TODO try implement Prevent default on submit--> 
       <input type="submit" @click="logInUser()" value="LOGAR"/>
       <a href="/cadastro">Não possui conta? Então cadastre-se</a>
     </form>
