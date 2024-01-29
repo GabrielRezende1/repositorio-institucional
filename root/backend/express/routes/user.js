@@ -4,6 +4,7 @@ const db = require("../../db/models/index");
 const authToken = require('../middlewares/auth');
 const jwt = require('jsonwebtoken');
 const fileCtrl = require("../middlewares/file.controller");
+const fs = require("fs");
 /* 
 /minha-conta
 /minha-conta/meus-documentos
@@ -179,7 +180,8 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
         res.status(401).json({msg: "Erro401", error});
     }
 });
-//GET /minha-conta/novo-documento
+//TODO Fazer o upload primeiro não é bom (Apagar o arquivo em caso de erro também)
+//POST /minha-conta/novo-documento
 router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (req, res) => {
     const titulo = req.body.titulo; //título do trabalho
     const arquivo = req.file.originalname; //nome do arquivo no sistema
@@ -200,53 +202,87 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
         });
         const userId = user.id_usuario;
 
-        const student = await db.Discente.findOne({
-            where: {fk_id_usuario: userId}
-        });
-        const studentId = student.id_discente;
-
-        const teacher = await db.Docente.findOne({
-            where: {
-                nome: {
-                    [db.Sequelize.Op.like]: orientador
-                }
-            }
-        });
-        const teacherId = teacher.id_docente;
-
         const type = await db.Doc_tipo.findOne({
             where: {tipo}
         });
         const typeId = type.id_doc_tipo;
-
-        const subject = await db.Assunto.findOrCreate({
-            where: {nome: assunto}
-        });
-        const subjectId = subject[0].dataValues.id_assunto;
         //
-        //Creating document
+        /**
+         * Creating document with Student/Teacher
+         * Student/Teacher can't create a Politics or Tutorial doc
+         */
+        if (email !== "Admin") {
+            if (typeId == 9 || typeId == 10) {
+                fs.unlinkSync(`${__basedir}../../db/documents/${arquivo}`);
+                res.status(401).json({
+                    msg: "Você escolheu um tipo de documento restrito!"
+                });
+                return;
+            }
+            //Fetch data specific do student/teacher
+            const student = await db.Discente.findOne({
+                where: {fk_id_usuario: userId}
+            });
+            const studentId = student.id_discente;
+    
+            const teacher = await db.Docente.findOne({
+                where: {
+                    nome: {
+                        [db.Sequelize.Op.like]: orientador
+                    }
+                }
+            });
+            const teacherId = teacher.id_docente;
+
+            const subject = await db.Assunto.findOrCreate({
+                where: {nome: assunto}
+            });
+            const subjectId = subject[0].dataValues.id_assunto;
+
+            const document = await db.Documento.create({
+                nome_doc: titulo,
+                nome_arq: arquivo,
+                resumo,
+                data,
+                fk_id_discente: studentId,
+                fk_id_docente: teacherId,
+                fk_id_doc_tipo: typeId
+            });
+    
+            const doc_subject = await db.Doc_assunto.create({
+                fk_id_assunto: subjectId, //"dataValues" because findOrCreate method returns a different object
+                fk_id_documento: document.id_documento
+            });
+
+            res.status(200).json({
+                msg: `Documento '${arquivo}' criado com sucesso!`,
+                document,
+                doc_subject
+            });
+            return;
+        }
+        //
+        /**
+         * Creating document with Admin.
+         * Only admins are capable of
+         * creating Politics or Tutorial docs.
+         * Politics/ Tutorial docs does not have a subject.
+         */
         const document = await db.Documento.create({
             nome_doc: titulo,
             nome_arq: arquivo,
-            resumo,
             data,
-            fk_id_discente: studentId,
-            fk_id_docente: teacherId,
             fk_id_doc_tipo: typeId
         });
 
-        const doc_subject = await db.Doc_assunto.create({
-            fk_id_assunto: subjectId, //"dataValues" because findOrCreate method returns a different object
-            fk_id_documento: document.id_documento
-        })
-        //
         res.status(200).json({
-            msg: "Path /minha-conta/novo-documento reached!",
-            document,
-            doc_subject
+            msg: `Documento "${arquivo}" criado com sucesso!`,
+            document
         });
+        //
     } catch (error) {
         console.log(error);
+        fs.unlinkSync(`${__basedir}../../db/documents/${arquivo}`);
         res.status(401).json({msg: "Erro401", error});
     }
 });

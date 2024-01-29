@@ -57,7 +57,7 @@ router.post('/cadastro', async (req, res) => {
     });
     // Regex email and senha
     const passwordRegex = senha.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/);
-    const emailRegex = email.match(/([a-z]+\.[a-z]+\.[0-9]+(ga|si))@(aluno|prof).faeterj-prc.faetec.rj.gov.br/g);
+    const emailRegex = email.match(/(([a-z]+\.[a-z]+\.[0-9]+(ga|si))@(aluno|prof).faeterj-prc.faetec.rj.gov.br)|Admin/g);
     //
 
     if (!user) { // If user doesn't exist, create one (user = email)
