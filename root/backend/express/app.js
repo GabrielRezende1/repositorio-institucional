@@ -12,6 +12,7 @@ const routes = {
 	document: require("./routes/document"),
 	home: require('./routes/home'),
 	login: require('./routes/login'),
+	policy: require("./routes/policy"),
 	tutorial: require('./routes/tutorial'),
 	user: require('./routes/user')
 }
@@ -25,6 +26,7 @@ app.use(express.urlencoded({extended: true}));
 app.use("/", routes.document);
 app.use("/", routes.home);
 app.use("/", routes.login);
+app.use("/", routes.policy);
 app.use("/", routes.tutorial);
 app.use("/", routes.user);
 
