@@ -2,16 +2,17 @@ const express = require("express");
 const router = express.Router();
 const db = require("../../db/models/index");
 const fileCtrl = require("../middlewares/file.controller");
-/*
-/documento
-/documento/:tipo
-/documento/:id
-/documento/:id/:nome
-*/
+/**
+ * /documento
+ * /documento/:tipo
+ * /documento/:id
+ * /documento/:id/:nome
+ * 
+ * OBS: Document creation is handled by the user.js
+ * since only logged users can create/update docs
+ */
 //GET /documento
 router.get("/documento", async (req, res) => {
-    console.log("Rota GET /documento alcançada!");
-
     //Limit the amount of documents shown on page
     const { page = 1 } = req.query;
     console.log("Page: " + page);
@@ -62,8 +63,6 @@ router.get("/documento", async (req, res) => {
 // Recupera documentos de um tipo específico do db
 //GET /documento/:tipo
 router.get("/documento/:tipo", async (req, res) => {
-    console.log("Rota GET /documento/:id alcançada!");
-
     const tipo = req.params.tipo;
     const docTipo = await db.Doc_tipo.findOne({
         where: { tipo }
@@ -89,9 +88,7 @@ router.get("/documento/:tipo", async (req, res) => {
 //TODO alterar função para se adequar ao de uma requisição de documento específico
 //GET /documento/:id
 router.get("/documento/:id", async (req, res) => {
-    console.log("Rota GET /documento/:id alcançada!");
-
-    const id = req.params.id;
+    const id = Number.parseInt(req.params.id, 10);
 
     const documento = await db.Documento.findOne({
         attributes: ["nome_doc", "nome_arq", "resumo", "data"],
@@ -111,9 +108,7 @@ router.get("/documento/:id", async (req, res) => {
 // Download do documento específico
 //GET /documento/:id/:nome
 router.get("/documento/:id/:nome", async (req, res) => {
-    console.log("Rota GET /documento/:id/:nome alcançada!");
-
-    const id = req.params.id;
+    const id = Number.parseInt(req.params.id, 10);
     const fileName = req.params.nome;
 
     const documento = await db.Documento.findOne({
@@ -137,75 +132,6 @@ router.get("/documento/:id/:nome", async (req, res) => {
             });
         }
     });
-});
-//TODO alterar função para se adequar ao de uma inserção de documento
-//POST /documento
-router.post("/documento", async (req, res) => {
-    console.log("Rota POST /documento alcançada!");
-
-    //const dados = req.body; //req.body only because it's json content-type (nome / resumo / data)
-
-    const nome = req.body.nome;
-    const sobrenome = req.body.sobrenome;
-    const empresa = req.body.empresa;
-
-    await db.Documento.create({
-        nome,
-        sobrenome,
-        empresa,
-    })
-        .then((results) => {
-            res.status(200).json({
-                mensagem: "Documento cadastrado!",
-                cadastrado: results,
-            });
-        })
-        .catch((err) => {
-            res.status(500).json({ error: err });
-        });
-});
-//TODO alterar função para se adequar ao de uma requisição de alteração de documento
-//PUT /documento/:id
-router.put("/:id", async (req, res) => {
-    const id = req.params.id;
-    const nome = req.body.nome;
-    const sobrenome = req.body.sobrenome;
-    const empresa = req.body.empresa;
-
-    await db.Documento.update(
-        {
-            nome: nome,
-            sobrenome: sobrenome,
-            empresa: empresa,
-        },
-        { where: { id_documento: id } }
-    )
-        .then((results) => {
-            res.status(200).json({
-                mensagem: "Documento alterado!",
-                alteração: results,
-            });
-        })
-        .catch((err) => {
-            res.status(500).json({ error: err });
-        });
-});
-//DELETE /documento/:id
-router.delete("documento/:id", async (req, res) => {
-    const id = req.params.id;
-
-    await db.Documento.destroy({
-        where: { id_documento: id },
-    })
-        .then((results) => {
-            res.status(200).json({
-                mensagem: "Documento apagado!",
-                deletado: results,
-            });
-        })
-        .catch((err) => {
-            res.status(500).json({ error: err });
-        });
 });
 
 module.exports = router;

@@ -5,11 +5,12 @@ const authToken = require('../middlewares/auth');
 const jwt = require('jsonwebtoken');
 const fileCtrl = require("../middlewares/file.controller");
 const fs = require("fs");
-/* 
-/minha-conta
-/minha-conta/meus-documentos
-/minha-conta/novo-documento
-*/
+/**
+ * /minha-conta
+ * /minha-conta/meus-documentos
+ * /minha-conta/novo-documento
+ * /minha-conta/meus-documentos/alterar-documento
+ */
 //GET /minha-conta
 router.get('/minha-conta', authToken, async (req, res) => {
     try {
@@ -22,7 +23,7 @@ router.get('/minha-conta', authToken, async (req, res) => {
         });
         const userId = user.id_usuario;
 
-        const isStudent = userEmail.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
+        const isStudent = email.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
         //TODO usar variável pra mostrar tela de novo cadastro ou do usuário no frontend
         let checkedUser;
 
@@ -60,9 +61,8 @@ router.post("/minha-conta", authToken, async (req, res) => {
             where: { email },
         });
         const userId = user.id_usuario;
-        const userEmail = user.email;
 
-        const isStudent = userEmail.match(
+        const isStudent = email.match(
             /@(aluno).faeterj-prc.faetec.rj.gov.br/g
         );
 
@@ -151,7 +151,7 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
         });
         const userId = user.id_usuario;
 
-        const isStudent = userEmail.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
+        const isStudent = email.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
         let checkedUser;
         let docs;
         //Check if it's student or teacher
@@ -172,7 +172,7 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
         });
         //Retrieve user's documents
         docs = await db.Documento.findAll({
-            where: {fk_id_disente: userId}
+            where: {fk_id_discente: userId}
         });
         res.status(200).json({msg: 'Documentos do Estudante', userId, docs});
     } catch (error) {
@@ -180,7 +180,13 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
         res.status(401).json({msg: "Erro401", error});
     }
 });
+//TODO Get user specific doc with privelege options in comparison to GET document/:id (maybe give an option to alter doc)
+//GET /minha-conta/meus-documentos/:id/:nome
+router.get("/minha-conta/meus-documentos/:id", authToken, async (req, res) => {
+    res.json({msg: 'path reached!'});
+});
 //TODO Fazer o upload primeiro não é bom (Apagar o arquivo em caso de erro também)
+//TODO configurar criação de novo documento para Docentes
 //POST /minha-conta/novo-documento
 router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (req, res) => {
     const titulo = req.body.titulo; //título do trabalho
@@ -219,7 +225,7 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
                 });
                 return;
             }
-            //Fetch data specific do student/teacher
+            //Fetch data specific to student/teacher
             const student = await db.Discente.findOne({
                 where: {fk_id_usuario: userId}
             });
@@ -285,6 +291,189 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
         fs.unlinkSync(`${__basedir}../../db/documents/${arquivo}`);
         res.status(401).json({msg: "Erro401", error});
     }
+});
+//TODO Se algum req.body estiver vazio, manter o que já estava. Preencher os html inputs com o que já estava
+/**
+ * GET /minha-conta/meus-documentos/alterar-documento/:id
+ * Pega o conteúdo do documento e passa para os inputs do HTML
+ * para o usuário alterar o que quer
+ * antes de requisitar a alteração do documento.
+ */
+router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        const decoded = jwt.decode(token);
+        const email = decoded.email;
+
+        const docId = Number.parseInt(req.params.id, 10);
+
+        const user = await db.Usuario.findOne({
+            where: {email}
+        });
+        const userId = user.id_usuario;
+        
+        const isStudent = email.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
+        let checkedUser;
+        let doc;
+
+        if (!isStudent) {
+            checkedUser = await db.Docente.findOne({
+                where: {fk_id_usuario: userId}
+            });
+            const teacherId = checkedUser.dataValues.id_docente;
+            //Retrieve user document
+            doc = await db.Documento.findOne({
+                where: {
+                    id_documento: docId,
+                    fk_id_docente: teacherId
+                }
+            });
+            res.status(200).json({msg: 'Documento do Professor', userId, isStudent, doc});
+            return;
+        }
+
+        checkedUser = await db.Discente.findOne({
+            where: {fk_id_usuario: userId}
+        });
+        const studentId = checkedUser.dataValues.id_discente;
+        //Retrieve user document
+        doc = await db.Documento.findOne({
+            where: {
+                id_documento: docId,
+                fk_id_discente: studentId
+            }
+        });
+        res.status(200).json({msg: 'Documento do Estudante', userId, isStudent, doc});
+    } catch (error) {
+        console.log(error);
+        res.status(401).json({msg: "Erro401", error});
+    }
+});
+//TODO alterar função para se adequar ao de uma requisição de alteração de documento.
+//PUT /minha-conta/meus-documentos/:id/alterar-documento
+router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, fileCtrl.upload, async (req, res) => {
+    const titulo = req.body.titulo; //título do trabalho
+    const arquivo = req.file.originalname; //nome do arquivo no sistema
+    const resumo = req.body.resumo;
+    const data = req.body.data;
+    const orientador = req.body.orientador; //TODO find fk_id_docente with db query
+    const tipo = req.body.tipo;
+    const assunto = req.body.assunto;
+
+    const docId = Number.parseInt(req.params.id, 10);
+
+    try {
+        const token = req.cookies.token;
+        const decoded = jwt.decode(token);
+        const email = decoded.email;
+
+        const isStudent = email.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
+        let checkedUser;
+        let doc;
+
+        //Fetching data (common on both student/teacher)
+        const user = await db.Usuario.findOne({
+            where: {email}
+        });
+        const userId = user.id_usuario;
+
+        const type = await db.Doc_tipo.findOne({
+            where: {tipo}
+        });
+        const typeId = type.id_doc_tipo;
+        //
+
+        if (!isStudent) {
+            //Fetch data specific to student/teacher
+            checkedUser = await db.Docente.findOne({
+                where: {fk_id_usuario: userId}
+            });
+            const teacherId = checkedUser.id_docente;
+
+            const subject = await db.Assunto.findOrCreate({
+                where: {nome: assunto}
+            });
+            const subjectId = subject[0].dataValues.id_assunto;
+            //Update user's document
+            doc = await db.Documento.update(
+                {
+                    nome_doc: titulo,
+                    nome_arq: arquivo,
+                    resumo,
+                    data,
+                    fk_id_doc_tipo: typeId
+                },
+                { where: { id_documento: id, fk_id_docente: teacherId} }
+            );
+
+            const doc_subject = await db.Doc_assunto.findOrCreate({
+                where: {
+                    fk_id_assunto: subjectId, //"dataValues" because findOrCreate method returns a different object
+                    fk_id_documento: docId
+                }
+            });
+
+            res.status(200).json({msg: 'Documentos do Professor', userId, doc, doc_subject});
+            return;
+        }
+
+        checkedUser = await db.Discente.findOne({
+            where: {fk_id_usuario: userId}
+        });
+        const studentId = checkedUser.id_discente;
+
+        const subject = await db.Assunto.findOrCreate({
+            where: {nome: assunto}
+        });
+        const subjectId = subject[0].dataValues.id_assunto;
+        //Update user's document
+        doc = await db.Documento.update(
+            {
+                nome_doc: titulo,
+                nome_arq: arquivo,
+                resumo,
+                data,
+                orientador,
+                fk_id_doc_tipo: typeId
+            },
+            { where: { id_documento: docId, fk_id_discente: studentId } }
+        );
+        
+        const doc_subject = await db.Doc_assunto.findOrCreate({
+            where: {
+                fk_id_assunto: subjectId, //"dataValues" because findOrCreate method returns a different object
+                fk_id_documento: docId
+            }
+        });
+
+        res.status(200).json({msg: 'Documentos do Professor', userId, doc, doc_subject});
+        return;
+    } catch (error) {
+        console.log(error);
+        fs.unlinkSync(`${__basedir}../../db/documents/${arquivo}`);
+        res.status(401).json({msg: "Erro401", error});        
+    }
+});
+//DELETE /minha-conta/:id/:nome
+router.delete("minha-conta/meus-documentos/:id/:nome", authToken, async (req, res) => {
+    const token = req.cookies.token;
+    const decoded = jwt.decode(token);
+    const email = decoded.email;
+    
+    const id = req.params.id;
+
+    await db.Documento.destroy({
+        where: { id_documento: id },
+    })
+        .then((results) => {
+            res.status(200).json({
+                mensagem: "Documento apagado!",
+                deletado: results,
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({ error: err });
+        });
 });
 
 module.exports = router;
