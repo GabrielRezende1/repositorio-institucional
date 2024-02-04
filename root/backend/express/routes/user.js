@@ -5,11 +5,15 @@ const authToken = require('../middlewares/auth');
 const jwt = require('jsonwebtoken');
 const fileCtrl = require("../middlewares/file.controller");
 const fs = require("fs");
+const idParam = require("../middlewares/idParam");
 /**
  * /minha-conta
  * /minha-conta/meus-documentos
  * /minha-conta/novo-documento
  * /minha-conta/meus-documentos/alterar-documento
+ * 
+ * OBS: Document visualization and download is
+ * handled by document.js since it's public
  */
 //GET /minha-conta
 router.get('/minha-conta', authToken, async (req, res) => {
@@ -183,6 +187,7 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
 //TODO Get user specific doc with privelege options in comparison to GET document/:id (maybe give an option to alter doc)
 //GET /minha-conta/meus-documentos/:id/:nome
 router.get("/minha-conta/meus-documentos/:id", authToken, async (req, res) => {
+    const id = idParam(req);
     res.json({msg: 'path reached!'});
 });
 //TODO Fazer o upload primeiro não é bom (Apagar o arquivo em caso de erro também)
@@ -305,7 +310,7 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
         const decoded = jwt.decode(token);
         const email = decoded.email;
 
-        const docId = Number.parseInt(req.params.id, 10);
+        const docId = idParam(req);
 
         const user = await db.Usuario.findOne({
             where: {email}
@@ -360,7 +365,7 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, file
     const tipo = req.body.tipo;
     const assunto = req.body.assunto;
 
-    const docId = Number.parseInt(req.params.id, 10);
+    const docId = idParam(req);
 
     try {
         const token = req.cookies.token;
@@ -460,7 +465,7 @@ router.delete("minha-conta/meus-documentos/:id/:nome", authToken, async (req, re
     const decoded = jwt.decode(token);
     const email = decoded.email;
     
-    const id = req.params.id;
+    const id = idParam(req);
 
     await db.Documento.destroy({
         where: { id_documento: id },

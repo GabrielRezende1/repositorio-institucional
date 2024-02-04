@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../../db/models/index");
-const fileCtrl = require("../middlewares/file.controller");
+const idParam = require("../middlewares/idParam");
 /**
  * /documento
  * /documento/:tipo
@@ -108,7 +108,7 @@ router.get("/documento/:id", async (req, res) => {
 // Download do documento específico
 //GET /documento/:id/:nome
 router.get("/documento/:id/:nome", async (req, res) => {
-    const id = Number.parseInt(req.params.id, 10);
+    const id = idParam(req);
     const fileName = req.params.nome;
 
     const documento = await db.Documento.findOne({
