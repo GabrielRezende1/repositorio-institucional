@@ -7,13 +7,13 @@ const db = require("../../db/models/index");
 	/politicas
 	/faq
  */
-//TODO search bar (usando wildcard % da db) e link para os filtros de documentos
+//TODO link para os filtros de documentos
 //GET home
 router.get("/", async (req, res) => {
 	const doctypes = await db.Doc_tipo.findAll({
 		attributes: ["tipo"],
 		where: {
-			"tipo": {
+			tipo: {
 				[db.Sequelize.Op.and]: [ //operator and
 					{[db.Sequelize.Op.ne]: "Política"}, //ne = not equal to
 					{[db.Sequelize.Op.ne]: "Tutorial"}
@@ -22,9 +22,7 @@ router.get("/", async (req, res) => {
 		}
 	});
 
-	let query = req.query;
-	//Query code
-	if(query.search == undefined) { //only search db if query exists
+	if(req.query.search == undefined) { //only search db if query exists
 		const documentTypes = doctypes.map((el, i, arr) => {
 			return el = el.tipo;
 		});
@@ -32,11 +30,8 @@ router.get("/", async (req, res) => {
 		res.json({ documentTypes });
 		return;
 	}
-	
-	console.log("Query existe!");
-	console.log(query);
-	res.redirect(`/documento/?search=${query.search}&page=${query.page}`);
 
+	res.redirect(`/documento/?search=${req.query.search}`);
 });
 //GET /apresentacao
 router.get("/apresentacao", async(req, res) => {

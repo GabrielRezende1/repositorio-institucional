@@ -15,48 +15,74 @@ const idParam = require("../middlewares/idParam");
 router.get("/documento", async (req, res) => {
     //Limit the amount of documents shown on page
     const { page = 1 } = req.query;
-    console.log("Page: " + page);
-    const limit = 2; //Ideal is 40
+    console.log(req.query);
+    const limit = 3; //Num. of records per page. Ideal is 40
     let lastPage = 1;
-    const countDocument = await db.Documento.count(); // .findAndCountAll()
-    console.log("Document quantity: " + countDocument);
+    // Get all records if search is empty|undefined
+    let docs;
+    if (!req.query.search) {
+        docs = await db.Documento.findAndCountAll({
+            attributes: ["id_documento", "nome_doc", "nome_arq", "resumo", "data"],
+            order: [["data", "ASC"]],
+            where: {
+                fk_id_doc_tipo: {
+                    [db.Sequelize.Op.and]: [ //operator and
+                        {[db.Sequelize.Op.ne]: 9}, //ne = not equal to
+                        {[db.Sequelize.Op.ne]: 10}
+                    ]
+                }
+            },
+            offset: Number(page * limit - limit),
+            limit,
+        });
+    }else {
+        docs = await db.Documento.findAndCountAll({
+            attributes: ["id_documento", "nome_doc", "nome_arq", "resumo", "data"],
+            where: {
+                nome_doc: {
+                    [db.Sequelize.Op.like]: `%${req.query.search}%`
+                },
+                fk_id_doc_tipo: {
+                    [db.Sequelize.Op.and]: [ //operator and
+                        {[db.Sequelize.Op.ne]: 9}, //ne = not equal to
+                        {[db.Sequelize.Op.ne]: 10}
+                    ]
+                }
+            },
+            order: [["nome_doc", "ASC"], ["data", "ASC"]],
+            offset: Number(page * limit - limit),
+            limit,
+        });
+    }
 
-    if (countDocument == 0) {
-        res.status(400).json({ erro: "Não foi possível recuperar os dados!" });
+    if (!docs) {
+        res.status(500).json({ erro: "Não foi possível recuperar os dados!" });
         return;
     }
-    lastPage = Math.ceil(countDocument / limit);
-    console.log("lastPage: " + lastPage);
 
-    console.log(page * limit - limit);
+    const docCount = docs.count;
+    const docRows = docs.rows;
 
-    //Retrieve all documents stored in the database using Sequelize
-    const documentos = await db.Documento.findAll({
-        attributes: ["id_documento", "nome_doc", "nome_arq", "resumo", "data"], //Choose which column to show
-        order: [["id_documento", "ASC"]], //Choose order
-        //Return the specific startpoint of documents and the limit of them on the page
-        offset: Number(page * limit - limit),
-        limit: limit,
-    });
-
-    if (!documentos) {
-        res.status(400).json({ erro: "Não foi possível recuperar os dados!" });
+    if (docCount == 0) {
+        res.status(400).json({
+            erro: `Não encontramos nenhum documento com '${req.query.search}'`
+        });
         return;
     }
+    
+    lastPage = Math.ceil(docCount / limit);
 
     const pagination = {
         path: "/documento",
         page: page,
         prev_page_url: Number(page) - 1 >= 1 ? Number(page) - 1 : false,
-        next_page_url:
-            Number(page) + 1 > lastPage ? false : Number(page) + 1,
+        next_page_url: Number(page) + 1 > lastPage ? false : Number(page) + 1,
         lastPage: lastPage,
-        total_documents: countDocument,
+        total_documents: docCount,
     };
 
     res.status(200).json({
-        mensagem: "Rota documento alcançada!",
-        data: documentos,
+        docRows,
         pagination,
     });
 });
