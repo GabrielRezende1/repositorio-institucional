@@ -4,9 +4,9 @@ const db = require("../../db/models/index");
 const idParam = require("../middlewares/idParam");
 /**
  * /documento
- * /documento/:tipo
- * /documento/:id
- * /documento/:id/:nome
+ * /documento/tipo/:tipo
+ * /documento/id/:id
+ * /documento/download/:id/:nome
  * 
  * OBS: Document creation is handled by the user.js
  * since only logged users can create/update docs
@@ -88,7 +88,7 @@ router.get("/documento", async (req, res) => {
 });
 // Recupera documentos de um tipo específico do db
 //GET /documento/:tipo
-router.get("/documento/:tipo", async (req, res) => {
+router.get("/documento/tipo/:tipo", async (req, res) => {
     const tipo = req.params.tipo;
     const docTipo = await db.Doc_tipo.findOne({
         where: { tipo }
@@ -111,29 +111,49 @@ router.get("/documento/:tipo", async (req, res) => {
         data: documento
     });
 });
-//TODO alterar função para se adequar ao de uma requisição de documento específico
 //GET /documento/:id
-router.get("/documento/:id", async (req, res) => {
-    const id = Number.parseInt(req.params.id, 10);
-
-    const documento = await db.Documento.findOne({
-        attributes: ["nome_doc", "nome_arq", "resumo", "data"],
-        where: { id_documento: id },
+router.get("/documento/id/:id", async (req, res) => {
+    const id = idParam(req);
+    const isStudent = false;
+    const doc = await db.Documento.findOne({
+        where: { id_documento: id }
     });
-
-    if (!documento) {
-        res.status(400).json({ erro: "Não foi possível recuperar os dados!" });
+    // Prevent user to manually try accessing a document out of scope
+    if ((doc.fk_id_doc_tipo == 9) | (doc.fk_id_doc_tipo == 10)) {
+        res.status(400).json({
+            erro: "Você tentou acessar um documento fora do escopo da rota!"
+        });
         return;
     }
 
+    const docType = await db.Doc_tipo.findOne({
+        where: { id_doc_tipo: doc.fk_id_doc_tipo }
+    })
+
+    const teacher = await db.Docente.findOne({
+        where: { id_docente: doc.fk_id_docente }
+    });
+    /**
+     * Check if doc is from a teacher or student
+     * Because teacher doc doesn't have student id
+     */
+    const student = await db.Discente.findOne({
+        where: { id_discente: doc.fk_id_discente }
+    });
+
+    if (!student) isStudent = true;
+
     res.status(200).json({
-        mensagem: "Rota documento alcançada!",
-        data: documento
+        isStudent,
+        docType,
+        doc,
+        teacher,
+        student: isStudent ? undefined : student
     });
 });
 // Download do documento específico
 //GET /documento/:id/:nome
-router.get("/documento/:id/:nome", async (req, res) => {
+router.get("/documento/download/:id/:nome", async (req, res) => {
     const id = idParam(req);
     const fileName = req.params.nome;
 
