@@ -1,17 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../../db/models/index");
-/*
-	/
-	/apresentacao
-	/politicas
-	/faq
+/**
+ * /
+ * /apresentacao
+ * /politicas
+ * /faq
  */
-//TODO link para os filtros de documentos
 //GET home
 router.get("/", async (req, res) => {
 	const doctypes = await db.Doc_tipo.findAll({
-		attributes: ["tipo"],
 		where: {
 			tipo: {
 				[db.Sequelize.Op.and]: [ //operator and
@@ -21,13 +19,9 @@ router.get("/", async (req, res) => {
 			}
 		}
 	});
-
-	if(req.query.search == undefined) { //only search db if query exists
-		const documentTypes = doctypes.map((el, i, arr) => {
-			return el = el.tipo;
-		});
-	
-		res.json({ documentTypes });
+	// Only search db if query exists
+	if(req.query.search == undefined) {
+		res.json({ doctypes, documentTypes });
 		return;
 	}
 

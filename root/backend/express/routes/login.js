@@ -19,14 +19,16 @@ router.post('/login', async (req, res) => {
     })
     .then(user => {
         if(user == undefined) {
-            res.status(403).json({err: 'Nenhuma conta cadastrada com esse email'});
+            res.status(403).json({
+                err: 'Nenhuma conta cadastrada com esse email'
+            });
             return;
         }
 
         let correctPassword = bcryptjs.compareSync(senha, user.senha);
 
         if(!correctPassword) {
-            res.status(403).json({err: 'Senha incorreta', correctPassword: correctPassword, user: user});
+            res.status(403).json({ err: 'Senha incorreta' });
             return;
         }
 
@@ -41,8 +43,9 @@ router.post('/login', async (req, res) => {
         //res.redirect('/'); //redir to home pg if success
     })
     .catch(err => {
-        console.log(err);
-        res.status(501).json({errAlt: 'Error, see terminal log if no err', err: err});
+        res.status(501).json({
+            err: { message: err.message, stack: err.stack }
+        });
     });
 });
 //POST /cadastro
@@ -95,15 +98,13 @@ router.post('/cadastro', async (req, res) => {
             })
             .catch((err) => {
                 res.status(500).json({
-                    error: err,
-                    errorAlt: 'Não foi possível cadastrar o usuário!'
+                    err: { message: err.message, stack: err.stack }
                 });
                 return;
             });
     }
 
-    res.status(400).json({ errorAlt: 'Email já cadastrado!' });
-    //res.redirect('/'); //redir to home pg ('/') if success
+    res.status(400).json({ err: 'Email já cadastrado!' });
 });
 //DELETE /logout
 router.delete('/logout', async (req, res) => {

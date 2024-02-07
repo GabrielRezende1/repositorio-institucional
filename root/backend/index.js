@@ -12,27 +12,27 @@ const https = require('https');
 const server = https.createServer(options, app);
 
 async function assertDatabaseConnectionOk() {
-	console.log(`Checking database connection...`);
+	console.log(`Verificando conexão com o Banco de Dados...`);
 	try {
-		await db.sequelize.authenticate();
-		console.log('Database connection OK!');
-		//await db.sequelize.sync();
-		console.log('Database models OK!');
+		await db.sequelize.authenticate({logging: false});
+		console.log('Conexão com o Banco de Dados OK!');
+		await db.sequelize.sync({logging: false});
+		console.log('Modelos do Banco de Dados OK!');
 	} catch (error) {
-		console.log('Unable to connect to the database:');
+		console.log('Não foi possível conectar com o Banco de Dados: ');
 		console.log(error.message);
 		process.exit(1);
 	}
 }
 
 async function init() {
-	await assertDatabaseConnectionOk();
+    await assertDatabaseConnectionOk();
 
-	console.log(`Inicializando app na porta ${process.env.PORT}...`);
+    console.log(`Inicializando app na porta ${process.env.PORT}...`);
 
-	server.listen(process.env.PORT);
+    server.listen(process.env.PORT);
 
-	console.log(`App escutando em https://localhost:${process.env.PORT}`);
+    console.log(`App escutando em https://localhost:${process.env.PORT}`);
 }
 
 init();

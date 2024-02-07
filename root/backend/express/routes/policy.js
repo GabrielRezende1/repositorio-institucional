@@ -9,60 +9,48 @@ const idParam = require("../middlewares/idParam");
  * /politicas/:id/:nome
  */
 //GET /politicas
-router.get("/politicas", async (req, res) => { //TODO links para as políticas
-	const politicaID = await db.Doc_tipo.findOne({ //Find policy ID on the table
-		where: {
-			"tipo": "Política"
-		}
+router.get("/politicas", async (req, res) => {
+	//Find policy ID on the table
+	const politicaID = await db.Doc_tipo.findOne({
+		where: { tipo: "Política" }
+	});
+	//Retrieve all policy docs
+	const politicas = await db.Documento.findAll({
+		where: { fk_id_doc_tipo: politicaID.id_doc_tipo }
 	});
 
-	const politicas = await db.Documento.findAll({ //Retrieve all policy docs
-		where: {
-			"fk_id_doc_tipo": politicaID.id_doc_tipo //Table column id
-		}
-	});
-
-	res.json({
-		msg: "Rota '/politicas' alcançada!", 
-		politicaID: politicaID.id_doc_tipo, 
-		politicas
-	});
+	res.json({ politicas });
 });
 //GET /politicas/:id
 router.get("/politicas/:id", async (req, res) => {
 	const id = idParam(req);
-
-	const politicaID = await db.Doc_tipo.findOne({ //Find policy ID on the table
+	//Find policy ID on the table
+	const politicaID = await db.Doc_tipo.findOne({
 		where: {
 			"tipo": "Política"
 		}
 	});
-
-	const politica = await db.Documento.findOne({ //Retrieve policy doc
+	//Retrieve policy doc
+	const politica = await db.Documento.findOne({
 		where: {
 			id_documento: id,
-			fk_id_doc_tipo: politicaID.id_doc_tipo //Table column id
+			fk_id_doc_tipo: politicaID.id_doc_tipo
 		}
 	});
 
-	res.json({
-		msg: `Rota '/politicas/${id}' alcançada!`, 
-		politicaID: politicaID.id_doc_tipo, 
-		politica
-	});
+	res.json({ politica });
 });
-// Download de documento da política
-//GET /politicas/:id/:nome
+//GET /politicas/:id/:nome (DOWNLOAD)
 router.get("/politicas/:id/:nome", async (req, res) => {
     const id = idParam(req);
     const fileName = req.params.nome;
 
     const politica = await db.Documento.findOne({
         attributes: ["nome_doc", "nome_arq", "resumo", "data"],
-        where: { 
+        where: {
             id_documento: id,
             nome_arq: fileName,
-			fk_id_doc_tipo: 9
+            fk_id_doc_tipo: 9
         }
     });
 
@@ -75,7 +63,7 @@ router.get("/politicas/:id/:nome", async (req, res) => {
     res.download(directoryPath + fileName, fileName, (err) => {
         if (err) {
             res.status(500).send({
-                message: "There was an issue in downloading the file. " + err,
+                message: "There was an issue in downloading the file. " + err
             });
         }
     });

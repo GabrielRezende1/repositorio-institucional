@@ -28,7 +28,6 @@ router.get('/minha-conta', authToken, async (req, res) => {
         const userId = user.id_usuario;
 
         const isStudent = email.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
-        //TODO usar variável pra mostrar tela de novo cadastro ou do usuário no frontend
         let checkedUser;
 
         if (isStudent) {
@@ -41,10 +40,9 @@ router.get('/minha-conta', authToken, async (req, res) => {
             });
         }
 
-        res.status(200).json({msg: "Path /minha-conta reached!", userId});
-    } catch (error) {
-        console.log(error);
-        res.status(401).json({msg: "Erro401", error});
+        res.status(200).json({ userId, checkedUser });
+    } catch (err) {
+        res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
 });
 //Criação de discente/docente de acordo com email pelo db
@@ -138,9 +136,8 @@ router.post("/minha-conta", authToken, async (req, res) => {
 
         res.status(200).json({ msg: "Estudante atualizado!", user, student });
         return;
-    } catch (error) {
-        console.log(error);
-        res.status(401).json({ msg: "Erro401", error });
+    } catch (err) {
+        res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
 });
 //GET /minha-conta/meus-documentos
@@ -179,9 +176,8 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
             where: {fk_id_discente: userId}
         });
         res.status(200).json({msg: 'Documentos do Estudante', userId, docs});
-    } catch (error) {
-        console.log(error);
-        res.status(401).json({msg: "Erro401", error});
+    } catch (err) {
+        res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
 });
 //TODO Get user specific doc with privelege options in comparison to GET document/:id (maybe give an option to alter doc)
@@ -291,10 +287,9 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
             document
         });
         //
-    } catch (error) {
-        console.log(error);
+    } catch (err) {
         fs.unlinkSync(`${__basedir}../../db/documents/${arquivo}`);
-        res.status(401).json({msg: "Erro401", error});
+        res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
 });
 //TODO Se algum req.body estiver vazio, manter o que já estava. Preencher os html inputs com o que já estava
@@ -349,9 +344,8 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
             }
         });
         res.status(200).json({msg: 'Documento do Estudante', userId, isStudent, doc});
-    } catch (error) {
-        console.log(error);
-        res.status(401).json({msg: "Erro401", error});
+    } catch (err) {
+        res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
 });
 //TODO alterar função para se adequar ao de uma requisição de alteração de documento.
@@ -453,10 +447,9 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, file
 
         res.status(200).json({msg: 'Documentos do Professor', userId, doc, doc_subject});
         return;
-    } catch (error) {
-        console.log(error);
+    } catch (err) {
         fs.unlinkSync(`${__basedir}../../db/documents/${arquivo}`);
-        res.status(401).json({msg: "Erro401", error});        
+        res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
 });
 //DELETE /minha-conta/:id/:nome

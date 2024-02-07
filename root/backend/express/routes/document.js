@@ -7,7 +7,7 @@ const idParam = require("../middlewares/idParam");
  * /documento/tipo/:tipo
  * /documento/id/:id
  * /documento/download/:id/:nome
- * 
+ *
  * OBS: Document creation is handled by the user.js
  * since only logged users can create/update docs
  */
@@ -15,43 +15,58 @@ const idParam = require("../middlewares/idParam");
 router.get("/documento", async (req, res) => {
     //Limit the amount of documents shown on page
     const { page = 1 } = req.query;
-    console.log(req.query);
     const limit = 3; //Num. of records per page. Ideal is 40
     let lastPage = 1;
     // Get all records if search is empty|undefined
     let docs;
     if (!req.query.search) {
         docs = await db.Documento.findAndCountAll({
-            attributes: ["id_documento", "nome_doc", "nome_arq", "resumo", "data"],
+            attributes: [
+                "id_documento",
+                "nome_doc",
+                "nome_arq",
+                "resumo",
+                "data"
+            ],
             order: [["data", "ASC"]],
             where: {
                 fk_id_doc_tipo: {
-                    [db.Sequelize.Op.and]: [ //operator and
-                        {[db.Sequelize.Op.ne]: 9}, //ne = not equal to
-                        {[db.Sequelize.Op.ne]: 10}
+                    [db.Sequelize.Op.and]: [
+                        //operator and
+                        { [db.Sequelize.Op.ne]: 9 }, //ne = not equal to
+                        { [db.Sequelize.Op.ne]: 10 }
                     ]
                 }
             },
             offset: Number(page * limit - limit),
-            limit,
+            limit
         });
-    }else {
+    } else {
         docs = await db.Documento.findAndCountAll({
-            attributes: ["id_documento", "nome_doc", "nome_arq", "resumo", "data"],
+            attributes: [
+                "id_documento",
+                "nome_doc",
+                "nome_arq",
+                "resumo",
+                "data"
+            ],
             where: {
                 nome_doc: {
                     [db.Sequelize.Op.like]: `%${req.query.search}%`
                 },
                 fk_id_doc_tipo: {
-                    [db.Sequelize.Op.and]: [ //operator and
-                        {[db.Sequelize.Op.ne]: 9}, //ne = not equal to
-                        {[db.Sequelize.Op.ne]: 10}
+                    [db.Sequelize.Op.and]: [ // operator and
+                        { [db.Sequelize.Op.ne]: 9 }, // ne = not equal to
+                        { [db.Sequelize.Op.ne]: 10 }
                     ]
                 }
             },
-            order: [["nome_doc", "ASC"], ["data", "ASC"]],
+            order: [
+                ["nome_doc", "ASC"],
+                ["data", "ASC"]
+            ],
             offset: Number(page * limit - limit),
-            limit,
+            limit
         });
     }
 
@@ -69,7 +84,7 @@ router.get("/documento", async (req, res) => {
         });
         return;
     }
-    
+
     lastPage = Math.ceil(docCount / limit);
 
     const pagination = {
@@ -78,12 +93,12 @@ router.get("/documento", async (req, res) => {
         prev_page_url: Number(page) - 1 >= 1 ? Number(page) - 1 : false,
         next_page_url: Number(page) + 1 > lastPage ? false : Number(page) + 1,
         lastPage: lastPage,
-        total_documents: docCount,
+        total_documents: docCount
     };
 
     res.status(200).json({
         docRows,
-        pagination,
+        pagination
     });
 });
 // Recupera documentos de um tipo específico do db
@@ -98,7 +113,7 @@ router.get("/documento/tipo/:tipo", async (req, res) => {
 
     const documento = await db.Documento.findAll({
         attributes: ["nome_doc", "nome_arq", "resumo", "data"],
-        where: { fk_id_doc_tipo: docTipoId },
+        where: { fk_id_doc_tipo: docTipoId }
     });
 
     if (!documento) {
@@ -128,7 +143,7 @@ router.get("/documento/id/:id", async (req, res) => {
 
     const docType = await db.Doc_tipo.findOne({
         where: { id_doc_tipo: doc.fk_id_doc_tipo }
-    })
+    });
 
     const teacher = await db.Docente.findOne({
         where: { id_docente: doc.fk_id_docente }
@@ -159,7 +174,7 @@ router.get("/documento/download/:id/:nome", async (req, res) => {
 
     const documento = await db.Documento.findOne({
         attributes: ["nome_doc", "nome_arq", "resumo", "data"],
-        where: { 
+        where: {
             id_documento: id,
             nome_arq: fileName
         }
@@ -174,7 +189,7 @@ router.get("/documento/download/:id/:nome", async (req, res) => {
     res.download(directoryPath + fileName, fileName, (err) => {
         if (err) {
             res.status(500).send({
-                message: "There was an issue in downloading the file. " + err,
+                message: "There was an issue in downloading the file. " + err
             });
         }
     });
