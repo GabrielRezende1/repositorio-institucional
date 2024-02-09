@@ -4,11 +4,11 @@ const router = express.Router();
 const db = require("../../db/models/index");
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-/*
-/login
-/cadastro
-/logout
-*/
+/**
+ * /login
+ * /cadastro
+ * /logout
+ */
 //GET /login
 router.post('/login', async (req, res) => {
     const email = req.body.email;
@@ -52,7 +52,6 @@ router.post('/login', async (req, res) => {
 router.post('/cadastro', async (req, res) => {
     const email = req.body.email;
     const senha = req.body.senha;
-    //TODO implementar o confirmeSenha
     const confirmeSenha = req.body.confirmeSenha;
     // Check if email already exists before creating user
     const user = await db.Usuario.findOne({
@@ -60,51 +59,59 @@ router.post('/cadastro', async (req, res) => {
     });
     // Regex email and senha
     const passwordRegex = senha.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/);
-    const emailRegex = email.match(/(([a-z]+\.[a-z]+\.[0-9]+(ga|si))@(aluno|prof).faeterj-prc.faetec.rj.gov.br)|Admin/g);
+    const emailRegex = email.match(/([a-z]+\.[a-z]+\.[0-9]+(ga|si))@(aluno|prof).faeterj-prc.faetec.rj.gov.br/g);
     //
 
-    if (!user) { // If user doesn't exist, create one (user = email)
-        if (!emailRegex) {
-            res.status(403).json({ msg: "Email não existe!" });
-            return;
-        }
-
-        if (!passwordRegex) {
-            res.status(403).json({
-                msg: "Senha não atende aos requisitos mínimos!", 
-                requisitos: [
-                    'No mínimo 8 caracteres',
-                    '1 letra maiúscula',
-                    '1 letra minúscula',
-                    '1 caractere especial'
-                ]
-            });
-            return;
-        }
-
-        const salt = bcryptjs.genSaltSync(10);
-        const hash = bcryptjs.hashSync(senha, salt);
-
-        await db.Usuario.create({
-            email,
-            senha: hash,
-        })
-            .then((results) => {
-                res.status(201).json({
-                    mensagem: "Usuário cadastrado!",
-                    cadastro: results
-                });
-                return;
-            })
-            .catch((err) => {
-                res.status(500).json({
-                    err: { message: err.message, stack: err.stack }
-                });
-                return;
-            });
+    if (user) { // If user doesn't exist, create one (user = email)
+        res.status(400).json({ err: 'Email já cadastrado!' });
+        return;
     }
 
-    res.status(400).json({ err: 'Email já cadastrado!' });
+    if (!emailRegex) {
+        res.status(403).json({ msg: "Email não existe!" });
+        return;
+    }
+
+    if (!passwordRegex) {
+        res.status(403).json({
+            msg: "Senha não atende aos requisitos mínimos!",
+            requisitos: [
+                "No mínimo 8 caracteres",
+                "1 letra maiúscula",
+                "1 letra minúscula",
+                "1 caractere especial"
+            ]
+        });
+        return;
+    }
+
+    if (senha != confirmeSenha) {
+        res.status(403).json({
+            msg: "Você não digitou a senha corretamente!"
+        });
+        return;
+    }
+
+    const salt = bcryptjs.genSaltSync(10);
+    const hash = bcryptjs.hashSync(senha, salt);
+
+    await db.Usuario.create({
+        email,
+        senha: hash
+    })
+        .then((results) => {
+            res.status(201).json({
+                mensagem: "Usuário cadastrado!",
+                cadastro: results
+            });
+            return;
+        })
+        .catch((err) => {
+            res.status(500).json({
+                err: { message: err.message, stack: err.stack }
+            });
+            return;
+        });
 });
 //DELETE /logout
 router.delete('/logout', async (req, res) => {
