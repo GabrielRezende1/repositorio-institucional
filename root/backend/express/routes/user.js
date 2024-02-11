@@ -158,13 +158,15 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
         //Check if it's student or teacher
         if (!isStudent) {
             checkedUser = await db.Docente.findOne({
-                where: {fk_id_usuario: userId}
+                where: { fk_id_usuario: userId }
             });
             //Retrieve user's documents
             docs = await db.Documento.findAll({
-                where: {fk_id_docente: userId}
+                where: { fk_id_docente: checkedUser.id_docente }
             });
-            res.status(200).json({msg: 'Documentos do Professor', userId, docs});
+            res.status(200).json({
+                msg: 'Documentos do Professor', userId, docs
+            });
             return;
         }
 
@@ -173,28 +175,41 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
         });
         //Retrieve user's documents
         docs = await db.Documento.findAll({
-            where: {fk_id_discente: userId}
+            where: { fk_id_discente: checkedUser.id_discente }
         });
-        res.status(200).json({msg: 'Documentos do Estudante', userId, docs});
+        res.status(200).json({ msg: 'Documentos do Estudante', userId, docs });
     } catch (err) {
         res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
 });
-//TODO Get user specific doc with privelege options in comparison to GET document/:id (maybe give an option to alter doc)
-//GET /minha-conta/meus-documentos/:id/:nome
-router.get("/minha-conta/meus-documentos/:id", authToken, async (req, res) => {
-    const id = idParam(req);
-    res.json({msg: 'path reached!'});
+//GET /minha-conta/novos-documentos (Just to access post request)
+router.get("/minha-conta/novo-documento", authToken, async (req, res) => {
+    try {
+        //Check if token exists
+        const token = req.cookies.token;
+        const decoded = jwt.decode(token);
+        const email = decoded.email;
+
+        // Teachers dropdown list for when student creates a new doc
+        const isStudent = email.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
+        let teachers
+        if (isStudent) {
+            teachers = await db.Docente.findAll();
+        }
+
+        res.status(200).json({ email, teachers });
+    } catch (err) {
+        res.status(401).json({err: {message: err.message, stack: err.stack}});
+    }
 });
 //TODO Fazer o upload primeiro não é bom (Apagar o arquivo em caso de erro também)
-//TODO configurar criação de novo documento para Docentes
 //POST /minha-conta/novo-documento
 router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (req, res) => {
     const titulo = req.body.titulo; //título do trabalho
     const arquivo = req.file.originalname; //nome do arquivo no sistema
     const resumo = req.body.resumo;
     const data = req.body.data;
-    const orientador = req.body.orientador; //TODO find fk_id_docente with db query
+    const orientador = req.body.orientador;
     const tipo = req.body.tipo;
     const assunto = req.body.assunto;
 
@@ -215,18 +230,42 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
         const typeId = type.id_doc_tipo;
         //
         /**
+         * Creating document with Admin.
+         * Only admins are capable of
+         * creating Politics or Tutorial docs.
+         * Politics/ Tutorial docs does not have a subject.
+         */
+        if (email == "Admin") {
+            const document = await db.Documento.create({
+                nome_doc: titulo,
+                nome_arq: arquivo,
+                data,
+                fk_id_doc_tipo: typeId
+            });
+    
+            res.status(200).json({
+                msg: `Documento "${arquivo}" criado com sucesso!`,
+                document
+            });
+            return;
+        }
+        //
+        /**
          * Creating document with Student/Teacher
          * Student/Teacher can't create a Politics or Tutorial doc
          */
-        if (email !== "Admin") {
-            if (typeId == 9 || typeId == 10) {
-                fs.unlinkSync(`${__basedir}../../db/documents/${arquivo}`);
-                res.status(401).json({
-                    msg: "Você escolheu um tipo de documento restrito!"
-                });
-                return;
-            }
-            //Fetch data specific to student/teacher
+        if (typeId == 9 || typeId == 10) {
+            fs.unlinkSync(`${__basedir}../../db/documents/${arquivo}`);
+            res.status(401).json({
+                msg: "Você escolheu um tipo de documento restrito!"
+            });
+            return;
+        }
+
+        const isStudent = email.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
+
+        if (isStudent) {
+            //Fetch data specific to student
             const student = await db.Discente.findOne({
                 where: {fk_id_usuario: userId}
             });
@@ -266,33 +305,42 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
                 document,
                 doc_subject
             });
-            return;
-        }
-        //
-        /**
-         * Creating document with Admin.
-         * Only admins are capable of
-         * creating Politics or Tutorial docs.
-         * Politics/ Tutorial docs does not have a subject.
-         */
-        const document = await db.Documento.create({
-            nome_doc: titulo,
-            nome_arq: arquivo,
-            data,
-            fk_id_doc_tipo: typeId
-        });
+        }else { //Fetch data specific to teacher
+            const teacher = await db.Docente.findOne({
+                where: {fk_id_usuario: userId}
+            });
+            const teacherId = teacher.id_docente;
 
-        res.status(200).json({
-            msg: `Documento "${arquivo}" criado com sucesso!`,
-            document
-        });
-        //
+            const subject = await db.Assunto.findOrCreate({
+                where: {nome: assunto}
+            });
+            const subjectId = subject[0].dataValues.id_assunto;
+
+            const document = await db.Documento.create({
+                nome_doc: titulo,
+                nome_arq: arquivo,
+                resumo,
+                data,
+                fk_id_docente: teacherId,
+                fk_id_doc_tipo: typeId
+            });
+    
+            const doc_subject = await db.Doc_assunto.create({
+                fk_id_assunto: subjectId, //"dataValues" because findOrCreate method returns a different object
+                fk_id_documento: document.id_documento
+            });
+
+            res.status(200).json({
+                msg: `Documento '${arquivo}' criado com sucesso!`,
+                document,
+                doc_subject
+            });
+        }
     } catch (err) {
         fs.unlinkSync(`${__basedir}../../db/documents/${arquivo}`);
         res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
 });
-//TODO Se algum req.body estiver vazio, manter o que já estava. Preencher os html inputs com o que já estava
 /**
  * GET /minha-conta/meus-documentos/alterar-documento/:id
  * Pega o conteúdo do documento e passa para os inputs do HTML
@@ -336,6 +384,8 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
             where: {fk_id_usuario: userId}
         });
         const studentId = checkedUser.dataValues.id_discente;
+
+        const teachers = await db.Docente.findAll();
         //Retrieve user document
         doc = await db.Documento.findOne({
             where: {
@@ -343,19 +393,18 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
                 fk_id_discente: studentId
             }
         });
-        res.status(200).json({msg: 'Documento do Estudante', userId, isStudent, doc});
+        res.status(200).json({msg: 'Documento do Estudante', userId, isStudent, doc, teachers});
     } catch (err) {
         res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
 });
-//TODO alterar função para se adequar ao de uma requisição de alteração de documento.
 //PUT /minha-conta/meus-documentos/:id/alterar-documento
 router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, fileCtrl.upload, async (req, res) => {
     const titulo = req.body.titulo; //título do trabalho
     const arquivo = req.file.originalname; //nome do arquivo no sistema
     const resumo = req.body.resumo;
     const data = req.body.data;
-    const orientador = req.body.orientador; //TODO find fk_id_docente with db query
+    const orientador = req.body.orientador;
     const tipo = req.body.tipo;
     const assunto = req.body.assunto;
 
@@ -407,7 +456,7 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, file
 
             const doc_subject = await db.Doc_assunto.findOrCreate({
                 where: {
-                    fk_id_assunto: subjectId, //"dataValues" because findOrCreate method returns a different object
+                    fk_id_assunto: subjectId,
                     fk_id_documento: docId
                 }
             });
@@ -425,6 +474,15 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, file
             where: {nome: assunto}
         });
         const subjectId = subject[0].dataValues.id_assunto;
+
+        const teacher = await db.Docente.findOne({
+            where: {
+                nome: {
+                    [db.Sequelize.Op.like]: orientador
+                }
+            }
+        });
+        const teacherId = teacher.id_docente;
         //Update user's document
         doc = await db.Documento.update(
             {
@@ -432,7 +490,7 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, file
                 nome_arq: arquivo,
                 resumo,
                 data,
-                orientador,
+                fk_id_docente: teacherId,
                 fk_id_doc_tipo: typeId
             },
             { where: { id_documento: docId, fk_id_discente: studentId } }
@@ -440,12 +498,12 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, file
         
         const doc_subject = await db.Doc_assunto.findOrCreate({
             where: {
-                fk_id_assunto: subjectId, //"dataValues" because findOrCreate method returns a different object
+                fk_id_assunto: subjectId,
                 fk_id_documento: docId
             }
         });
 
-        res.status(200).json({msg: 'Documentos do Professor', userId, doc, doc_subject});
+        res.status(200).json({msg: 'Documentos do Estudante', userId, doc, doc_subject});
         return;
     } catch (err) {
         fs.unlinkSync(`${__basedir}../../db/documents/${arquivo}`);
