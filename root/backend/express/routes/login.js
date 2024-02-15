@@ -10,6 +10,26 @@ const jwt = require('jsonwebtoken');
  * /logout
  */
 //GET /login
+router.get('/login', async (req, res) => {
+    const token = req.cookies.token;
+    const cookies = req.cookies;
+    if (token) {
+        try {
+            const check = jwt.verify(token, process.env.JWT_SECRET);
+            console.log(check);
+            if (check) {
+                res.status(200).json({token, cookies});
+                return;
+            }
+        } catch (error) {
+            res.clearCookie('token');
+            res.status(403).json({msg: 'Token expirou!', cookies});
+        }
+    }else {
+        res.status(403).json({msg: 'Token inexistente!', cookies: req.cookies});
+    }
+});
+//POST /login
 router.post('/login', async (req, res) => {
     const email = req.body.email;
     const senha = req.body.senha;
@@ -36,11 +56,9 @@ router.post('/login', async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             sameSite: 'none',
-            secure: true,
-            maxAge: 1000 * 60 // Same as jwt "expiresIn"
+            secure: true
         });
         res.json({msg: 'Você está logado', token: token});
-        //res.redirect('/'); //redir to home pg if success
     })
     .catch(err => {
         res.status(501).json({

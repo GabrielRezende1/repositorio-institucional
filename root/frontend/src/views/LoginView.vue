@@ -4,46 +4,53 @@ export default {
   data() {
     return {
       email: '',
-      senha: ''
+      senha: '',
+      senhaErrada: ''
     }
   },
 
   methods: {
     logInUser() {
-      axios
-      .post('https://localhost:3000/login', {
+      axios.post('https://localhost:3000/login', {
         email: this.email,
         senha: this.senha
       }, { withCredentials: true })
-      .then(response => {
-        if(response.status == 200) {
-          console.log(response.data);
-        } else {
-          console.log('Usuário ou senha incorretos!');
-        }
+      .then(res => {
+        if(res.status == 200)
+          this.$router.push("/");
       })
       .catch(err => {
-        console.log('erro: ');
-        console.log(err);
-      })
+        this.senhaErrada = "Usuário ou senha incorretos!";
+        console.log(err.response.data);
+      });
     }
   },
-
-  components: {
+  //Trying to access login page while already logged in redirects to home page
+  beforeCreate() {
+    axios.get('https://localhost:3000/login', { withCredentials: true })
+    .then(res => {
+      console.log(res.data);
+      if (res.data.token) this.$router.push("/");
+    })
+    .catch(err => {
+      console.log(err.response.data);
+    });
   }
 }
 </script>
 
 <template>
   <section>
-    <form action="" method="get">
+    <form action="" method="get" @submit.prevent="logInUser">
       <label for="email">E-MAIL:</label>
       <input type="text" id="email" v-model="email" placeholder="Insira seu e-mail..."/>
 
       <label for="senha">SENHA:</label>
       <input type="password" id="senha" v-model="senha" placeholder="Insira seu e-mail...">
-      <!--TODO try implement Prevent default on submit--> 
-      <input type="submit" @click="logInUser()" value="LOGAR"/>
+
+      <input type="submit" value="LOGAR"/>
+      
+      <span v-if="senhaErrada">{{ senhaErrada }}</span>
       <a href="/cadastro">Não possui conta? Então cadastre-se</a>
     </form>
   </section>
@@ -56,7 +63,7 @@ section {
 }
 
 form {
-  width: 600px;
+  width: 800px;
   margin: 0 auto;
 }
 
@@ -73,7 +80,7 @@ input[type=text], input[type=password] {
   height: 48px;
 
   padding-left: 1rem;
-  font-size: 22px;
+  font-size: 20px;
   margin: 0.5rem auto 2rem auto;
   border-radius: 10px;
   outline: 0;
@@ -83,7 +90,7 @@ input[type=text], input[type=password] {
 }
 
 input[type=text]:focus, input[type=password]:focus {
-  font-size: 24px;
+  font-size: 22px;
 }
 
 input[type=submit] {
@@ -114,5 +121,24 @@ a {
 
   display: block;
   text-align: center;
+}
+
+span {
+  display: block;
+  margin: 0 auto;
+  width: fit-content;
+  background-color: rgba(255, 0, 0, 0.3);
+  border-radius: 5px;
+  padding: 0 5px;
+  
+  animation-name: blinkSpan;
+  animation-duration: 0.4s;
+  animation-iteration-count: 3;
+}
+
+@keyframes blinkSpan {
+  50% {
+    background-color: red;
+  }
 }
 </style>
