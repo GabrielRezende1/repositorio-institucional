@@ -1,10 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-//import ProdutoView from '../views/HomeView.vue' //doesn't need because lazy-loading
-//import LoginView from '../views/HomeView.vue'
-//import CadastroView from '../views/HomeView.vue'
-//import MinhaContaView from '../views/MinhaContaView.vue'
-
+//Lazy-loading files doesn't require import
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -22,12 +18,17 @@ const router = createRouter({
       path: '/cadastro',
       name: 'cadastro',
       component: () => import('../views/CadastroView.vue')
-    }/* ,
+    },
     {
       path: '/minha-conta',
       name: 'minha-conta',
-      component: MinhaContaView
-    }, */
+      component: () => import('../views/MinhaContaView.vue')
+    },
+    {
+      path: '/documento',
+      name: 'documento',
+      component: () => import('../views/DocView.vue')
+    }
   ]
 })
 
