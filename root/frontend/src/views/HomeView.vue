@@ -1,6 +1,6 @@
 <script>
-//TODO style frontend
-import SearchView from '../components/SearchView.vue';
+//TODO Watch out for spaces in the URL
+import SearchBar from '../components/SearchBar.vue';
 export default {
   data() {
     return {
@@ -10,7 +10,7 @@ export default {
   },
 
   components: {
-    SearchView
+    SearchBar
 }
 }
 </script>
@@ -22,19 +22,19 @@ export default {
     </div><!--logo-->
 
     <div class="search">
-      <SearchView />
+      <SearchBar />
     </div><!--search-->
 
     <nav class="categorias">
       <ul>
-        <li><a href="">Artigo de Evento</a></li>
-        <li><a href="">Artigo de Periódico</a></li>
-        <li><a href="">Capítulo de Livro</a></li>
-        <li><a href="">Dissertação</a></li>
-        <li><a href="">Livro</a></li>
-        <li><a href="">Monografia</a></li>
-        <li><a href="">Tese</a></li>
-        <li><a href="">Trabalho de Conclusão de Curso</a></li>
+        <li><a href="/documento/tipo/artigo+de+evento">Artigo de Evento</a></li>
+        <li><a href="/documento/tipo/artigo+de+periodico">Artigo de Periódico</a></li>
+        <li><a href="/documento/tipo/capitulo+de+livro">Capítulo de Livro</a></li>
+        <li><a href="/documento/tipo/dissertacao">Dissertação</a></li>
+        <li><a href="/documento/tipo/livro">Livro</a></li>
+        <li><a href="/documento/tipo/monografia">Monografia</a></li>
+        <li><a href="/documento/tipo/tese">Tese</a></li>
+        <li><a href="/documento/tipo/trabalho+de+conclusao+de+curso">Trabalho de Conclusão de Curso</a></li>
       </ul>
     </nav><!--categorias-->
   </div><!--container-->

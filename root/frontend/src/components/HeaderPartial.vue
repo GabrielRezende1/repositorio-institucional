@@ -1,9 +1,6 @@
 <script>
-import IconMenu from './icons/IconMenu.vue'
-import IconCart from './icons/IconCart.vue';
-import IconFavorites from "./icons/IconFavorites.vue";
-import IconUser from './icons/IconUser.vue';
-/* import { RouterLink } from 'vue-router'; */
+//TODO user-account doesn't change when pushing to '/' from /login
+import axios from 'axios';
 export default {
   // Properties returned from data() become reactive state
   // and will be exposed on `this`.
@@ -17,20 +14,37 @@ export default {
   // Methods are functions that mutate state and trigger updates.
   // They can be bound as event handlers in templates.
   methods: {
-    
-  },
-
-  components: {
-    IconMenu,
-    IconCart,
-    IconFavorites,
-    IconUser
+    search() {
+            if (this.searchInput) {
+                axios.get('https://localhost:3000/?search=' + this.searchInput,
+                {withCredentials: true})
+                .then(res => {
+                    console.log(res.data);
+                    console.log(this.searchInput);
+                    this.$router.push('/documento?search=' + this.searchInput);
+                })
+                .catch(err => {
+                    console.log(err.response.data);
+                });
+            }
+        }
   },
   // Lifecycle hooks are called at different stages
   // of a component's lifecycle.
   // This function will be called when the component is mounted.
   mounted() {
-    
+      //authToken
+      axios
+      .get('https://localhost:3000/login', { withCredentials: true })
+      .then((res) => {
+          console.log(res.data);
+          console.log('você está logado!');
+          this.disconnected = false;
+      })
+      .catch((err) => {
+          console.log(err.response.data);
+          this.disconnected = true;
+      })
   }
 }
 </script>
@@ -39,34 +53,40 @@ export default {
   <header>
     <div class="container">
 
-        <div class="flex"> 
+        <div class="flex">
           <div class="logo">
             <a href="/"><img alt="logo do site" src="@/assets/logo.svg"/></a>
           </div><!--logo-->
 
+          <div class="general-opt">
+            <nav>
+              <ul>
+                <li><a href="/apresentacao">Apresentação</a></li>
+                <li><a href="/faq">FAQ</a></li>
+                <li><a href="/politicas">Política</a></li>
+                <li><a href="/tutorial/geral">Tutorial</a></li>
+              </ul>
+            </nav>
+          </div><!--general-opt-->
+
           <div class="search-bar">
-            <form action="/busca" method="post">
+            <form action="" method="get" @submit.prevent="search">
               <input v-model="searchInput" type="text" placeholder="Busque aqui">
+              <input hidden type="submit" />
             </form>
           </div><!--search-bar-->
 
           <div class="user-account">
-            <a href="/minha-conta"><IconUser /></a><!--add login img-->
             <div v-if="disconnected">
               <a href="/login">Login</a>
               <a href="/cadastro">Cadastro</a>
             </div><!--disconnected-->
-          </div><!--v-if disconnected then don't show login/cadastro options-->
+            <div v-else>
+              <a href="/minha-conta">Conta</a><!--add login img-->
+              <a href="/logout">Logout</a>
+            </div>
+          </div><!--user-account-->
 
-          <div class="user-options">
-            <nav>
-              <ul>
-                <li><a href="/carrinho"><IconCart /></a></li>
-                <li><a href="/minha-conta/favoritos"><IconFavorites /></a></li>
-                <li><a href="#"><IconMenu /></a></li>
-              </ul>
-            </nav>
-          </div><!--user-options-->
         </div><!--flex-->
 
     </div><!--container-->
@@ -84,13 +104,15 @@ header {
 
 a {
   color: var(--yellow);
+  margin: 2px 5px;
+  border-radius: 4px;
 }
 
 a:hover {
   background-color: var(--light-blue);
 }
 
-div:nth-child(1) > a:hover { /* Logo img */
+div.logo > a:hover { /* Logo img */
   background-color: transparent;
 }
 
@@ -109,7 +131,7 @@ div.container {
   height: 100%; /* inherit from: container => header */
 }
 
-div.logo, div.search-bar, div.user-account, div.user-options {
+div.logo, div.general-opt, div.search-bar, div.user-account {
   padding: 0 1rem 0 1rem;
 }
 
@@ -122,18 +144,23 @@ div.logo > a img {
 }
 
 div.search-bar {
-  width: 45%;
+  width: 25%;
 }
 
 div.search-bar form input[type=text] {
   width: 100%;
-  line-height: 1.5;
+  line-height: 30px;
   font-size: 20px;
   border-radius: 2px;
-  padding-left: 1rem;
+  padding-left: 0.5rem;
+  transition: 0.4s;
 }
 
-div.user-account, div.user-options {
+div.search-bar form input[type=text]:focus {
+  font-size: 21px;
+}
+
+div.user-account, div.general-opt {
   width: 20%;
 }
 
@@ -155,36 +182,11 @@ div.user-account > a, div.user-account > div > a {
 nav li {
   list-style-type: none;
   display: inline-block;
-  
 }
 
 nav a {
   display: inline-block;
   padding: 0 1rem;
-  border-radius: 4px;
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-/* svg {
-  width: 100%;
-} */
-
-@media screen and (max-width: 1200px) {
-/**DOESN'T WORK? */
-  /*   .logo {
-    width: 10%;
-  }
-
-  .search-bar {
-    width: 30%;
-  }
-
-  .user-account, .user-options {
-    width: 30%;
-  } */
 }
 
 </style>
