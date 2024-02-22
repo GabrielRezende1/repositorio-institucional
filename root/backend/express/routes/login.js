@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
             return;
         }
 
-        const token = jwt.sign({email: email}, process.env.JWT_SECRET, {expiresIn: 60});
+        const token = jwt.sign({email: email}, process.env.JWT_SECRET, {expiresIn: 360});
         res.cookie('token', token, {
             httpOnly: true,
             sameSite: 'none',
@@ -66,6 +66,67 @@ router.post('/login', async (req, res) => {
         });
     });
 });
+//PUT /login (Should be a PUT /login)
+router.put('/login', async (req, res) => {
+    console.log('put login alcançado');
+    const token = req.cookies.token;
+    const decoded = jwt.decode(token);
+    const email = decoded.email;
+
+    if (!token) {
+        res.status(401).json({msg: 'Token expirou!', token});
+        return;
+    }
+
+    const user = await db.Usuario.findOne({
+        where: {email}
+    });
+    const userId = user.id_usuario;
+    const userPwd = user.senha;
+
+    const oldPwd = req.body.senha;
+    const newPwd = req.body.novaSenha;
+    const checkPwd = req.body.confirmeSenha;
+    // Regex senha
+    const pwdRegex = newPwd.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/);
+    //
+    if (!pwdRegex) {
+        res.status(403).json({
+            msg: "Senha não atende aos requisitos mínimos!",
+            requisitos: [
+                "No mínimo 8 caracteres",
+                "1 letra maiúscula",
+                "1 letra minúscula",
+                "1 caractere especial"
+            ]
+        });
+        return;
+    }
+
+    if (newPwd != checkPwd) {
+        res.status(403).json({
+            msg: "Você não digitou a senha nova corretamente!"
+        });
+        return;
+    }
+
+    const correctPassword = bcryptjs.compareSync(oldPwd, userPwd);
+
+    if (!correctPassword) {
+        res.status(403).json({msg: 'Você não digitou a senha corretamente!'});
+    }
+
+    const salt = bcryptjs.genSaltSync(10);
+    const hash = bcryptjs.hashSync(newPwd, salt);
+
+    const newUser = await db.Usuario.upsert({
+        id_usuario: userId,
+        email,
+        senha: hash
+    });
+
+    res.status(200).json({ msg: 'Senha alterada com sucesso!', correctPassword, newUser });
+})
 //POST /cadastro
 router.post('/cadastro', async (req, res) => {
     const email = req.body.email;
