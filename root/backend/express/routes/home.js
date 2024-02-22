@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
 	});
 	// Only search db if query exists
 	if(req.query.search == undefined) {
-		res.json({ doctypes, documentTypes });
+		res.status(200).json({ doctypes, documentTypes });
 		return;
 	}
 

@@ -5,7 +5,7 @@ const db = require("../../db/models/index");
 const idParam = require("../middlewares/idParam");
 /**
  * /politicas
- * /politicas/:id/:nome
+ * /politicas/:nome
  */
 //GET /politicas
 router.get("/politicas", async (req, res) => {

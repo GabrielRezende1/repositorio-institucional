@@ -40,7 +40,7 @@ router.get('/minha-conta', authToken, async (req, res) => {
             });
         }
 
-        res.status(200).json({ userId, checkedUser });
+        res.status(200).json({ userId, email, checkedUser, isStudent });
     } catch (err) {
         res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
@@ -97,7 +97,7 @@ router.post("/minha-conta", authToken, async (req, res) => {
                     graduacao,
                 },
                 {
-                    where: { fk_id_usuario: exists.id_docente },
+                    where: { fk_id_usuario: exists.fk_id_usuario },
                 }
             );
             res.status(200).json({
@@ -130,7 +130,7 @@ router.post("/minha-conta", authToken, async (req, res) => {
                 curso,
             },
             {
-                where: { fk_id_usuario: exists.id_discente },
+                where: { fk_id_usuario: exists.fk_id_usuario },
             }
         );
 
@@ -510,6 +510,7 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, file
         res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
 });
+//TODO Pensar sobre deletar docs
 //DELETE /minha-conta/:id/:nome
 router.delete("minha-conta/meus-documentos/:id/:nome", authToken, async (req, res) => {
     const token = req.cookies.token;
