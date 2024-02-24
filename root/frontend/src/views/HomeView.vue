@@ -21,9 +21,7 @@ export default {
             <a href="/"><img alt="logo do site" src="@/assets/logo.svg"/></a>
     </div><!--logo-->
 
-    <div class="search">
-      <SearchBar />
-    </div><!--search-->
+    <SearchBar />
 
     <nav class="categorias">
       <ul>

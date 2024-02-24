@@ -21,6 +21,19 @@ export default {
                     console.log(err.response.data);
                 });
             }
+        },
+
+        viewDocs() {
+            axios.get('https://localhost:3000/documento',
+                {withCredentials: true})
+                .then(res => {
+                    console.log('todos os documentos')
+                    console.log(res.data);
+                    this.$router.push('/documento');
+                })
+                .catch(err => {
+                    console.log(err.response.data);
+                });
         }
     }
 }
@@ -29,9 +42,14 @@ export default {
 <template>
     <section>
         <div class="search-bar">
+            <!--Search specific doc-->
             <form action="" method="get" @submit.prevent="search">
                 <input v-model="searchInput" type="text" placeholder="Busque aqui" />
                 <input type="submit" value="Buscar" />
+            </form>
+            <!--Search all docs-->
+            <form action="" method="get" @submit.prevent="viewDocs">
+                <input type="submit" value="Ver Documentos">
             </form>
         </div><!--search-bar-->
     </section>

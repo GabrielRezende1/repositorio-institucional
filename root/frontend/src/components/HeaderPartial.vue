@@ -14,20 +14,6 @@ export default {
   // Methods are functions that mutate state and trigger updates.
   // They can be bound as event handlers in templates.
   methods: {
-    search() {
-            if (this.searchInput) {
-                axios.get('https://localhost:3000/?search=' + this.searchInput,
-                {withCredentials: true})
-                .then(res => {
-                    console.log(res.data);
-                    console.log(this.searchInput);
-                    this.$router.push('/documento?search=' + this.searchInput);
-                })
-                .catch(err => {
-                    console.log(err.response.data);
-                });
-            }
-        }
   },
   // Lifecycle hooks are called at different stages
   // of a component's lifecycle.
@@ -68,13 +54,6 @@ export default {
               </ul>
             </nav>
           </div><!--general-opt-->
-
-          <div class="search-bar">
-            <form action="" method="get" @submit.prevent="search">
-              <input v-model="searchInput" type="text" placeholder="Busque aqui">
-              <input hidden type="submit" />
-            </form>
-          </div><!--search-bar-->
 
           <div class="user-account">
             <div v-if="disconnected">
@@ -141,23 +120,6 @@ div.logo {
 
 div.logo > a img {
   width: 80%;
-}
-
-div.search-bar {
-  width: 25%;
-}
-
-div.search-bar form input[type=text] {
-  width: 100%;
-  line-height: 30px;
-  font-size: 20px;
-  border-radius: 2px;
-  padding-left: 0.5rem;
-  transition: 0.4s;
-}
-
-div.search-bar form input[type=text]:focus {
-  font-size: 21px;
 }
 
 div.user-account, div.general-opt {
