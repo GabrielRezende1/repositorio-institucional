@@ -25,6 +25,16 @@ const router = createRouter({
       component: () => import('../views/MinhaContaView.vue')
     },
     {
+      path: '/minha-conta/meus-documentos',
+      name: 'meus-documentos',
+      component: () => import('../views/MeusDocsView.vue')
+    },
+    {
+      path: '/minha-conta/novo-documento',
+      name: 'novo-documento',
+      component: () => import('../views/NovoDocView.vue')
+    },
+    {
       path: '/documento',
       name: 'documento',
       component: () => import('../views/DocView.vue')
