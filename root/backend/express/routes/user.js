@@ -162,7 +162,22 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
             });
             //Retrieve user's documents
             docs = await db.Documento.findAll({
-                where: { fk_id_docente: checkedUser.id_docente }
+                where: { fk_id_docente: checkedUser.id_docente },
+                attributes: {
+                    include: [
+                        "nome_doc",
+                        "nome_arq",
+                        "resumo",
+                        [db.Sequelize.fn(
+                            "DATE_FORMAT", 
+                            db.Sequelize.col("data"), 
+                            "%d-%m-%Y"
+                        ), "data"],
+                        "fk_id_docente",
+                        "fk_id_doc_tipo"
+                    ]
+                },
+                include: ["Doc_tipo"]
             });
             res.status(200).json({
                 msg: 'Documentos do Professor', userId, docs
@@ -175,7 +190,23 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
         });
         //Retrieve user's documents
         docs = await db.Documento.findAll({
-            where: { fk_id_discente: checkedUser.id_discente }
+            where: { fk_id_discente: checkedUser.id_discente },
+            attributes: {
+                include: [
+                    "nome_doc",
+                    "nome_arq",
+                    "resumo",
+                    [db.Sequelize.fn(
+                        "DATE_FORMAT", 
+                        db.Sequelize.col("data"), 
+                        "%d-%m-%Y"
+                    ), "data"],
+                    "fk_id_discente",
+                    "fk_id_docente",
+                    "fk_id_doc_tipo"
+                ]
+            },
+            include: ["Doc_tipo", "Docente"]
         });
         res.status(200).json({ msg: 'Documentos do Estudante', userId, docs });
     } catch (err) {
@@ -197,7 +228,7 @@ router.get("/minha-conta/novo-documento", authToken, async (req, res) => {
             teachers = await db.Docente.findAll();
         }
 
-        res.status(200).json({ email, teachers });
+        res.status(200).json({ email, teachers, isStudent });
     } catch (err) {
         res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
@@ -373,8 +404,9 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
             doc = await db.Documento.findOne({
                 where: {
                     id_documento: docId,
-                    fk_id_docente: teacherId
-                }
+                    fk_id_docente: teacherId,
+                },
+                include: ["Doc_tipo"]
             });
             res.status(200).json({msg: 'Documento do Professor', userId, isStudent, doc});
             return;
@@ -391,7 +423,8 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
             where: {
                 id_documento: docId,
                 fk_id_discente: studentId
-            }
+            },
+            include: ["Doc_tipo", "Docente"]
         });
         res.status(200).json({msg: 'Documento do Estudante', userId, isStudent, doc, teachers});
     } catch (err) {
