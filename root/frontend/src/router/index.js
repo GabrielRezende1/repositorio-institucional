@@ -35,6 +35,11 @@ const router = createRouter({
       component: () => import('../views/NovoDocView.vue')
     },
     {
+      path: '/minha-conta/meus-documentos/alterar-documento/:id',
+      name: 'alterar-documento',
+      component: () => import('../views/AlterarDocView.vue')
+    },
+    {
       path: '/documento',
       name: 'documento',
       component: () => import('../views/DocView.vue')

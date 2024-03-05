@@ -10,7 +10,8 @@ const idParam = require("../middlewares/idParam");
  * /minha-conta
  * /minha-conta/meus-documentos
  * /minha-conta/novo-documento
- * /minha-conta/meus-documentos/alterar-documento
+ * /minha-conta/meus-documentos/alterar-documento/:id (without file upload)
+ * /minha-conta/meus-documentos/alterar-documento/:id/upload (only file upload)
  * 
  * OBS: Document visualization and download is
  * handled by document.js since it's public
@@ -390,6 +391,12 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
             where: {email}
         });
         const userId = user.id_usuario;
+
+        const doc_subject = await db.Doc_assunto.findOne({
+            where: {fk_id_documento: docId},
+            include: ["Assunto"]
+        });
+        const doc_subjectId = doc_subject.id_assunto;
         
         const isStudent = email.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
         let checkedUser;
@@ -408,7 +415,7 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
                 },
                 include: ["Doc_tipo"]
             });
-            res.status(200).json({msg: 'Documento do Professor', userId, isStudent, doc});
+            res.status(200).json({msg: 'Documento do Professor', userId, isStudent, doc, doc_subject});
             return;
         }
 
@@ -426,15 +433,14 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
             },
             include: ["Doc_tipo", "Docente"]
         });
-        res.status(200).json({msg: 'Documento do Estudante', userId, isStudent, doc, teachers});
+        res.status(200).json({msg: 'Documento do Estudante', userId, isStudent, doc, teachers, doc_subject});
     } catch (err) {
         res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
 });
-//PUT /minha-conta/meus-documentos/:id/alterar-documento
-router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, fileCtrl.upload, async (req, res) => {
+//PUT /minha-conta/meus-documentos/:id/alterar-documento (without file upload)
+router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, async (req, res) => {
     const titulo = req.body.titulo; //título do trabalho
-    const arquivo = req.file.originalname; //nome do arquivo no sistema
     const resumo = req.body.resumo;
     const data = req.body.data;
     const orientador = req.body.orientador;
@@ -479,7 +485,6 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, file
             doc = await db.Documento.update(
                 {
                     nome_doc: titulo,
-                    nome_arq: arquivo,
                     resumo,
                     data,
                     fk_id_doc_tipo: typeId
@@ -520,7 +525,6 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, file
         doc = await db.Documento.update(
             {
                 nome_doc: titulo,
-                nome_arq: arquivo,
                 resumo,
                 data,
                 fk_id_docente: teacherId,
@@ -537,6 +541,75 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, file
         });
 
         res.status(200).json({msg: 'Documentos do Estudante', userId, doc, doc_subject});
+        return;
+    } catch (err) {
+        res.status(401).json({err: {message: err.message, stack: err.stack}});
+    }
+});
+//PUT /minha-conta/meus-documentos/alterar-documento/:id/upload (only file upload)
+router.put('/minha-conta/meus-documentos/alterar-documento/:id/upload', authToken, fileCtrl.upload, async (req, res) => {
+    const arquivo = req.file.originalname; //nome do arquivo no sistema
+
+    const docId = idParam(req);
+
+    try {
+        const token = req.cookies.token;
+        const decoded = jwt.decode(token);
+        const email = decoded.email;
+
+        const isStudent = email.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
+        let checkedUser;
+        let doc;
+        let oldFileName;
+
+        const user = await db.Usuario.findOne({
+            where: {email}
+        });
+        const userId = user.id_usuario;
+
+        if (!isStudent) {
+            //Fetch data specific to student/teacher
+            checkedUser = await db.Docente.findOne({
+                where: {fk_id_usuario: userId}
+            });
+            const teacherId = checkedUser.id_docente;
+            //Get user's old file name
+            oldFileName = await db.Documento.findOne({
+                where: {id_documento: docId}
+            });
+            oldFileName = oldFileName.nome_arq;
+            //Update user's document
+            doc = await db.Documento.update(
+                {
+                    nome_arq: arquivo
+                },
+                { where: { id_documento: id, fk_id_docente: teacherId} }
+            );
+            // Delete oldFileName after updated name is successful
+            fs.unlinkSync(`${__basedir}../../db/documents/${oldFileName}`);
+            res.status(200).json({msg: 'Arquivo do professor alterado', userId, doc, oldFileName});
+            return;
+        }
+
+        checkedUser = await db.Discente.findOne({
+            where: {fk_id_usuario: userId}
+        });
+        const studentId = checkedUser.id_discente;
+        //Get user's old file name
+        oldFileName = await db.Documento.findOne({
+            where: {id_documento: docId}
+        });
+        oldFileName = oldFileName.nome_arq;
+        //Update user's document
+        doc = await db.Documento.update(
+            {
+                nome_arq: arquivo
+            },
+            { where: { id_documento: docId, fk_id_discente: studentId } }
+        );
+        // Delete oldFileName after updated name is successful
+        fs.unlinkSync(`${__basedir}../../db/documents/${oldFileName}`);
+        res.status(200).json({msg: 'Arquivo do estudante alterado', userId, doc, oldFileName});
         return;
     } catch (err) {
         fs.unlinkSync(`${__basedir}../../db/documents/${arquivo}`);
