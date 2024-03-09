@@ -1,5 +1,4 @@
 <script>
-//TODO form only accepts POST or GET method, but updateDoc is PUT
 import axios from 'axios';
 import MenuBar from '../components/MenuBar.vue';
 export default {

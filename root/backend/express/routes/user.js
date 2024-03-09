@@ -172,7 +172,7 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
                         [db.Sequelize.fn(
                             "DATE_FORMAT", 
                             db.Sequelize.col("data"), 
-                            "%d-%m-%Y"
+                            "%d/%m/%Y"
                         ), "data"],
                         "fk_id_docente",
                         "fk_id_doc_tipo"
