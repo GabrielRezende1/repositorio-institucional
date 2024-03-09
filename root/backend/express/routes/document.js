@@ -38,6 +38,7 @@ router.get("/documento", async (req, res) => {
                     ]
                 }
             },
+            include: ["Discente", "Docente", "Doc_tipo"],
             offset: Number(page * limit - limit),
             limit
         });
@@ -65,6 +66,7 @@ router.get("/documento", async (req, res) => {
                 ["nome_doc", "ASC"],
                 ["data", "ASC"]
             ],
+            include: ["Discente", "Docente", "Doc_tipo"],
             offset: Number(page * limit - limit),
             limit
         });
@@ -129,39 +131,55 @@ router.get("/documento/tipo/:tipo", async (req, res) => {
 //GET /documento/:id
 router.get("/documento/id/:id", async (req, res) => {
     const id = idParam(req);
-    const isStudent = false;
-    const doc = await db.Documento.findOne({
-        where: { id_documento: id }
+    let isStudent = false;
+    const doc = await db.Documento.findAll({
+        where: { id_documento: id },
+        attributes: {
+            include: [
+                "nome_doc",
+                "nome_arq",
+                "resumo",
+                [db.Sequelize.fn(
+                    "DATE_FORMAT", 
+                    db.Sequelize.col("data"), 
+                    "%d/%m/%Y"
+                ), "data"],
+                "fk_id_docente",
+                "fk_id_doc_tipo"
+            ]
+        },
+        include: ["Discente", "Docente", "Doc_tipo"]
     });
     // Prevent user to manually try accessing a document out of scope
-    if ((doc.fk_id_doc_tipo == 9) | (doc.fk_id_doc_tipo == 10)) {
+    if ((doc[0].dataValues.fk_id_doc_tipo == 9) | (doc[0].dataValues.fk_id_doc_tipo == 10)) {
         res.status(400).json({
             erro: "Você tentou acessar um documento fora do escopo da rota!"
         });
         return;
     }
 
-    const docType = await db.Doc_tipo.findOne({
-        where: { id_doc_tipo: doc.fk_id_doc_tipo }
+    const teacher = await db.Docente.findOne({
+        where: { id_docente: doc[0].dataValues.fk_id_docente }
     });
 
-    const teacher = await db.Docente.findOne({
-        where: { id_docente: doc.fk_id_docente }
+    const docSubject = await db.Doc_assunto.findAll({
+        where: { fk_id_documento: doc[0].dataValues.id_documento },
+        include: ["Assunto"]
     });
     /**
      * Check if doc is from a teacher or student
      * Because teacher doc doesn't have student id
      */
     const student = await db.Discente.findOne({
-        where: { id_discente: doc.fk_id_discente }
+        where: { id_discente: doc[0].dataValues.fk_id_discente }
     });
 
-    if (!student) isStudent = true;
+    if (student) isStudent = true;
 
     res.status(200).json({
         isStudent,
-        docType,
         doc,
+        docSubject,
         teacher,
         student: isStudent ? undefined : student
     });
