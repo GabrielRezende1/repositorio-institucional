@@ -43,7 +43,13 @@ const router = createRouter({
       path: '/documento',
       name: 'documento',
       component: () => import('../views/DocView.vue')
-    }
+    },
+    {
+      path: '/documento/id/:id',
+      name: 'documentoId',
+      component: () => import('../views/DocSingleView.vue')
+    },
+
   ]
 })
 

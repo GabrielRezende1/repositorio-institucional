@@ -31,9 +31,7 @@ export default {
             .catch(err => {
                 console.log(err.response.data);
             });
-        },
-
-
+        }
     },
 
     beforeCreate() { //authToken
@@ -80,6 +78,7 @@ export default {
                     <td>
                         <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
                         <a :href="'/minha-conta/meus-documentos/alterar-documento/' + doc.id_documento">Alterar</a>
+                        <a target="_blank" :href="'/documento/id/' + doc.id_documento">Visualizar</a>
                     </td>
                 </tr><!-- v-for -->
             </tbody>

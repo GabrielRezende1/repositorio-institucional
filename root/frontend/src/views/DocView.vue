@@ -229,9 +229,42 @@ export default {
     </div><!--search-bar-->
 
     <section>
-        <ul>
-            <li v-for="x in docs" :key="x">{{ x }}</li>
-        </ul>
+        <table>
+            <colgroup>
+                <col width="5%" />
+                <col width="35%" />
+                <col width="35%" />
+                <col width="15%" />
+                <col width="10%" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Data:</th>
+                    <th>Título:</th>
+                    <th>Autor:</th>
+                    <th>Tipo:</th>
+                    <th>Assunto:</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="doc in docs" :key="doc">
+                    <td>{{ doc.data }}</td>
+                    <td>{{ doc.nome_doc }}</td>
+                    <td v-if="!doc.Discente">
+                        {{ doc.Docente.nome }}
+                    </td>
+                    <td v-else>
+                        {{ doc.Discente.nome }}
+                    </td>
+                    <td>{{ doc.Doc_tipo.tipo }}</td>
+                    <td>
+                        <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
+                        <a target="_blank" :href="'/documento/id/' + doc.id_documento">Visualizar</a>
+                    </td>
+                </tr><!-- v-for -->
+            </tbody>
+        </table>
     </section>
 
     <nav>
@@ -259,5 +292,88 @@ div.search-bar form input[type=text] {
 
 div.search-bar form input[type=text]:focus {
   font-size: 21px;
+}
+
+section {
+    width: 100%;
+    margin: 2rem 0;
+}
+/**Table */
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    width: 95%;
+    margin: 0 auto;
+}
+
+table th {
+    font-weight: 700;
+    background-color: var(--yellow);
+    text-align: left;
+}
+
+table tr:nth-child(even) {
+  background-color: #D6EEEE;
+}
+
+table td, table th{
+    border-top: 2px solid var(--blue);
+    font-size: 18px;
+    padding: 5px;
+}
+
+table td a {
+    display: inline-block;
+
+    width: 100%;
+    text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 0.5rem;
+  margin: 0 0 0.5rem 0;
+  border-radius: 10px;
+  background-color: var(--yellow);
+  color: var(--black);
+  cursor: pointer;
+
+  transition: 0.4s;
+}
+
+table td a:hover {
+    background-color: var(--blue);
+    color: white;
+}
+/** */
+/**nav */
+nav ul {
+    list-style-type: none;
+    text-align: center;
+}
+
+nav ul li {
+    display: inline-block;
+    width: 100%;
+}
+
+nav ul li button{
+    display: inline-block;
+
+    width: 30%;
+    text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 0.5rem;
+  margin: 0 0 0.5rem 0;
+  border-radius: 10px;
+  background-color: var(--yellow);
+  color: var(--black);
+  cursor: pointer;
+
+  transition: 0.4s;
+}
+
+nav ul li button:hover {
+    background-color: var(--blue);
+    color: white;
 }
 </style>
