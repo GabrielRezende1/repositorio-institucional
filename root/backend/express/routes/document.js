@@ -106,26 +106,70 @@ router.get("/documento", async (req, res) => {
 // Recupera documentos de um tipo específico do db
 //GET /documento/:tipo
 router.get("/documento/tipo/:tipo", async (req, res) => {
-    const tipo = req.params.tipo;
-    const docTipo = await db.Doc_tipo.findOne({
-        where: { tipo }
-    });
+    //Limit the amount of documents shown on page
+    const { page = 1 } = req.query;
+    const limit = 1; //Num. of records per page. Ideal is 40
+    let lastPage = 1;
 
+    const tipo = req.params.tipo;
+    const tipoFormatado = tipo.replace(/\+/g, ' ');
+
+    const docTipo = await db.Doc_tipo.findOne({
+        where: { tipo: tipoFormatado }
+    });
     const docTipoId = docTipo.id_doc_tipo;
 
-    const documento = await db.Documento.findAll({
-        attributes: ["nome_doc", "nome_arq", "resumo", "data"],
-        where: { fk_id_doc_tipo: docTipoId }
+    const docs = await db.Documento.findAndCountAll({
+        attributes: {
+            include: [
+                "id_documento",
+                "nome_doc",
+                "nome_arq",
+                "resumo",
+                [db.Sequelize.fn(
+                    "DATE_FORMAT", 
+                    db.Sequelize.col("data"), 
+                    "%d/%m/%Y"
+                ), "data"],
+                "fk_id_docente",
+                "fk_id_doc_tipo"
+            ]
+        },
+        include: ["Discente", "Docente", "Doc_tipo"],
+        where: { fk_id_doc_tipo: docTipoId },
+        offset: Number(page * limit - limit),
+        limit
     });
 
-    if (!documento) {
+    if (!docs) {
         res.status(400).json({ erro: "Não foi possível recuperar os dados!" });
         return;
     }
 
+    const docCount = docs.count;
+    const docRows = docs.rows;
+
+    if (docCount == 0) {
+        res.status(400).json({
+            erro: `Não encontramos nenhum documento com '${req.query.search}'`
+        });
+        return;
+    }
+
+    lastPage = Math.ceil(docCount / limit);
+
+    const pagination = {
+        path: "/documento",
+        page: page,
+        prev_page_url: Number(page) - 1 >= 1 ? Number(page) - 1 : false,
+        next_page_url: Number(page) + 1 > lastPage ? false : Number(page) + 1,
+        lastPage: lastPage,
+        total_documents: docCount
+    };
+
     res.status(200).json({
-        mensagem: "Rota documento alcançada!",
-        data: documento
+        docRows,
+        pagination
     });
 });
 //GET /documento/:id

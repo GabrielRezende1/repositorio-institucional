@@ -49,7 +49,11 @@ const router = createRouter({
       name: 'documentoId',
       component: () => import('../views/DocSingleView.vue')
     },
-
+    {
+      path: '/documento/tipo/:tipo',
+      name: 'documentoTipo',
+      component: () => import('../views/DocTypeView.vue')
+    }
   ]
 })
 
