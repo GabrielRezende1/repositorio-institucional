@@ -18,7 +18,7 @@ export default {
 <template>
   <div class="container">
     <div class="logo">
-            <a href="/"><img alt="logo do site" src="@/assets/logo.svg"/></a>
+            <a href="/"><img alt="logo do site" src="@/assets/faeterj-prc-logo.png"/></a>
     </div><!--logo-->
 
     <SearchBar />
@@ -42,6 +42,7 @@ export default {
 
 .container {
   max-width: 1280px;
+  min-height: calc(100vh - 300px); /** 150px from headerPartial and footer */
   margin: 0 auto;
 }
 

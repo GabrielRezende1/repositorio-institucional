@@ -52,12 +52,18 @@ export default {
 <style scoped>
 section {
   width: 100%;
-  margin: 2rem 0;
+  min-height: calc(100vh - 300px); /** 150px from headerPartial and footer */
+
+  position: relative;
 }
 
 form {
   width: 600px;
-  margin: 0 auto;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 label {

@@ -41,7 +41,7 @@ export default {
 
         <div class="flex">
           <div class="logo">
-            <a href="/"><img alt="logo do site" src="@/assets/logo.svg"/></a>
+            <a href="/"><img alt="logo do site" src="@/assets/faeterj-prc-logo.png"/></a>
           </div><!--logo-->
 
           <div class="general-opt">
