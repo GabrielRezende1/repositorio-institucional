@@ -100,7 +100,8 @@ export default {
     mounted() {
         //Set max date to today
         const date = document.getElementById('data');
-        date.max = new Date().toLocaleDateString('pt-BR');
+        //Get correct YYYY-MM-DD format used in html date tag
+        date.max = new Date().toISOString().split("T")[0];
     },
 
     components: { MenuBar }
