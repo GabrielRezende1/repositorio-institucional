@@ -206,9 +206,9 @@ router.get("/documento/id/:id", async (req, res) => {
         where: { id_docente: doc[0].dataValues.fk_id_docente }
     });
 
-    const docSubject = await db.Doc_assunto.findAll({
+    const docKeyword = await db.Doc_pal_chave.findAll({
         where: { fk_id_documento: doc[0].dataValues.id_documento },
-        include: ["Assunto"]
+        include: ["Palavra_chave"]
     });
     /**
      * Check if doc is from a teacher or student
@@ -223,7 +223,7 @@ router.get("/documento/id/:id", async (req, res) => {
     res.status(200).json({
         isStudent,
         doc,
-        docSubject,
+        docKeyword,
         teacher,
         student: isStudent ? undefined : student
     });

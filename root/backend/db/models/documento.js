@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Documento.hasMany(models.Doc_assunto, {
+      Documento.hasMany(models.Doc_pal_chave, {
         foreignKey: {
           name: 'fk_id_documento',
           allowNull: false

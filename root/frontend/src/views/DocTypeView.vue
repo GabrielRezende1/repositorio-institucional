@@ -147,7 +147,7 @@ export default {
                     <th>Título:</th>
                     <th>Autor:</th>
                     <th>Tipo:</th>
-                    <th>Assunto:</th>
+                    <th>Palavra-Chave:</th>
                     <th></th>
                 </tr>
             </thead>

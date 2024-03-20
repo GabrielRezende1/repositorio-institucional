@@ -17,7 +17,7 @@ export default {
             data: '',
             orientador: '',
             tipo: '', //doc_tipo
-            assunto: ''
+            palavraChave: []
         }
     },
 
@@ -39,12 +39,13 @@ export default {
                 data: this.data,
                 orientador: this.orientador,
                 tipo: this.tipo,
-                assunto: this.assunto
+                palavraChave: this.palavraChave
             },
             { withCredentials: true })
             .then(res => {
                 this.info = res.data;
                 this.updatedDoc = 'Documento alterado com sucesso!';
+                console.log(this.info);
             })
             .catch(err => {
                 console.log(err.response.data);
@@ -85,7 +86,10 @@ export default {
             this.data = this.info.doc.data,
             this.orientador = this.info.doc.Docente.nome,
             this.tipo = this.info.doc.Doc_tipo.tipo,
-            this.assunto = this.info.doc_subject.Assunto.nome
+            this.palavraChave = this.info.docKeyword
+                .map(el => el.Palavra_chave.nome);
+
+            //this.palavraChave.map(el => el.Palavra_chave.nome);
         })
             .catch((err) => {
             console.log(err.response.data);
@@ -125,8 +129,8 @@ export default {
             <input type="text" id="nome_doc" v-model="nome_doc" required />
             <label for="resumo">Resumo:</label>
             <textarea name="resumo" id="resumo" v-model="resumo" cols="40" rows="10" required></textarea>
-            <label for="assunto">Assunto:</label>
-            <input type="text" id="assunto" v-model="assunto" />
+            <label for="palavraChave">Palavras-Chave: (Separar cada item por VÍRGULA)</label>
+            <input type="text" id="palavraChave" v-model="palavraChave" />
             <label for="data">Data:</label>
             <input type="date" id="data" v-model="data" required />
             <label v-if="info.isStudent" for="orientador">Orientador:</label>

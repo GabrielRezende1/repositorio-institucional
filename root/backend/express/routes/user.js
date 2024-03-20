@@ -243,7 +243,7 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
     const data = req.body.data;
     const orientador = req.body.orientador;
     const tipo = req.body.tipo;
-    const assunto = req.body.assunto;
+    const palavraChave = req.body.palavraChave;
 
     try {
         //Check if token exists
@@ -265,7 +265,7 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
          * Creating document with Admin.
          * Only admins are capable of
          * creating Politics or Tutorial docs.
-         * Politics/ Tutorial docs does not have a subject.
+         * Politics/ Tutorial docs does not have a keyword.
          */
         if (email == "Admin") {
             const document = await db.Documento.create({
@@ -312,10 +312,10 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
             });
             const teacherId = teacher.id_docente;
 
-            const subject = await db.Assunto.findOrCreate({
-                where: {nome: assunto}
+            const keyword = await db.Palavra_chave.findOrCreate({
+                where: {nome: palavraChave}
             });
-            const subjectId = subject[0].dataValues.id_assunto;
+            const keywordId = keyword[0].dataValues.id_palavra_chave;
 
             const document = await db.Documento.create({
                 nome_doc: titulo,
@@ -327,15 +327,15 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
                 fk_id_doc_tipo: typeId
             });
     
-            const doc_subject = await db.Doc_assunto.create({
-                fk_id_assunto: subjectId, //"dataValues" because findOrCreate method returns a different object
+            const docKeyword = await db.Doc_pal_chave.create({
+                fk_id_palavra_chave: keywordId, //"dataValues" because findOrCreate method returns a different object
                 fk_id_documento: document.id_documento
             });
 
             res.status(200).json({
                 msg: `Documento '${arquivo}' criado com sucesso!`,
                 document,
-                doc_subject
+                docKeyword
             });
         }else { //Fetch data specific to teacher
             const teacher = await db.Docente.findOne({
@@ -343,10 +343,10 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
             });
             const teacherId = teacher.id_docente;
 
-            const subject = await db.Assunto.findOrCreate({
-                where: {nome: assunto}
+            const keyword = await db.Palavra_chave.findOrCreate({
+                where: {nome: palavraChave}
             });
-            const subjectId = subject[0].dataValues.id_assunto;
+            const keywordId = keyword[0].dataValues.id_palavra_chave;
 
             const document = await db.Documento.create({
                 nome_doc: titulo,
@@ -357,15 +357,15 @@ router.post('/minha-conta/novo-documento', authToken, fileCtrl.upload, async (re
                 fk_id_doc_tipo: typeId
             });
     
-            const doc_subject = await db.Doc_assunto.create({
-                fk_id_assunto: subjectId, //"dataValues" because findOrCreate method returns a different object
+            const docKeyword = await db.Doc_pal_chave.create({
+                fk_id_palavra_chave: keywordId, //"dataValues" because findOrCreate method returns a different object
                 fk_id_documento: document.id_documento
             });
 
             res.status(200).json({
                 msg: `Documento '${arquivo}' criado com sucesso!`,
                 document,
-                doc_subject
+                docKeyword
             });
         }
     } catch (err) {
@@ -392,11 +392,10 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
         });
         const userId = user.id_usuario;
 
-        const doc_subject = await db.Doc_assunto.findOne({
+        const docKeyword = await db.Doc_pal_chave.findAll({
             where: {fk_id_documento: docId},
-            include: ["Assunto"]
+            include: ["Palavra_chave"]
         });
-        const doc_subjectId = doc_subject.id_assunto;
         
         const isStudent = email.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
         let checkedUser;
@@ -415,7 +414,7 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
                 },
                 include: ["Doc_tipo"]
             });
-            res.status(200).json({msg: 'Documento do Professor', userId, isStudent, doc, doc_subject});
+            res.status(200).json({msg: 'Documento do Professor', userId, isStudent, doc, docKeyword});
             return;
         }
 
@@ -433,7 +432,7 @@ router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
             },
             include: ["Doc_tipo", "Docente"]
         });
-        res.status(200).json({msg: 'Documento do Estudante', userId, isStudent, doc, teachers, doc_subject});
+        res.status(200).json({msg: 'Documento do Estudante', userId, isStudent, doc, teachers, docKeyword});
     } catch (err) {
         res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
@@ -445,7 +444,7 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
     const data = req.body.data;
     const orientador = req.body.orientador;
     const tipo = req.body.tipo;
-    const assunto = req.body.assunto;
+    const palavraChave = req.body.palavraChave.split(",");
 
     const docId = idParam(req);
 
@@ -477,10 +476,10 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
             });
             const teacherId = checkedUser.id_docente;
 
-            const subject = await db.Assunto.findOrCreate({
-                where: {nome: assunto}
+            const keyword = await db.Palavra_chave.findOrCreate({
+                where: {nome: palavraChave}
             });
-            const subjectId = subject[0].dataValues.id_assunto;
+            const keywordId = keyword[0].dataValues.id_palavra_chave;
             //Update user's document
             doc = await db.Documento.update(
                 {
@@ -492,14 +491,14 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
                 { where: { id_documento: id, fk_id_docente: teacherId} }
             );
 
-            const doc_subject = await db.Doc_assunto.findOrCreate({
+            const docKeyword = await db.Doc_pal_chave.findOrCreate({
                 where: {
-                    fk_id_assunto: subjectId,
+                    fk_id_palavra_chave: keywordId,
                     fk_id_documento: docId
                 }
             });
 
-            res.status(200).json({msg: 'Documentos do Professor', userId, doc, doc_subject});
+            res.status(200).json({msg: 'Documentos do Professor', userId, doc, docKeyword});
             return;
         }
 
@@ -508,10 +507,21 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
         });
         const studentId = checkedUser.id_discente;
 
-        const subject = await db.Assunto.findOrCreate({
-            where: {nome: assunto}
+        const keywords = [];
+        const keywordsId = [];
+        for (let i = 0; i < palavraChave.length; i++) {
+            const palavraChaveSingle = palavraChave[i].trim();
+
+            const keyword = await db.Palavra_chave.findOrCreate({
+                where: {nome: palavraChaveSingle}
+            });
+            keywordsId.push(keyword[0].dataValues.id_palavra_chave);
+            keywords.push(palavraChaveSingle);
+        }
+/*         const keyword = await db.Palavra_chave.findOrCreate({
+            where: {nome: palavraChave}
         });
-        const subjectId = subject[0].dataValues.id_assunto;
+        const keywordId = keyword[0].dataValues.id_palavra_chave; */
 
         const teacher = await db.Docente.findOne({
             where: {
@@ -533,14 +543,26 @@ router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, asyn
             { where: { id_documento: docId, fk_id_discente: studentId } }
         );
         
-        const doc_subject = await db.Doc_assunto.findOrCreate({
+        docKeywords = [];
+        for (let i = 0; i < keywordsId.length; i++) {
+            const keywordsIdSingle = keywordsId[i];
+            
+            const docKeyword = await db.Doc_pal_chave.findOrCreate({
+                where: {
+                    fk_id_palavra_chave: keywordsIdSingle,
+                    fk_id_documento: docId
+                }
+            });
+            docKeywords.push(docKeyword);
+        }
+/*         const docKeyword = await db.Doc_pal_chave.findOrCreate({
             where: {
-                fk_id_assunto: subjectId,
+                fk_id_palavra_chave: keywordId,
                 fk_id_documento: docId
             }
-        });
+        }); */
 
-        res.status(200).json({msg: 'Documentos do Estudante', userId, doc, doc_subject});
+        res.status(200).json({msg: 'Documentos do Estudante', userId, doc, docKeywords});
         return;
     } catch (err) {
         res.status(401).json({err: {message: err.message, stack: err.stack}});

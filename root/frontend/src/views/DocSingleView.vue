@@ -35,7 +35,7 @@ export default {
             <th>Autor:</th>
             <th v-if="data.isStudent">Orientador:</th>
             <th>Resumo:</th>
-            <th>Assunto</th>
+            <th>Palavras-Chave:</th>
             <th>Data:</th>
         </tr>
 
@@ -50,9 +50,9 @@ export default {
             </td>
             <td v-if="data.isStudent">{{ doc.Docente.nome }}</td>
             <td>{{ doc.resumo }}</td>
-            <td> <!--Assunto-->
-                <span v-for="docSubject in data.docSubject" :key="docSubject">
-                    {{ docSubject.Assunto.nome }};
+            <td> <!--palavraChave-->
+                <span v-for="docKeyword in data.docKeyword" :key="docKeyword">
+                    {{ docKeyword.Palavra_chave.nome }};
                 </span>
             </td>
             <td>{{ doc.data }}</td>

@@ -16,7 +16,7 @@ export default {
             data: '',
             docente: '',
             tipo: '', //doc column "tipo"
-            assunto: ''
+            palavraChave: ''
         }
     },
 
@@ -45,7 +45,7 @@ export default {
             form.append('data', this.data);
             form.append('tipo', this.tipo);
             form.append('orientador', this.docente);
-            form.append('assunto', this.assunto);
+            form.append('palavraChave', this.palavraChave);
 
             axios.post('https://localhost:3000/minha-conta/novo-documento',
             form, {withCredentials: true})
@@ -106,8 +106,8 @@ export default {
                 <option value="Tese">Tese</option>
                 <option value="Trabalho de Conclusão de Curso">Trabalho de Conclusão de Curso</option>
             </select>
-            <label for="assunto">Assunto:</label>
-            <input type="text" id="assunto" v-model="assunto" />
+            <label for="palavraChave">Palavras-Chave:</label>
+            <input type="text" id="palavraChave" v-model="palavraChave" />
             <!--If user is Student, create drop down list of teachers-->
             <label v-if="info.isStudent" for="docente">Orientador:</label>
             <select v-if="info.isStudent" name="docente" id="docente" v-model="docente">
