@@ -59,6 +59,11 @@ div.logo > a img {
 div.logo > a {
   background-color: transparent;
 }
+
+div.logo img {
+  background-color: white;
+  border-radius: 10%;
+}
 /* nav */
 nav.categorias {
   list-style-type: none;
@@ -79,32 +84,5 @@ nav ul li a {
 nav ul li a:hover {
   background-color: #cfd64a;
 }
-/** */
 
-.flex {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-
-  height: 100%; /* inherit from: container => header */
-}
-
-.produtos-single > button {
-  /* width: 80%; */
-  padding: 2px 1rem;
-  font-size: 20px;
-  
-  border-radius: 5px;
-  border: 1px solid var(--black);
-  background-color: var(--yellow);
-
-  transition: 0.4s;
-}
-
-.produtos-single > button:hover {
-  background-color: var(--blue);
-  color: white;
-}
 </style>

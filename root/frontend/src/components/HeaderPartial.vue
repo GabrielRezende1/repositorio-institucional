@@ -50,7 +50,7 @@ export default {
                 <li><a href="/apresentacao">Apresentação</a></li>
                 <li><a href="/faq">FAQ</a></li>
                 <li><a href="/politicas">Política</a></li>
-                <li><a href="/tutorial/geral">Tutorial</a></li>
+                <li><a href="/tutorial">Tutorial</a></li>
               </ul>
             </nav>
           </div><!--general-opt-->
@@ -93,6 +93,11 @@ a:hover {
 
 div.logo > a:hover { /* Logo img */
   background-color: transparent;
+}
+
+div.logo img {
+  background-color: white;
+  border-radius: 10%;
 }
 
 div.container {
