@@ -4,25 +4,23 @@ const router = express.Router();
 const db = require("../../db/models/index");
 const idParam = require("../middlewares/idParam");
 /**
- * /tutorial/geral
- * /tutorial/documentos
+ * /tutorial
  * /tutorial/documentos/:nome
  */
 //GET /tutorial/geral
-router.get("/tutorial/geral", async (req, res) => {
-    res.json({
-        login: "Apenas integrantes da instituição podem se cadastrar para publicarem seus trabalhos. Caso você seja um aluno/professor da FAETERJ-PRC, você pode fazer o cadastro de usuário com o seu e-mail institucional.",
-        documentos: "Atualmente só são aceitos documentos em PDF para upload dos trabalhos (de até 4MB em tamanho). Portanto, antes de publicá-lo, tenha certeza de ter convertido seu documento em PDF."
-    });
-});
-//GET /tutorial/documentos
-router.get("/tutorial/documentos", async (req, res) => {
-	//Retrieve all tutorial docs
+router.get("/tutorial", async (req, res) => {
+    	//Retrieve all tutorial docs
 	const tutorials = await db.Documento.findAll({
 		where: { fk_id_doc_tipo: 10 } //Imutable doc_type id
 	});
 
-	res.json({ tutorials });
+	res.json({ 
+        tutorials,
+        text: {
+            login: "Apenas integrantes da instituição podem se cadastrar para publicarem seus trabalhos. Caso você seja um aluno/professor da FAETERJ-PRC, você pode fazer o cadastro de usuário com o seu e-mail institucional.",
+            documentos: "Atualmente só são aceitos documentos em PDF para upload dos trabalhos (de até 10MB em tamanho). Portanto, antes de publicá-lo, tenha certeza de ter convertido seu documento em PDF."
+        }
+     });
 });
 //GET /tutorial/documentos/:nome
 router.get("/tutorial/documentos/:nome", async (req, res) => {
