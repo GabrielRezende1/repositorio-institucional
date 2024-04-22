@@ -1,5 +1,5 @@
 <script>
-import IconMySQL from "./icons/IconMySQL.vue";
+import IconMariaDB from "./icons/IconMariaDB.vue";
 import IconExpress from "./icons/IconExpress.vue";
 import IconVue from "./icons/IconVue.vue";
 import IconNode from "./icons/IconNode.vue";
@@ -21,7 +21,7 @@ export default {
   },
 
   components: {
-    IconMySQL,
+    IconMariaDB,
     IconExpress,
     IconVue,
     IconNode,
@@ -43,7 +43,7 @@ export default {
     <nav>
       <!--Tecnologias usadas, telefone, email, voltar para cima-->
       <ul>
-        <li><a href="https://www.mysql.com/" target="_blank"><IconMySQL /></a></li>
+        <li><a href="https://mariadb.org/" target="_blank"><IconMariaDB /></a></li>
         <li><a href="https://expressjs.com/" target="_blank"><IconExpress /></a></li>
         <li><a href="https://vuejs.org/" target="_blank"><IconVue /></a></li>
         <li><a href="https://nodejs.org/en" target="_blank"><IconNode /></a></li>
