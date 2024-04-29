@@ -14,6 +14,17 @@ export default {
   // Methods are functions that mutate state and trigger updates.
   // They can be bound as event handlers in templates.
   methods: {
+    logout() {
+      axios.delete('https://localhost:3000/logout', {withCredentials: true})
+      .then(res => {
+        console.log(res.data);
+        this.disconnected = true;
+        this.$router.push('/');
+      })
+      .catch(err => {
+        console.log(err.response.data)
+      })
+    }
   },
   // Lifecycle hooks are called at different stages
   // of a component's lifecycle.
@@ -62,7 +73,7 @@ export default {
             </div><!--disconnected-->
             <div v-else>
               <a href="/minha-conta">Conta</a><!--add login img-->
-              <a href="/logout">Logout</a>
+              <a href="/" @click.prevent="logout()">Logout</a>
             </div>
           </div><!--user-account-->
 

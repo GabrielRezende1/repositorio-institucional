@@ -194,7 +194,8 @@ router.post('/cadastro', async (req, res) => {
 });
 //DELETE /logout
 router.delete('/logout', async (req, res) => {
-    if (token !== undefined) res.clearCookie('token');
+    const token = req.cookies.token;
+    if (token) res.clearCookie('token').end();
 })
 
 module.exports = router;
