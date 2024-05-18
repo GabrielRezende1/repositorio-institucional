@@ -15,7 +15,7 @@ export default {
   // They can be bound as event handlers in templates.
   methods: {
     logout() {
-      axios.delete('https://localhost:3000/logout', {withCredentials: true})
+      axios.delete('http://localhost:3000/api/logout')
       .then(res => {
         console.log(res.data);
         this.disconnected = true;
@@ -32,7 +32,7 @@ export default {
   mounted() {
       //authToken
       axios
-      .get('https://localhost:3000/login', { withCredentials: true })
+      .get('http://localhost:3000/api/login')
       .then((res) => {
           console.log(res.data);
           console.log('você está logado!');

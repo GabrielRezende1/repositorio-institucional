@@ -12,8 +12,7 @@ export default {
     },
 
     mounted() {
-        axios.get('https://localhost:3000/documento/id/' + this.$route.params.id,
-            {withCredentials: true})
+        axios.get('http://localhost:3000/api/documento/id/' + this.$route.params.id)
             .then(res => {
                 this.data = res.data;
                 console.log(this.data);

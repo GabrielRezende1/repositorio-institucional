@@ -10,8 +10,8 @@ export default {
 
     methods: {
         downloadFile(nome_arq) {
-            axios.get('https://localhost:3000/politicas/' + nome_arq,
-            {withCredentials: true, responseType: 'blob'})
+            axios.get('http://localhost:3000/api/politicas/' + nome_arq,
+            {responseType: 'blob'})
             .then(res => {
                 const link = document.createElement('a');
                 console.log(link);
@@ -32,7 +32,7 @@ export default {
     },
 
     mounted() {
-        axios.get('https://localhost:3000/politicas', {withCredentials:true})
+        axios.get('http://localhost:3000/api/politicas')
         .then(res => {
             this.politica = res.data;
             console.log(this.politica);

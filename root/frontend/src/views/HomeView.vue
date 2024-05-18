@@ -1,5 +1,4 @@
 <script>
-//TODO Watch out for spaces in the URL
 import SearchBar from '../components/SearchBar.vue';
 export default {
   data() {

@@ -40,11 +40,10 @@ export default {
         //
         nextPage(page) {
             if (this.pagination.next_page_url) {
-                axios.get('https://localhost:3000/documento/tipo/'
+                axios.get('http://localhost:3000/api/documento/tipo/'
                 + this.$route.params.tipo
                 + '?page='
-                + page,
-                {withCredentials: true})
+                + page)
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -67,11 +66,10 @@ export default {
 
         prevPage(page) {
             if (this.pagination.prev_page_url) {
-                axios.get('https://localhost:3000/documento/tipo/'
+                axios.get('http://localhost:3000/api/documento/tipo/'
                 + this.$route.params.tipo
                 + '?page='
-                + page,
-                {withCredentials: true})
+                + page)
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -93,8 +91,8 @@ export default {
         },
 
         docDownload(id, nome_arq) {
-            axios.get(`https://localhost:3000/documento/download/${id}/${nome_arq}`,
-            {withCredentials: true, responseType: 'blob'})
+            axios.get(`http://localhost:3000/api/documento/download/${id}/${nome_arq}`,
+            {responseType: 'blob'})
             .then(res => {
                 const link = document.createElement('a');
                 console.log(link);
@@ -115,9 +113,8 @@ export default {
     },
     
     mounted() {
-        axios.get('https://localhost:3000/documento/tipo/'
-        + this.$route.params.tipo,
-        {withCredentials: true})
+        axios.get('http://localhost:3000/api/documento/tipo/'
+        + this.$route.params.tipo)
         .then(res => {
             this.docs = res.data.docRows;
             this.pagination = res.data.pagination;

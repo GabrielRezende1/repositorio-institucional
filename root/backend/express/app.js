@@ -1,12 +1,7 @@
 const express = require('express');
-const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 global.__basedir = __dirname;
-corsOptions = {
-	origin: 'https://localhost:5173',
-	credentials: true
-};
 
 const routes = {
 	document: require("./routes/document"),
@@ -19,15 +14,14 @@ const routes = {
 
 const app = express();
 
-app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
-app.use("/", routes.document);
-app.use("/", routes.home);
-app.use("/", routes.login);
-app.use("/", routes.policy);
-app.use("/", routes.tutorial);
-app.use("/", routes.user);
+app.use("/api/", routes.document);
+app.use("/api/", routes.home);
+app.use("/api/", routes.login);
+app.use("/api/", routes.policy);
+app.use("/api/", routes.tutorial);
+app.use("/api/", routes.user);
 
 module.exports = app;

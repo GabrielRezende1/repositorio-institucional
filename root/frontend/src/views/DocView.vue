@@ -14,8 +14,7 @@ export default {
 
     methods: {
         viewAllDocs() {
-            axios.get('https://localhost:3000/documento',
-                {withCredentials: true})
+            axios.get('http://localhost:3000/api/documento')
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -31,8 +30,7 @@ export default {
 
         search() {
             if (this.searchInput) {
-                axios.get('https://localhost:3000/documento/?search=' + this.searchInput,
-                {withCredentials: true})
+                axios.get('http://localhost:3000/api/documento/?search=' + this.searchInput)
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -46,8 +44,7 @@ export default {
                     console.log(err.response.data);
                 });
             }else {
-              axios.get('https://localhost:3000/documento',
-                {withCredentials: true})
+              axios.get('http://localhost:3000/api/documento')
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -65,9 +62,8 @@ export default {
 
         searchURL() {
             if (!this.$route.query.page) {
-                axios.get('https://localhost:3000/documento?search='
-                + this.$route.query.search + '&page=1',
-                {withCredentials: true})
+                axios.get('http://localhost:3000/api/documento?search='
+                + this.$route.query.search + '&page=1')
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -82,9 +78,8 @@ export default {
                 return;
             }
 
-            axios.get('https://localhost:3000/documento?search='
-            + this.$route.query.search + '&page=' + this.$route.query.page,
-            {withCredentials: true})
+            axios.get('http://localhost:3000/api/documento?search='
+            + this.$route.query.search + '&page=' + this.$route.query.page)
             .then(res => {
                 console.log(res.data);
                 this.docs = res.data.docRows;
@@ -126,9 +121,8 @@ export default {
         nextPage(page) {
             if (this.pagination.next_page_url) {
                 if (!this.$route.query.search) {
-                    axios.get('https://localhost:3000/documento?page='
-                    + page,
-                    {withCredentials: true})
+                    axios.get('http://localhost:3000/api/documento?page='
+                    + page)
                     .then(res => {
                         console.log(res.data);
                         this.docs = res.data.docRows;
@@ -144,9 +138,8 @@ export default {
                     return;
                 }
 
-                axios.get('https://localhost:3000/documento?search='
-                + this.$route.query.search + '&page=' + page,
-                {withCredentials: true})
+                axios.get('http://localhost:3000/api/documento?search='
+                + this.$route.query.search + '&page=' + page)
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -169,9 +162,8 @@ export default {
         prevPage(page) {
             if (this.pagination.prev_page_url) {
                 if (!this.$route.query.search) {
-                    axios.get('https://localhost:3000/documento?page='
-                    + page,
-                    {withCredentials: true})
+                    axios.get('http://localhost:3000/api/documento?page='
+                    + page)
                     .then(res => {
                         console.log(res.data);
                         this.docs = res.data.docRows;
@@ -187,9 +179,8 @@ export default {
                     return;
                 }
 
-                axios.get('https://localhost:3000/documento?search='
-                + this.$route.query.search + '&page=' + page,
-                {withCredentials: true})
+                axios.get('http://localhost:3000/api/documento?search='
+                + this.$route.query.search + '&page=' + page)
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;

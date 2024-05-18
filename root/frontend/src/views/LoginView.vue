@@ -11,10 +11,10 @@ export default {
 
   methods: {
     logInUser() {
-      axios.post('https://localhost:3000/login', {
+      axios.post('http://localhost:3000/api/login', {
         email: this.email,
         senha: this.senha
-      }, { withCredentials: true })
+      })
       .then(res => {
         if(res.status == 200)
           this.$router.push("/");
@@ -27,7 +27,7 @@ export default {
   },
   //Trying to access login page while already logged in redirects to home page
   beforeCreate() {
-    axios.get('https://localhost:3000/login', { withCredentials: true })
+    axios.get('http://localhost:3000/api/login')
     .then(res => {
       console.log(res.data);
       if (res.data.token) this.$router.push("/");

@@ -13,8 +13,8 @@ export default {
 
     methods: {
         docDownload(id, nome_arq) {
-            axios.get(`https://localhost:3000/documento/download/${id}/${nome_arq}`,
-            {withCredentials: true, responseType: 'blob'})
+            axios.get(`http://localhost:3000/api/documento/download/${id}/${nome_arq}`,
+            {responseType: 'blob'})
             .then(res => {
                 const link = document.createElement('a');
                 console.log(link);
@@ -36,7 +36,7 @@ export default {
 
     beforeCreate() { //authToken
         axios
-            .get('https://localhost:3000/minha-conta/meus-documentos', { withCredentials: true })
+            .get('http://localhost:3000/api/minha-conta/meus-documentos')
             .then((res) => {
                 console.log(res.data)
                 this.data = res.data

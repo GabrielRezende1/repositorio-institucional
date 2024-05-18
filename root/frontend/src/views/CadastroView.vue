@@ -11,7 +11,7 @@ export default {
   methods: {
     createAccount() {
       axios
-      .post('http://localhost:3000/cadastro', {
+      .post('http://localhost:3000/api/cadastro', {
         email: this.email,
         senha: this.senha
       })

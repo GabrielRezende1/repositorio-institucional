@@ -25,12 +25,12 @@ export default {
         postMinhaConta() {
             if (this.data.isStudent) {
                 axios
-                    .post('https://localhost:3000/minha-conta', {
+                    .post('http://localhost:3000/api/minha-conta', {
                     matricula: this.matricula,
                     nome: this.nome,
                     curso: this.curso,
                     fk_id_usuario: this.data.userId
-                }, { withCredentials: true })
+                })
                     .then((res) => {
                     console.log(res.data);
                     this.data2 = res.data;
@@ -42,12 +42,12 @@ export default {
             }
             else {
                 axios
-                    .post('https://localhost:3000/minha-conta', {
+                    .post('http://localhost:3000/api/minha-conta', {
                     id_funcional: this.idFuncional,
                     nome: this.nome,
                     graduacao: this.graduacao,
                     fk_id_usuario: this.data.userId,
-                }, { withCredentials: true })
+                })
                     .then((res) => {
                     console.log(res.data);
                     this.data2 = res.data;
@@ -62,13 +62,12 @@ export default {
         putMeuUsuario() {
             if (this.novaSenha == this.confirmeSenha) {
                 axios
-                    .put('https://localhost:3000/login',
+                    .put('http://localhost:3000/api/login',
                     {
                         senha: this.senha,
                         novaSenha: this.novaSenha,
                         confirmeSenha: this.confirmeSenha
-                    },
-                    {withCredentials: true})
+                    })
                     .then(res => {
                         this.data3 = res.data;
                         console.log(this.data3);
@@ -83,7 +82,7 @@ export default {
     beforeCreate() {
         //authToken
         axios
-            .get('https://localhost:3000/minha-conta', { withCredentials: true })
+            .get('http://localhost:3000/api/minha-conta')
             .then((res) => {
             console.log(res.data);
             this.data = res.data;
