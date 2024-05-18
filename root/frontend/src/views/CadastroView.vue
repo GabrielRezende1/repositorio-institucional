@@ -44,7 +44,7 @@ export default {
       <input type="password" id="senha2" :value="senha" placeholder="Repita sua senha..."/>
       
       <input type="submit" value="CADASTRAR">
-      <a href="/login">Já possui conta? Então faça Login</a>
+      <RouterLink to="/login" class="RouterLink">Já possui conta? Então faça Login</RouterLink>
     </form>
   </section>
 </template>
@@ -115,7 +115,7 @@ input[type=submit]:hover {
   font-size: 21px;
 }
 
-a {
+.RouterLink {
   font-weight: 600;
 
   display: block;

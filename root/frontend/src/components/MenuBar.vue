@@ -1,9 +1,9 @@
 <template>
     <nav class="menu">
         <ul>
-            <li><a href="/minha-conta">Meus Dados</a></li>
-            <li><a href="/minha-conta/meus-documentos">Meus Documentos</a></li>
-            <li><a href="/minha-conta/novo-documento">Novo Documento</a></li>
+            <li><RouterLink to="/minha-conta" class="RouterLink">Meus Dados</RouterLink></li>
+            <li><RouterLink to="/minha-conta/meus-documentos" class="RouterLink">Meus Documentos</RouterLink></li>
+            <li><RouterLink to="/minha-conta/novo-documento" class="RouterLink">Novo Documento</RouterLink></li>
         </ul>
     </nav><!--menu-->
 </template>
@@ -25,7 +25,7 @@
     display: inline-block;
 }
 
-.menu > ul li a {
+.menu > ul li .RouterLink {
     padding: 0 1rem;
     font-weight: 600;
     font-size: 20px;
@@ -33,7 +33,7 @@
     margin: 0 1rem;
 }
 
-.menu > ul li a:hover {
+.menu > ul li .RouterLink:hover {
     background-color: #cfd64a;
 }
 </style>

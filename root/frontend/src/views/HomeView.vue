@@ -17,21 +17,21 @@ export default {
 <template>
   <div class="container">
     <div class="logo">
-            <a href="/"><img alt="logo do site" src="@/assets/faeterj-prc-logo.png"/></a>
+            <RouterLink to="/" class="RouterLink"><img alt="logo do site" src="@/assets/faeterj-prc-logo.png"/></RouterLink>
     </div><!--logo-->
 
     <SearchBar />
 
     <nav class="categorias">
       <ul>
-        <li><a href="/documento/tipo/artigo+de+evento">Artigo de Evento</a></li>
-        <li><a href="/documento/tipo/artigo+de+periodico">Artigo de Periódico</a></li>
-        <li><a href="/documento/tipo/capitulo+de+livro">Capítulo de Livro</a></li>
-        <li><a href="/documento/tipo/dissertacao">Dissertação</a></li>
-        <li><a href="/documento/tipo/livro">Livro</a></li>
-        <li><a href="/documento/tipo/monografia">Monografia</a></li>
-        <li><a href="/documento/tipo/tese">Tese</a></li>
-        <li><a href="/documento/tipo/trabalho+de+conclusao+de+curso">Trabalho de Conclusão de Curso</a></li>
+        <li><RouterLink to="/documento/tipo/artigo+de+evento" class="RouterLink">Artigo de Evento</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/artigo+de+periodico" class="RouterLink">Artigo de Periódico</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/capitulo+de+livro" class="RouterLink">Capítulo de Livro</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/dissertacao" class="RouterLink">Dissertação</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/livro" class="RouterLink">Livro</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/monografia" class="RouterLink">Monografia</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/tese" class="RouterLink">Tese</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/trabalho+de+conclusao+de+curso" class="RouterLink">Trabalho de Conclusão de Curso</RouterLink></li>
       </ul>
     </nav><!--categorias-->
   </div><!--container-->
@@ -51,11 +51,11 @@ div.logo {
   margin: 0 auto;
 }
 
-div.logo > a img {
+div.logo > .RouterLink img {
   width: 100%;
 }
 
-div.logo > a {
+div.logo > .RouterLink {
   background-color: transparent;
 }
 
@@ -75,12 +75,12 @@ nav.categorias ul li {
   font-size: 16px;
 }
 
-nav ul li a {
+nav ul li .RouterLink {
   padding: 2px 0.5rem;
   font-weight: bold;
 }
 
-nav ul li a:hover {
+nav ul li .RouterLink:hover {
   background-color: #cfd64a;
 }
 

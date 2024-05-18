@@ -250,7 +250,7 @@ export default {
                     <td>{{ doc.Doc_tipo.tipo }}</td>
                     <td>
                         <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
-                        <a target="_blank" :href="'/documento/id/' + doc.id_documento">Visualizar</a>
+                        <RouterLink target="_blank" :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
                     </td>
                 </tr><!-- v-for -->
             </tbody>
@@ -312,7 +312,7 @@ table td, table th{
     padding: 5px;
 }
 
-table td a {
+table td a, table td .RouterLink {
     display: inline-block;
 
     width: 100%;
@@ -329,7 +329,7 @@ table td a {
   transition: 0.4s;
 }
 
-table td a:hover {
+table td a:hover, table td .RouterLink:hover {
     background-color: var(--blue);
     color: white;
 }

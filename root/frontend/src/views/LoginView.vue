@@ -51,7 +51,7 @@ export default {
       <input type="submit" value="LOGAR"/>
       
       <span v-if="senhaErrada">{{ senhaErrada }}</span>
-      <a href="/cadastro">Não possui conta? Então cadastre-se</a>
+      <RouterLink to="/cadastro" class="RouterLink">Não possui conta? Então cadastre-se</RouterLink>
     </form>
   </section>
 </template>
@@ -122,7 +122,7 @@ input[type=submit]:hover {
   font-size: 21px;
 }
 
-a {
+.RouterLink {
   font-weight: 600;
 
   display: block;
