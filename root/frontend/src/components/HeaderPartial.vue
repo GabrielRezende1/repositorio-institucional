@@ -1,6 +1,7 @@
 <script>
 //TODO user-account doesn't change when pushing to '/' from /login
 import axios from 'axios';
+import IconUser from './icons/IconUser.vue';
 export default {
   // Properties returned from data() become reactive state
   // and will be exposed on `this`.
@@ -25,6 +26,9 @@ export default {
         console.log(err.response.data)
       })
     }
+  },
+  components: {
+    IconUser
   },
   // Lifecycle hooks are called at different stages
   // of RouterLink component's lifecycle.
@@ -72,6 +76,7 @@ export default {
               <RouterLink to="/cadastro" class="RouterLink">Cadastro</RouterLink>
             </div><!--disconnected-->
             <div v-else>
+              <RouterLink to="/minha-conta" class="RouterLink icon-user"><IconUser /></RouterLink><!--add login img-->
               <RouterLink to="/minha-conta" class="RouterLink">Conta</RouterLink><!--add login img-->
               <RouterLink to="/" @click.prevent="logout()" class="RouterLink">Logout</RouterLink>
             </div>
@@ -146,10 +151,20 @@ div.user-account {
   text-align: center;
 }
 
-div.user-account > .RouterLink:first-child {
+div.user-account .icon-user:first-child {
   background-color: var(--light-blue);
-  padding-top: 16px;
+
+  width: 60px;
   border-radius: 50%;
+
+  display: block;
+  position: relative;
+  transform: translateX(-50%);
+  left: 50%;
+}
+
+div.user-account .icon-user:first-child:hover {
+  background-color: greenyellow;
 }
 
 div.user-account > .RouterLink, div.user-account > div > .RouterLink {
