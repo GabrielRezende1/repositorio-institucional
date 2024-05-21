@@ -1,6 +1,7 @@
 <script>
 //TODO user-account doesn't change when pushing to '/' from /login
 import axios from 'axios';
+import IconUser from './icons/IconUser.vue'
 export default {
   // Properties returned from data() become reactive state
   // and will be exposed on `this`.
@@ -25,6 +26,9 @@ export default {
         console.log(err.response.data)
       })
     }
+  },
+  components: {
+    IconUser
   },
   // Lifecycle hooks are called at different stages
   // of a component's lifecycle.
@@ -72,6 +76,7 @@ export default {
               <a href="/cadastro">Cadastro</a>
             </div><!--disconnected-->
             <div v-else>
+              <a href="/minha-conta" class="icon-user"><IconUser /></a>
               <a href="/minha-conta">Conta</a><!--add login img-->
               <a href="/" @click.prevent="logout()">Logout</a>
             </div>
@@ -146,10 +151,20 @@ div.user-account {
   text-align: center;
 }
 
-div.user-account > a:first-child {
+div.user-account .icon-user:first-child {
   background-color: var(--light-blue);
-  padding-top: 16px;
+
+  width: 60px;
   border-radius: 50%;
+
+  display: block;
+  position: relative;
+  transform: translateX(-50%);
+  left: 50%;
+}
+
+div.user-account .icon-user:first-child:hover {
+  background-color: greenyellow;
 }
 
 div.user-account > a, div.user-account > div > a {
