@@ -131,20 +131,19 @@ export default {
 <template>
     <section>
         <table>
-<!--             <colgroup>
+            <colgroup>
                 <col width="5%" />
                 <col width="35%" />
                 <col width="35%" />
                 <col width="15%" />
                 <col width="10%" />
-            </colgroup> -->
+            </colgroup>
             <thead>
                 <tr>
                     <th>Data:</th>
                     <th>Título:</th>
                     <th>Autor:</th>
                     <th>Tipo:</th>
-                    <th>Palavra-Chave:</th>
                     <th></th>
                 </tr>
             </thead>
@@ -161,7 +160,7 @@ export default {
                     <td>{{ doc.Doc_tipo.tipo }}</td>
                     <td>
                         <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
-                        <RouterLink target="_blank" :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
+                        <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
                     </td>
                 </tr><!-- v-for -->
             </tbody>

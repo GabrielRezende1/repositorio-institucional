@@ -78,7 +78,7 @@ export default {
                     <td>
                         <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
                         <RouterLink :to="'/minha-conta/meus-documentos/alterar-documento/' + doc.id_documento" class="RouterLink">Alterar</RouterLink>
-                        <RouterLink target="_blank" :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
+                        <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
                     </td>
                 </tr><!-- v-for -->
             </tbody>
