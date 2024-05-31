@@ -8,7 +8,26 @@ export default {
     },
 
     methods: {
-        
+        docDownload(id, nome_arq) {
+            axios.get(`http://localhost:3000/api/documento/download/${id}/${nome_arq}`,
+            {withCredentials: true, responseType: 'blob'})
+            .then(res => {
+                const link = document.createElement('a');
+                console.log(link);
+                link.href = window.URL.createObjectURL(
+                    new Blob([res.data], {type: 'application/pdf'})
+                );
+                document.body.appendChild(link);
+                link.setAttribute('download', nome_arq);
+                link.click();
+                //Clear link ans URL
+                link.remove();
+                URL.revokeObjectURL(link.href);
+            })
+            .catch(err => {
+                console.log(err.response.data);
+            });
+        },
     },
 
     mounted() {
@@ -57,7 +76,7 @@ export default {
             <td>{{ doc.data }}</td>
         </tr><!-- v-for -->
     </tbody>
-    <td>
+    <td v-for="doc in data.doc" :key="doc">
         <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
     </td>
 </table>
