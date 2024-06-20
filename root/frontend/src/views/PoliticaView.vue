@@ -49,8 +49,8 @@ export default {
     <h2>Políticas</h2>
 
     <ul>
-        <li v-for="key in politica" :key="key">
-            <a href="#" @click.prevent="downloadFile(key[0].nome_arq)">{{ key[0].nome_arq }}</a>
+        <li v-for="key in politica.politicas" :key="key">
+            <a href="#" @click.prevent="downloadFile(key.nome_arq)">{{ key.nome_arq }}</a>
         </li>
     </ul>
 </section>
