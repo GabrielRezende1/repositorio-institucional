@@ -156,6 +156,33 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
         const isStudent = email.match(/@(aluno).faeterj-prc.faetec.rj.gov.br/g);
         let checkedUser;
         let docs;
+        //Check if it's admin
+        if (email == "Admin") {
+            docs = await db.Documento.findAll({
+                attributes: {
+                    include: [
+                        "nome_doc",
+                        "nome_arq",
+                        "resumo",
+                        [db.Sequelize.fn(
+                            "DATE_FORMAT", 
+                            db.Sequelize.col("data"), 
+                            "%d/%m/%Y"
+                        ), "data"],
+                        "fk_id_docente",
+                        "fk_id_doc_tipo"
+                    ]
+                },
+                include: ["Doc_tipo"]
+            });
+            res.status(200).json({
+                msg: 'Todos os documentos para o Admin', userId, docs, email, isStudent
+            });
+            return;
+        }
+        /**
+         * 
+         */
         //Check if it's student or teacher
         if (!isStudent) {
             checkedUser = await db.Docente.findOne({

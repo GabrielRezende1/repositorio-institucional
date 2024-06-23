@@ -52,7 +52,39 @@ export default {
 <template>
     <MenuBar />
     <section>
-        <table>
+        <table v-if="data.email == 'Admin'">
+            <colgroup>
+                <col width="5%" />
+                <col width="10%" />
+                <col width="40%" />
+                <col width="35%" />
+                <col width="10%" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>ID:</th>
+                    <th>Data:</th>
+                    <th>Título:</th>
+                    <th>Tipo:</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="doc in data.docs" :key="doc">
+                    <td>{{ doc.id_documento }}</td>
+                    <td>{{ doc.data }}</td>
+                    <td>{{ doc.nome_doc }}</td>
+                    <td>{{ doc.Doc_tipo.tipo }}</td>
+                    <td>
+                        <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
+                        <RouterLink :to="'/minha-conta/meus-documentos/alterar-documento/' + doc.id_documento" class="RouterLink">Alterar</RouterLink>
+                        <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
+                    </td>
+                </tr><!-- v-for -->
+            </tbody><!--Admin-->
+        </table><!--Admin-->
+
+        <table v-else-if="data.isStudent">
             <colgroup>
                 <col width="5%" />
                 <col width="35%" />
@@ -82,7 +114,36 @@ export default {
                     </td>
                 </tr><!-- v-for -->
             </tbody>
-        </table>
+        </table><!--Discente-->
+
+        <table v-else>
+            <colgroup>
+                <col width="10%" />
+                <col width="65%" />
+                <col width="15%" />
+                <col width="10%" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>Data:</th>
+                    <th>Título:</th>
+                    <th>Tipo:</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody >
+                <tr v-for="doc in data.docs" :key="doc">
+                    <td>{{ doc.data }}</td>
+                    <td>{{ doc.nome_doc }}</td>
+                    <td>{{ doc.Doc_tipo.tipo }}</td>
+                    <td>
+                        <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
+                        <RouterLink :to="'/minha-conta/meus-documentos/alterar-documento/' + doc.id_documento" class="RouterLink">Alterar</RouterLink>
+                        <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
+                    </td>
+                </tr><!-- v-for -->
+            </tbody>
+        </table><!--Docente-->
     </section>
 </template>
 
