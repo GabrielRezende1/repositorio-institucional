@@ -208,7 +208,7 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
                 include: ["Doc_tipo"]
             });
             res.status(200).json({
-                msg: 'Documentos do Professor', userId, docs
+                msg: 'Documentos do Professor', userId, docs, isStudent
             });
             return;
         }
@@ -236,7 +236,7 @@ router.get('/minha-conta/meus-documentos', authToken, async (req, res) => {
             },
             include: ["Doc_tipo", "Docente"]
         });
-        res.status(200).json({ msg: 'Documentos do Estudante', userId, docs });
+        res.status(200).json({ msg: 'Documentos do Estudante', userId, docs, isStudent });
     } catch (err) {
         res.status(401).json({err: {message: err.message, stack: err.stack}});
     }
