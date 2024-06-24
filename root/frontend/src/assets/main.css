@@ -8,14 +8,14 @@
   background-color: var(--light-blue);
 }
 
-a {
+a, .RouterLink {
   text-decoration: none;
   color: var(--black);
   transition: 0.4s;
 }
 
 @media (hover: hover) {
-  a:hover {
+  a:hover, .RouterLink:hover {
     background-color: var(--yellow);
   }
 }

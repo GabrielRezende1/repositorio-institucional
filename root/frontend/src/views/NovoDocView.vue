@@ -47,8 +47,8 @@ export default {
             form.append('orientador', this.docente);
             form.append('palavraChave', this.palavraChave);
 
-            axios.post('https://localhost:3000/minha-conta/novo-documento',
-            form, {withCredentials: true})
+            axios.post('http://localhost:3000/api/minha-conta/novo-documento',
+            form)
             .then(res => {
                 this.info2 = res.data;
                 console.log(this.info2);
@@ -62,7 +62,7 @@ export default {
 
     beforeCreate() {
         axios
-            .get('https://localhost:3000/minha-conta/novo-documento', { withCredentials: true })
+            .get('http://localhost:3000/api/minha-conta/novo-documento')
             .then((res) => {
                 console.log(res.data);
                 this.info = res.data;

@@ -10,8 +10,8 @@ export default {
 
     methods: {
         downloadFile(nome_arq) {
-            axios.get('https://localhost:3000/tutorial/documentos/' + nome_arq,
-            {withCredentials: true, responseType: 'blob'})
+            axios.get('http://localhost:3000/api/tutorial/documentos/' + nome_arq,
+            {responseType: 'blob'})
             .then(res => {
                 const link = document.createElement('a');
                 console.log(link);
@@ -32,7 +32,7 @@ export default {
     },
 
     mounted() {
-        axios.get('https://localhost:3000/tutorial', {withCredentials:true})
+        axios.get('http://localhost:3000/api/tutorial')
         .then(res => {
             this.tutorial = res.data;
             console.log(this.tutorial);

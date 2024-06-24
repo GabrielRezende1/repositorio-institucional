@@ -14,7 +14,7 @@ export default {
 
     methods: {
         docDownload(id, nome_arq) {
-            axios.get(`https://localhost:3000/documento/download/${id}/${nome_arq}`,
+            axios.get(`http://localhost:3000/api/documento/download/${id}/${nome_arq}`,
             {withCredentials: true, responseType: 'blob'})
             .then(res => {
                 const link = document.createElement('a');
@@ -34,8 +34,7 @@ export default {
             });
         },
         viewAllDocs() {
-            axios.get('https://localhost:3000/documento',
-                {withCredentials: true})
+            axios.get('http://localhost:3000/api/documento')
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -51,8 +50,7 @@ export default {
 
         search() {
             if (this.searchInput) {
-                axios.get('https://localhost:3000/documento/?search=' + this.searchInput,
-                {withCredentials: true})
+                axios.get('http://localhost:3000/api/documento/?search=' + this.searchInput)
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -66,8 +64,7 @@ export default {
                     console.log(err.response.data);
                 });
             }else {
-              axios.get('https://localhost:3000/documento',
-                {withCredentials: true})
+              axios.get('http://localhost:3000/api/documento')
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -85,9 +82,8 @@ export default {
 
         searchURL() {
             if (!this.$route.query.page) {
-                axios.get('https://localhost:3000/documento?search='
-                + this.$route.query.search + '&page=1',
-                {withCredentials: true})
+                axios.get('http://localhost:3000/api/documento?search='
+                + this.$route.query.search + '&page=1')
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -102,9 +98,8 @@ export default {
                 return;
             }
 
-            axios.get('https://localhost:3000/documento?search='
-            + this.$route.query.search + '&page=' + this.$route.query.page,
-            {withCredentials: true})
+            axios.get('http://localhost:3000/api/documento?search='
+            + this.$route.query.search + '&page=' + this.$route.query.page)
             .then(res => {
                 console.log(res.data);
                 this.docs = res.data.docRows;
@@ -146,9 +141,8 @@ export default {
         nextPage(page) {
             if (this.pagination.next_page_url) {
                 if (!this.$route.query.search) {
-                    axios.get('https://localhost:3000/documento?page='
-                    + page,
-                    {withCredentials: true})
+                    axios.get('http://localhost:3000/api/documento?page='
+                    + page)
                     .then(res => {
                         console.log(res.data);
                         this.docs = res.data.docRows;
@@ -164,9 +158,8 @@ export default {
                     return;
                 }
 
-                axios.get('https://localhost:3000/documento?search='
-                + this.$route.query.search + '&page=' + page,
-                {withCredentials: true})
+                axios.get('http://localhost:3000/api/documento?search='
+                + this.$route.query.search + '&page=' + page)
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -189,9 +182,8 @@ export default {
         prevPage(page) {
             if (this.pagination.prev_page_url) {
                 if (!this.$route.query.search) {
-                    axios.get('https://localhost:3000/documento?page='
-                    + page,
-                    {withCredentials: true})
+                    axios.get('http://localhost:3000/api/documento?page='
+                    + page)
                     .then(res => {
                         console.log(res.data);
                         this.docs = res.data.docRows;
@@ -207,9 +199,8 @@ export default {
                     return;
                 }
 
-                axios.get('https://localhost:3000/documento?search='
-                + this.$route.query.search + '&page=' + page,
-                {withCredentials: true})
+                axios.get('http://localhost:3000/api/documento?search='
+                + this.$route.query.search + '&page=' + page)
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -279,7 +270,7 @@ export default {
                     <td>{{ doc.Doc_tipo.tipo }}</td>
                     <td>
                         <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
-                        <a target="_blank" :href="'/documento/id/' + doc.id_documento">Visualizar</a>
+                        <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
                     </td>
                 </tr><!-- v-for -->
             </tbody>
@@ -341,7 +332,7 @@ table td, table th{
     padding: 5px;
 }
 
-table td a {
+table td a, table td .RouterLink {
     display: inline-block;
 
     width: 100%;
@@ -358,7 +349,7 @@ table td a {
   transition: 0.4s;
 }
 
-table td a:hover {
+table td a:hover, table td .RouterLink:hover {
     background-color: var(--blue);
     color: white;
 }

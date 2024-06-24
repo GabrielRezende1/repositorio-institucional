@@ -1,7 +1,7 @@
 <script>
 //TODO user-account doesn't change when pushing to '/' from /login
 import axios from 'axios';
-import IconUser from './icons/IconUser.vue'
+import IconUser from './icons/IconUser.vue';
 export default {
   // Properties returned from data() become reactive state
   // and will be exposed on `this`.
@@ -16,7 +16,7 @@ export default {
   // They can be bound as event handlers in templates.
   methods: {
     logout() {
-      axios.delete('https://localhost:3000/logout', {withCredentials: true})
+      axios.delete('http://localhost:3000/api/logout')
       .then(res => {
         console.log(res.data);
         this.disconnected = true;
@@ -31,12 +31,12 @@ export default {
     IconUser
   },
   // Lifecycle hooks are called at different stages
-  // of a component's lifecycle.
+  // of RouterLink component's lifecycle.
   // This function will be called when the component is mounted.
   mounted() {
       //authToken
       axios
-      .get('https://localhost:3000/login', { withCredentials: true })
+      .get('http://localhost:3000/api/login')
       .then((res) => {
           console.log(res.data);
           console.log('você está logado!');
@@ -56,29 +56,29 @@ export default {
 
         <div class="flex">
           <div class="logo">
-            <a href="/"><img alt="logo do site" src="@/assets/faeterj-prc-logo.png"/></a>
+            <RouterLink to="/" class="RouterLink"><img alt="logo do site" src="@/assets/faeterj-prc-logo.png"/></RouterLink>
           </div><!--logo-->
 
           <div class="general-opt">
             <nav>
               <ul>
-                <li><a href="/apresentacao">Apresentação</a></li>
-                <li><a href="/faq">FAQ</a></li>
-                <li><a href="/politicas">Política</a></li>
-                <li><a href="/tutorial">Tutorial</a></li>
+                <li><RouterLink to="/apresentacao" class="RouterLink">Apresentação</RouterLink></li>
+                <li><RouterLink to="/faq" class="RouterLink">FAQ</RouterLink></li>
+                <li><RouterLink to="/politicas" class="RouterLink">Política</RouterLink></li>
+                <li><RouterLink to="/tutorial" class="RouterLink">Tutorial</RouterLink></li>
               </ul>
             </nav>
           </div><!--general-opt-->
 
           <div class="user-account">
             <div v-if="disconnected">
-              <a href="/login">Login</a>
-              <a href="/cadastro">Cadastro</a>
+              <RouterLink to="/login" class="RouterLink">Login</RouterLink>
+              <RouterLink to="/cadastro" class="RouterLink">Cadastro</RouterLink>
             </div><!--disconnected-->
             <div v-else>
-              <a href="/minha-conta" class="icon-user"><IconUser /></a>
-              <a href="/minha-conta">Conta</a><!--add login img-->
-              <a href="/" @click.prevent="logout()">Logout</a>
+              <RouterLink to="/minha-conta" class="RouterLink icon-user"><IconUser /></RouterLink><!--add login img-->
+              <RouterLink to="/minha-conta" class="RouterLink">Conta</RouterLink><!--add login img-->
+              <RouterLink to="/" @click.prevent="logout()" class="RouterLink">Logout</RouterLink>
             </div>
           </div><!--user-account-->
 
@@ -97,17 +97,17 @@ header {
   background-color: var(--blue);
 }
 
-a {
+.RouterLink {
   color: var(--yellow);
   margin: 2px 5px;
   border-radius: 4px;
 }
 
-a:hover {
+.RouterLink:hover {
   background-color: var(--light-blue);
 }
 
-div.logo > a:hover { /* Logo img */
+div.logo > .RouterLink:hover { /* Logo img */
   background-color: transparent;
 }
 
@@ -139,7 +139,7 @@ div.logo {
   width: 15%;
 }
 
-div.logo > a img {
+div.logo > .RouterLink img {
   width: 80%;
 }
 
@@ -167,7 +167,7 @@ div.user-account .icon-user:first-child:hover {
   background-color: greenyellow;
 }
 
-div.user-account > a, div.user-account > div > a {
+div.user-account > .RouterLink, div.user-account > div > .RouterLink {
   padding: 0 0.5rem;
   font-weight: bold;
 }
@@ -177,7 +177,7 @@ nav li {
   display: inline-block;
 }
 
-nav a {
+nav .RouterLink {
   display: inline-block;
   padding: 0 1rem;
 }

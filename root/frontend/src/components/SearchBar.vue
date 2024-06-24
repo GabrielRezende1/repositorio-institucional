@@ -10,8 +10,7 @@ export default {
     methods: {
         search() {
             if (this.searchInput) {
-                axios.get('https://localhost:3000/?search=' + this.searchInput,
-                {withCredentials: true})
+                axios.get('http://localhost:3000/api/?search=' + this.searchInput)
                 .then(res => {
                     console.log(res.data);
                     console.log(this.searchInput);
@@ -24,8 +23,7 @@ export default {
         },
 
         viewDocs() {
-            axios.get('https://localhost:3000/documento',
-                {withCredentials: true})
+            axios.get('http://localhost:3000/api/documento')
                 .then(res => {
                     console.log('todos os documentos')
                     console.log(res.data);

@@ -8,7 +8,7 @@ export default {
     },
 
     mounted() {
-        axios.get("https://localhost:3000/faq", {withCredentials: true})
+        axios.get("http://localhost:3000/api/faq")
         .then(res => {
             this.data = res.data;
             console.log(this.data);

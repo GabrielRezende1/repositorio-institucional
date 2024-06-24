@@ -9,7 +9,7 @@ export default {
 
     methods: {
         docDownload(id, nome_arq) {
-            axios.get(`https://localhost:3000/documento/download/${id}/${nome_arq}`,
+            axios.get(`http://localhost:3000/api/documento/download/${id}/${nome_arq}`,
             {withCredentials: true, responseType: 'blob'})
             .then(res => {
                 const link = document.createElement('a');
@@ -31,8 +31,7 @@ export default {
     },
 
     mounted() {
-        axios.get('https://localhost:3000/documento/id/' + this.$route.params.id,
-            {withCredentials: true})
+        axios.get('http://localhost:3000/api/documento/id/' + this.$route.params.id)
             .then(res => {
                 this.data = res.data;
                 console.log(this.data);

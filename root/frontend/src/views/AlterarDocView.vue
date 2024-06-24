@@ -32,7 +32,7 @@ export default {
         },
 
         putAlterarDoc(id) {
-            axios.put(`https://localhost:3000/minha-conta/meus-documentos/alterar-documento/${id}`,
+            axios.put(`http://localhost:3000/api/minha-conta/meus-documentos/alterar-documento/${id}`,
             {
                 titulo: this.nome_doc,
                 resumo: this.resumo,
@@ -40,8 +40,7 @@ export default {
                 orientador: this.orientador,
                 tipo: this.tipo,
                 palavraChave: this.palavraChave
-            },
-            { withCredentials: true })
+            })
             .then(res => {
                 this.info = res.data;
                 this.updatedDoc = 'Documento alterado com sucesso!';
@@ -58,8 +57,8 @@ export default {
             const form = new FormData();
             form.append('arquivo', new Blob([this.file], {type: 'application/pdf'}), this.file.name);
 
-            axios.put(`https://localhost:3000/minha-conta/meus-documentos/alterar-documento/${id}/upload`,
-            form, {withCredentials: true})
+            axios.put(`http://localhost:3000/api/minha-conta/meus-documentos/alterar-documento/${id}/upload`,
+            form)
             .then(res => {
                 this.info2 = res.data;
                 this.updatedFile = 'Arquivo alterado com sucesso!';
@@ -74,8 +73,8 @@ export default {
     
     beforeCreate() {
         axios
-            .get('https://localhost:3000/minha-conta/meus-documentos/alterar-documento/'
-            + this.$route.params.id, { withCredentials: true })
+            .get('http://localhost:3000/api/minha-conta/meus-documentos/alterar-documento/'
+            + this.$route.params.id)
             .then((res) => {
             this.info = res.data;
             console.log(this.info);

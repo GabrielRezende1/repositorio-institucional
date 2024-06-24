@@ -13,8 +13,8 @@ export default {
 
     methods: {
         docDownload(id, nome_arq) {
-            axios.get(`https://localhost:3000/documento/download/${id}/${nome_arq}`,
-            {withCredentials: true, responseType: 'blob'})
+            axios.get(`http://localhost:3000/api/documento/download/${id}/${nome_arq}`,
+            {responseType: 'blob'})
             .then(res => {
                 const link = document.createElement('a');
                 console.log(link);
@@ -36,7 +36,7 @@ export default {
 
     beforeCreate() { //authToken
         axios
-            .get('https://localhost:3000/minha-conta/meus-documentos', { withCredentials: true })
+            .get('http://localhost:3000/api/minha-conta/meus-documentos')
             .then((res) => {
                 console.log(res.data)
                 this.data = res.data
@@ -77,8 +77,8 @@ export default {
                     <td>{{ doc.Doc_tipo.tipo }}</td>
                     <td>
                         <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
-                        <a :href="'/minha-conta/meus-documentos/alterar-documento/' + doc.id_documento">Alterar</a>
-                        <a target="_blank" :href="'/documento/id/' + doc.id_documento">Visualizar</a>
+                        <RouterLink :to="'/minha-conta/meus-documentos/alterar-documento/' + doc.id_documento" class="RouterLink">Alterar</RouterLink>
+                        <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
                     </td>
                 </tr><!-- v-for -->
             </tbody><!--Admin-->
@@ -109,8 +109,8 @@ export default {
                     <td>{{ doc.Doc_tipo.tipo }}</td>
                     <td>
                         <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
-                        <a :href="'/minha-conta/meus-documentos/alterar-documento/' + doc.id_documento">Alterar</a>
-                        <a target="_blank" :href="'/documento/id/' + doc.id_documento">Visualizar</a>
+                        <RouterLink :to="'/minha-conta/meus-documentos/alterar-documento/' + doc.id_documento" class="RouterLink">Alterar</RouterLink>
+                        <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
                     </td>
                 </tr><!-- v-for -->
             </tbody>
@@ -138,8 +138,8 @@ export default {
                     <td>{{ doc.Doc_tipo.tipo }}</td>
                     <td>
                         <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
-                        <a :href="'/minha-conta/meus-documentos/alterar-documento/' + doc.id_documento">Alterar</a>
-                        <a target="_blank" :href="'/documento/id/' + doc.id_documento">Visualizar</a>
+                        <RouterLink :to="'/minha-conta/meus-documentos/alterar-documento/' + doc.id_documento" class="RouterLink">Alterar</RouterLink>
+                        <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
                     </td>
                 </tr><!-- v-for -->
             </tbody>
@@ -176,7 +176,7 @@ table td, table th{
     padding: 5px;
 }
 
-table td a {
+table td a, table td .RouterLink {
     display: inline-block;
 
     width: 100%;
@@ -193,7 +193,7 @@ table td a {
   transition: 0.4s;
 }
 
-table td a:hover {
+table td a:hover, table td .RouterLink:hover {
     background-color: var(--blue);
   color: white;
 }

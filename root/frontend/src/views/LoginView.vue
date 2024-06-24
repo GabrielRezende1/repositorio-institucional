@@ -11,10 +11,10 @@ export default {
 
   methods: {
     logInUser() {
-      axios.post('https://localhost:3000/login', {
+      axios.post('http://localhost:3000/api/login', {
         email: this.email,
         senha: this.senha
-      }, { withCredentials: true })
+      })
       .then(res => {
         if(res.status == 200)
           this.$router.push("/");
@@ -27,7 +27,7 @@ export default {
   },
   //Trying to access login page while already logged in redirects to home page
   beforeCreate() {
-    axios.get('https://localhost:3000/login', { withCredentials: true })
+    axios.get('http://localhost:3000/api/login')
     .then(res => {
       console.log(res.data);
       if (res.data.token) this.$router.push("/");
@@ -51,7 +51,7 @@ export default {
       <input type="submit" value="LOGAR"/>
       
       <span v-if="senhaErrada">{{ senhaErrada }}</span>
-      <a href="/cadastro">Não possui conta? Então cadastre-se</a>
+      <RouterLink to="/cadastro" class="RouterLink">Não possui conta? Então cadastre-se</RouterLink>
     </form>
   </section>
 </template>
@@ -122,7 +122,7 @@ input[type=submit]:hover {
   font-size: 21px;
 }
 
-a {
+.RouterLink {
   font-weight: 600;
 
   display: block;

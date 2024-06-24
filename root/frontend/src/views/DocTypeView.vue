@@ -40,11 +40,10 @@ export default {
         //
         nextPage(page) {
             if (this.pagination.next_page_url) {
-                axios.get('https://localhost:3000/documento/tipo/'
+                axios.get('http://localhost:3000/api/documento/tipo/'
                 + this.$route.params.tipo
                 + '?page='
-                + page,
-                {withCredentials: true})
+                + page)
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -67,11 +66,10 @@ export default {
 
         prevPage(page) {
             if (this.pagination.prev_page_url) {
-                axios.get('https://localhost:3000/documento/tipo/'
+                axios.get('http://localhost:3000/api/documento/tipo/'
                 + this.$route.params.tipo
                 + '?page='
-                + page,
-                {withCredentials: true})
+                + page)
                 .then(res => {
                     console.log(res.data);
                     this.docs = res.data.docRows;
@@ -93,8 +91,8 @@ export default {
         },
 
         docDownload(id, nome_arq) {
-            axios.get(`https://localhost:3000/documento/download/${id}/${nome_arq}`,
-            {withCredentials: true, responseType: 'blob'})
+            axios.get(`http://localhost:3000/api/documento/download/${id}/${nome_arq}`,
+            {responseType: 'blob'})
             .then(res => {
                 const link = document.createElement('a');
                 console.log(link);
@@ -115,9 +113,8 @@ export default {
     },
     
     mounted() {
-        axios.get('https://localhost:3000/documento/tipo/'
-        + this.$route.params.tipo,
-        {withCredentials: true})
+        axios.get('http://localhost:3000/api/documento/tipo/'
+        + this.$route.params.tipo)
         .then(res => {
             this.docs = res.data.docRows;
             this.pagination = res.data.pagination;
@@ -134,20 +131,19 @@ export default {
 <template>
     <section>
         <table>
-<!--             <colgroup>
+            <colgroup>
                 <col width="5%" />
                 <col width="35%" />
                 <col width="35%" />
                 <col width="15%" />
                 <col width="10%" />
-            </colgroup> -->
+            </colgroup>
             <thead>
                 <tr>
                     <th>Data:</th>
                     <th>Título:</th>
                     <th>Autor:</th>
                     <th>Tipo:</th>
-                    <th>Palavra-Chave:</th>
                     <th></th>
                 </tr>
             </thead>
@@ -164,7 +160,7 @@ export default {
                     <td>{{ doc.Doc_tipo.tipo }}</td>
                     <td>
                         <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
-                        <a target="_blank" :href="'/documento/id/' + doc.id_documento">Visualizar</a>
+                        <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
                     </td>
                 </tr><!-- v-for -->
             </tbody>
@@ -180,14 +176,14 @@ export default {
 
     <nav class="categorias">
       <ul>
-        <li><a href="/documento/tipo/artigo+de+evento">Artigo de Evento</a></li>
-        <li><a href="/documento/tipo/artigo+de+periodico">Artigo de Periódico</a></li>
-        <li><a href="/documento/tipo/capitulo+de+livro">Capítulo de Livro</a></li>
-        <li><a href="/documento/tipo/dissertacao">Dissertação</a></li>
-        <li><a href="/documento/tipo/livro">Livro</a></li>
-        <li><a href="/documento/tipo/monografia">Monografia</a></li>
-        <li><a href="/documento/tipo/tese">Tese</a></li>
-        <li><a href="/documento/tipo/trabalho+de+conclusao+de+curso">Trabalho de Conclusão de Curso</a></li>
+        <li><RouterLink to="/documento/tipo/artigo+de+evento" class="RouterLink">Artigo de Evento</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/artigo+de+periodico" class="RouterLink">Artigo de Periódico</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/capitulo+de+livro" class="RouterLink">Capítulo de Livro</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/dissertacao" class="RouterLink">Dissertação</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/livro" class="RouterLink">Livro</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/monografia" class="RouterLink">Monografia</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/tese" class="RouterLink">Tese</RouterLink></li>
+        <li><RouterLink to="/documento/tipo/trabalho+de+conclusao+de+curso" class="RouterLink">Trabalho de Conclusão de Curso</RouterLink></li>
       </ul>
     </nav><!--categorias-->
 </template>
@@ -221,7 +217,7 @@ table td, table th{
     padding: 5px;
 }
 
-table td a {
+table td a, table td .RouterLink {
     display: inline-block;
 
     width: 100%;
@@ -238,7 +234,7 @@ table td a {
   transition: 0.4s;
 }
 
-table td a:hover {
+table td a:hover, table td .RouterLink:hover {
     background-color: var(--blue);
     color: white;
 }
@@ -288,12 +284,12 @@ nav.categorias ul li {
   font-size: 16px;
 }
 
-nav ul li a {
+nav ul li .RouterLink {
   padding: 2px 0.5rem;
   font-weight: bold;
 }
 
-nav ul li a:hover {
+nav ul li .RouterLink:hover {
   background-color: #cfd64a;
 }
 /** */
