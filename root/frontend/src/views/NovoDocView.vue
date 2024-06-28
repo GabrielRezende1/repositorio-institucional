@@ -1,5 +1,5 @@
 <script>
-import MenuBar from '../components/MenuBar.vue'
+import MenuBar from '@/components/MenuBar.vue'
 import axios from 'axios'
 export default {
     data() {

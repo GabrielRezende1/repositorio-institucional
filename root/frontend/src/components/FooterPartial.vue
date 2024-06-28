@@ -1,9 +1,9 @@
 <script>
-import IconMariaDB from "./icons/IconMariaDB.vue";
-import IconExpress from "./icons/IconExpress.vue";
-import IconVue from "./icons/IconVue.vue";
-import IconNode from "./icons/IconNode.vue";
-import IconArrowUp from "./icons/IconArrowUp.vue";
+import IconMariaDB from "@/components/icons/IconMariaDB.vue";
+import IconExpress from "@/components/icons/IconExpress.vue";
+import IconVue from "@/components/icons/IconVue.vue";
+import IconNode from "@/components/icons/IconNode.vue";
+import IconArrowUp from "@/components/icons/IconArrowUp.vue";
 export default {
   // Properties returned from data() become reactive state
   // and will be exposed on `this`.

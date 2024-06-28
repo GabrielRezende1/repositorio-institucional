@@ -36,47 +36,47 @@ const router = createRouter({
     { // ========== logged paths ==========
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue')
+      component: () => import('@/views/LoginView.vue')
     },
     {
       path: '/cadastro',
       name: 'cadastro',
-      component: () => import('../views/CadastroView.vue')
+      component: () => import('@/views/CadastroView.vue')
     },
     {
       path: '/minha-conta',
       name: 'minha-conta',
-      component: () => import('../views/MinhaContaView.vue')
+      component: () => import('@/views/MinhaContaView.vue')
     },
     {
       path: '/minha-conta/meus-documentos',
       name: 'meus-documentos',
-      component: () => import('../views/MeusDocsView.vue')
+      component: () => import('@/views/MeusDocsView.vue')
     },
     {
       path: '/minha-conta/novo-documento',
       name: 'novo-documento',
-      component: () => import('../views/NovoDocView.vue')
+      component: () => import('@/views/NovoDocView.vue')
     },
     {
       path: '/minha-conta/meus-documentos/alterar-documento/:id',
       name: 'alterar-documento',
-      component: () => import('../views/AlterarDocView.vue')
+      component: () => import('@/views/AlterarDocView.vue')
     },
     { // ========== doc paths ==========
       path: '/documento',
       name: 'documento',
-      component: () => import('../views/DocView.vue')
+      component: () => import('@/views/DocView.vue')
     },
     {
       path: '/documento/id/:id',
       name: 'documentoId',
-      component: () => import('../views/DocSingleView.vue')
+      component: () => import('@/views/DocSingleView.vue')
     },
     {
       path: '/documento/tipo/:tipo',
       name: 'documentoTipo',
-      component: () => import('../views/DocTypeView.vue')
+      component: () => import('@/views/DocTypeView.vue')
     }
   ]
 })

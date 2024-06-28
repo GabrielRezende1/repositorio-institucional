@@ -1,7 +1,7 @@
 <script>
 //TODO user-account doesn't change when pushing to '/' from /login
 import axios from 'axios';
-import IconUser from './icons/IconUser.vue';
+import IconUser from '@/components/icons/IconUser.vue';
 export default {
   // Properties returned from data() become reactive state
   // and will be exposed on `this`.
