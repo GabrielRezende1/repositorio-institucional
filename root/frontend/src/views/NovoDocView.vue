@@ -107,7 +107,7 @@ export default {
                 <option value="Tese">Tese</option>
                 <option value="Trabalho de Conclusão de Curso">Trabalho de Conclusão de Curso</option>
             </select>
-            <label for="palavraChave">Palavras-Chave:</label>
+            <label for="palavraChave">Palavras-Chave: (Separar itens por VÍRGULA)</label>
             <input type="text" id="palavraChave" v-model="palavraChave" />
             <!--If user is Student, create drop down list of teachers-->
             <label v-if="info.isStudent" for="docente">Orientador:</label>
@@ -197,5 +197,49 @@ input[type=submit]:hover {
   background-color: var(--blue);
   color: white;
   font-size: 21px;
+}
+
+/** Media Queries
+ */
+
+ @media screen and (max-width: 800px) {
+  form {
+    width: 100%;
+  }
+
+  input[type=text],
+  input[type=date],
+  input[type=file],
+  select,
+  textarea {
+  width: 95%;
+
+  font-size: 18px;
+}
+
+input[type=text]:focus,
+input[type=date]:focus,
+input[type=file]:focus,
+select:focus{
+  font-size: 20px;
+}
+
+input[type=submit] {
+  width: 40%;
+
+  font-size: 18px;
+}
+
+input[type=submit]:hover {
+  font-size: 20px;
+}
+}
+
+@media screen and (max-width: 600px) {
+  label {
+    display: block;
+    text-align: center;
+    padding: 0;
+  }
 }
 </style>

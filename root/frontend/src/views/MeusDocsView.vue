@@ -50,8 +50,8 @@ export default {
 </script>
 
 <template>
-    <MenuBar />
     <section>
+        <MenuBar />
         <table v-if="data.email == 'Admin'">
             <colgroup>
                 <col width="5%" />

@@ -145,7 +145,7 @@ export default {
             <input type="password" id="novaSenha" v-model="novaSenha">
             <label for="confirmeSenha">Confirme a Senha:</label>
             <input type="password" id="confirmeSenha" v-model="confirmeSenha">
-            <input type="submit" value="Atualizar usuário">
+            <input type="submit" value="Atualizar Usuário">
         </form>
         <span v-if="senhaErrada">{{ senhaErrada }}</span>
     </section>
@@ -168,7 +168,7 @@ form {
 }
 
 label {
-  font-size: 16px;
+  font-size: 18px;
   padding: 0 2rem;
   color: var(--black);
   font-weight: 600;
@@ -229,7 +229,7 @@ input[type=submit] {
 input[type=submit]:hover {
   background-color: var(--blue);
   color: white;
-  font-size: 21px;
+  font-size: 22px;
 }
 
 span {
@@ -248,6 +248,49 @@ span {
 @keyframes blinkSpan {
   50% {
     background-color: red;
+  }
+}
+
+/** Media Queries
+ */
+
+ @media screen and (max-width: 800px) {
+  form {
+    width: 100%;
+  }
+
+  input[type=text], 
+  input[type=password],
+  input[type=number],
+  select {
+  width: 95%;
+
+  font-size: 18px;
+}
+
+input[type=text]:focus,
+input[type=password]:focus,
+input[type=number]:focus,
+select:focus {
+  font-size: 20px;
+}
+
+input[type=submit] {
+  width: 50%;
+
+  font-size: 18px;
+}
+
+input[type=submit]:hover {
+  font-size: 20px;
+}
+}
+
+@media screen and (max-width: 600px) {
+  label {
+    display: block;
+    text-align: center;
+    padding: 0;
   }
 }
 </style>

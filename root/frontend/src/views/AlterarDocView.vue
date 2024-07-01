@@ -129,7 +129,7 @@ export default {
             <input type="text" id="nome_doc" v-model="nome_doc" required />
             <label for="resumo">Resumo:</label>
             <textarea name="resumo" id="resumo" v-model="resumo" cols="40" rows="10" required></textarea>
-            <label for="palavraChave">Palavras-Chave: (Separar cada item por VÍRGULA)</label>
+            <label for="palavraChave">Palavras-Chave: (Separar itens por VÍRGULA)</label>
             <input type="text" id="palavraChave" v-model="palavraChave" />
             <label for="data">Data:</label>
             <input type="date" id="data" v-model="data" required />
@@ -254,6 +254,50 @@ span {
 @keyframes blinkSpan {
   50% {
     background-color: green;
+  }
+}
+
+/** Media Queries
+ */
+
+ @media screen and (max-width: 800px) {
+  form {
+    width: 100%;
+  }
+
+  input[type=text],
+  input[type=date],
+  input[type=file],
+  select,
+  textarea {
+  width: 95%;
+
+  font-size: 18px;
+}
+
+input[type=text]:focus,
+input[type=date]:focus,
+input[type=file]:focus,
+select:focus{
+  font-size: 20px;
+}
+
+input[type=submit] {
+  width: 60%;
+
+  font-size: 18px;
+}
+
+input[type=submit]:hover {
+  font-size: 20px;
+}
+}
+
+@media screen and (max-width: 600px) {
+  label {
+    display: block;
+    text-align: center;
+    padding: 0;
   }
 }
 </style>

@@ -11,8 +11,8 @@
 <style scoped>
 .menu {
     width: 800px;
-    background-color: var(--yellow);
     margin: 0 auto;
+    margin-bottom: 1rem;
 }
 
 .menu > ul {
@@ -29,11 +29,28 @@
     padding: 0 1rem;
     font-weight: 600;
     font-size: 20px;
+    background-color: var(--yellow);
     border: 1px solid #cfd64a;
+    border-radius: 3px;
     margin: 0 1rem;
 }
 
 .menu > ul li .RouterLink:hover {
     background-color: #cfd64a;
+}
+
+/**
+ * Media Queries
+ */
+
+@media screen and (max-width: 800px) {
+  .menu {
+    width: 100%;
+  }
+
+  .menu > ul li {
+    display: block;
+    text-align: center;
+  }
 }
 </style>
