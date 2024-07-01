@@ -70,6 +70,17 @@ export default {
             </nav>
           </div><!--general-opt-->
 
+          <div class="general-opt-mobile">
+            <nav>
+              <ul>
+                <li><RouterLink to="/apresentacao" class="RouterLink">Apresentação</RouterLink></li>
+                <li><RouterLink to="/faq" class="RouterLink">FAQ</RouterLink></li>
+                <li><RouterLink to="/politicas" class="RouterLink">Política</RouterLink></li>
+                <li><RouterLink to="/tutorial" class="RouterLink">Tutorial</RouterLink></li>
+              </ul>
+            </nav>
+          </div><!--general-opt-->
+
           <div class="user-account">
             <div v-if="disconnected">
               <RouterLink to="/login" class="RouterLink">Login</RouterLink>
@@ -147,8 +158,28 @@ div.user-account, div.general-opt {
   width: 20%;
 }
 
+div.general-opt-mobile {
+  display: none;
+}
+
 div.user-account {
   text-align: center;
+}
+
+div.user-account .RouterLink {
+
+  font-weight: 600;
+  border-radius: 10px;
+  border: 0;
+  background-color: var(--yellow);
+  color: var(--black);
+  cursor: pointer;
+
+  transition: 0.4s;
+}
+
+div.user-account .RouterLink:hover {
+  background-color: greenyellow;
 }
 
 div.user-account .icon-user:first-child {
@@ -174,12 +205,60 @@ div.user-account > .RouterLink, div.user-account > div > .RouterLink {
 
 nav li {
   list-style-type: none;
-  display: inline-block;
+  text-align: center;
 }
 
 nav .RouterLink {
   display: inline-block;
   padding: 0 1rem;
+}
+
+/** Media Queries
+ */
+
+@media screen and (max-width: 900px) {
+  div.logo {
+    width: 25%;
+  }
+} 
+
+@media screen and (max-width: 800px) {
+  header {
+    height: auto;
+  }
+
+  .flex {
+    flex-direction: column;
+    padding: 1rem 0;
+  }
+
+  div.search-bar, div.user-account {
+    width: 100%;
+  }
+
+  div.logo {
+    width: 25%;
+    text-align: center;
+  }
+
+  div.general-opt {
+    display: none;
+  }
+
+  div.general-opt-mobile {
+    display: block;
+  }
+
+  nav li {
+    display: block;
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  div.logo {
+    width: 50%;
+  }
 }
 
 </style>
