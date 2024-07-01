@@ -129,44 +129,44 @@ export default {
 </script>
 
 <template>
-    <section>
-        <table>
-            <colgroup>
-                <col width="5%" />
-                <col width="35%" />
-                <col width="35%" />
-                <col width="15%" />
-                <col width="10%" />
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>Data:</th>
-                    <th>Título:</th>
-                    <th>Autor:</th>
-                    <th>Tipo:</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="doc in docs" :key="doc">
-                    <td>{{ doc.data }}</td>
-                    <td>{{ doc.nome_doc }}</td>
-                    <td v-if="!doc.Discente">
-                        {{ doc.Docente.nome }}
-                    </td>
-                    <td v-else>
-                        {{ doc.Discente.nome }}
-                    </td>
-                    <td>{{ doc.Doc_tipo.tipo }}</td>
-                    <td>
-                        <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
-                        <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
-                    </td>
-                </tr><!-- v-for -->
-            </tbody>
-        </table>
-    </section>
-
+<section>
+    <div>
+    <table>
+        <colgroup>
+            <col width="5%" />
+            <col width="35%" />
+            <col width="35%" />
+            <col width="15%" />
+            <col width="10%" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Data:</th>
+                <th>Título:</th>
+                <th>Autor:</th>
+                <th>Tipo:</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="doc in docs" :key="doc">
+                <td>{{ doc.data }}</td>
+                <td>{{ doc.nome_doc }}</td>
+                <td v-if="!doc.Discente">
+                    {{ doc.Docente.nome }}
+                </td>
+                <td v-else>
+                    {{ doc.Discente.nome }}
+                </td>
+                <td>{{ doc.Doc_tipo.tipo }}</td>
+                <td>
+                    <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
+                    <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
+                </td>
+            </tr><!-- v-for -->
+        </tbody>
+    </table>
+    
     <nav class="pages">
         <ul>
             <li><button v-show="showPrevPage" @click="prevPage(pagination.prev_page_url)">Página anterior</button></li>
@@ -186,18 +186,27 @@ export default {
         <li><RouterLink to="/documento/tipo/trabalho+de+conclusao+de+curso" class="RouterLink">Trabalho de Conclusão de Curso</RouterLink></li>
       </ul>
     </nav><!--categorias-->
+    </div><!---->
+</section>
 </template>
 
 <style scoped>
 section {
-    width: 100%;
-    margin: 2rem 0;
+    min-height: calc(100vh - 300px); /** 150px from headerPartial and footer */
+    position: relative;
+}
+
+div {
+    width: 95%;
+    position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 /**Table */
 table {
     border-spacing: 0;
     border-collapse: collapse;
-    width: 95%;
     margin: 0 auto;
 }
 
@@ -238,6 +247,10 @@ table td a:hover, table td .RouterLink:hover {
     background-color: var(--blue);
     color: white;
 }
+
+nav {
+    margin: 1rem 0;
+}
 /** */
 /**nav.pages */
 nav.pages ul {
@@ -263,6 +276,7 @@ nav.pages ul li button{
   background-color: var(--yellow);
   color: var(--black);
   cursor: pointer;
+  outline: none;
 
   transition: 0.4s;
 }
@@ -275,13 +289,20 @@ nav.pages ul li button:hover {
 /* nav.categorias */
 nav.categorias {
   list-style-type: none;
-  background-color: var(--yellow);
+}
+
+nav.categorias ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 
 nav.categorias ul li {
   display: inline-block;
-  padding: 0 1rem;
+  margin: 1px 1px;
   font-size: 16px;
+  background-color: var(--yellow);
+  border-radius: 3px;
 }
 
 nav ul li .RouterLink {

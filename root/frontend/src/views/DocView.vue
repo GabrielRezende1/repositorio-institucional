@@ -232,50 +232,49 @@ export default {
 </script>
 
 <template>
+<section>
     <div class="search-bar">
         <form action="" method="get" @submit.prevent="search">
             <input v-model="searchInput" type="text" placeholder="Buscar documentos">
-            <input hidden type="submit" />
+            <input type="submit" value="Buscar" />
         </form>
     </div><!--search-bar-->
 
-    <section>
-        <table>
-            <colgroup>
-                <col width="5%" />
-                <col width="35%" />
-                <col width="35%" />
-                <col width="15%" />
-                <col width="10%" />
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>Data:</th>
-                    <th>Título:</th>
-                    <th>Autor:</th>
-                    <th>Tipo:</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="doc in docs" :key="doc">
-                    <td>{{ doc.data }}</td>
-                    <td>{{ doc.nome_doc }}</td>
-                    <td v-if="!doc.Discente">
-                        {{ doc.Docente.nome }}
-                    </td>
-                    <td v-else>
-                        {{ doc.Discente.nome }}
-                    </td>
-                    <td>{{ doc.Doc_tipo.tipo }}</td>
-                    <td>
-                        <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
-                        <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
-                    </td>
-                </tr><!-- v-for -->
-            </tbody>
-        </table>
-    </section>
+    <table>
+        <colgroup>
+            <col width="5%" />
+            <col width="35%" />
+            <col width="35%" />
+            <col width="15%" />
+            <col width="10%" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th>Data:</th>
+                <th>Título:</th>
+                <th>Autor:</th>
+                <th>Tipo:</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="doc in docs" :key="doc">
+                <td>{{ doc.data }}</td>
+                <td>{{ doc.nome_doc }}</td>
+                <td v-if="!doc.Discente">
+                    {{ doc.Docente.nome }}
+                </td>
+                <td v-else>
+                    {{ doc.Discente.nome }}
+                </td>
+                <td>{{ doc.Doc_tipo.tipo }}</td>
+                <td>
+                    <a href="#" @click.prevent="docDownload(doc.id_documento, doc.nome_arq)">Baixar</a>
+                    <RouterLink :to="'/documento/id/' + doc.id_documento" class="RouterLink">Visualizar</RouterLink>
+                </td>
+            </tr><!-- v-for -->
+        </tbody>
+    </table>
 
     <nav>
         <ul>
@@ -283,11 +282,19 @@ export default {
             <li><button v-show="showNextPage" @click="nextPage(pagination.next_page_url)">Próxima página</button></li>
         </ul>
     </nav>
+</section>
 </template>
 
 <style scoped>
+
+section {
+  max-width: 1280px;
+  min-height: calc(100vh - 300px); /** 150px from headerPartial and footer */
+  margin: 0 auto;
+}
+
 div.search-bar {
-  width: 50%;
+  width: 60%;
   margin: 10px auto;
 }
 
@@ -295,19 +302,41 @@ div.search-bar form input[type=text] {
   width: 100%;
   line-height: 30px;
   font-size: 20px;
-  border-radius: 2px;
+  border-radius: 10px;
   padding-left: 0.5rem;
+  background-color: var(--light-blue);
+
   transition: 0.4s;
 }
 
 div.search-bar form input[type=text]:focus {
+  background-color: white;
   font-size: 21px;
 }
 
-section {
-    width: 100%;
-    margin: 2rem 0;
+input[type=submit] {
+  display: block;
+  width: 100px;
+  height: 36px;
+
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0.5rem auto 0.5rem auto;
+  border-radius: 10px;
+  border: 0;
+  background-color: var(--yellow);
+  color: var(--black);
+  cursor: pointer;
+
+  transition: 0.4s;
 }
+
+input[type=submit]:hover {
+  background-color: var(--blue);
+  color: white;
+  font-size: 19px;
+}
+
 /**Table */
 table {
     border-spacing: 0;
@@ -366,10 +395,10 @@ nav ul li {
 }
 
 nav ul li button{
-    display: inline-block;
+  display: inline-block;
 
-    width: 30%;
-    text-align: center;
+  width: 30%;
+  text-align: center;
   font-size: 18px;
   font-weight: 600;
   padding: 0.5rem;
@@ -386,4 +415,13 @@ nav ul li button:hover {
     background-color: var(--blue);
     color: white;
 }
+
+/** Media Queries
+ */
+
+@media screen and (max-width: 600px) {
+  div.search-bar {
+    width: 90%;
+  }
+} 
 </style>

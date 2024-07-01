@@ -84,12 +84,23 @@ export default {
 </template>
 
 <style scoped>
+section {
+  min-height: calc(100vh - 300px); /** 150px from headerPartial and footer */
+  position: relative;
+}
+
 /**Table */
+
 table {
     border-spacing: 0;
     border-collapse: collapse;
     width: 95%;
     margin: 1rem auto;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 table > td { /**link td */
