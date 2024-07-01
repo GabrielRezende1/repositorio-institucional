@@ -23,7 +23,6 @@ export default {
 <template>
 <section>
     <h2>Perguntas Frequentes</h2>
-    <br><br><br>
     <table>
         <tbody>
             <tr v-for="doc in data" :key="doc">
@@ -42,6 +41,14 @@ section {
     margin: 0 auto;
 }
 
+h2 {
+    padding: 0 1rem;
+}
+
+section > h2:first-child {
+    margin: 1rem 0;
+}
+
 table {
     border-spacing: 0;
     border-collapse: collapse;
@@ -49,20 +56,15 @@ table {
     margin: 0 auto;
 }
 
-table th {
-    font-weight: 700;
-    background-color: var(--yellow);
-    text-align: left;
-}
-
 table tr:nth-child(even) {
   background-color: #D6EEEE;
 }
 
-table td, table th{
+table td{
     border-top: 2px solid var(--blue);
     font-size: 18px;
     padding: 10px;
+    text-align: justify;
 }
 
 table td a {
@@ -85,5 +87,15 @@ table td a {
 table td a:hover {
     background-color: var(--blue);
     color: white;
+}
+
+/** Media Queries
+ */
+
+@media screen and (max-width: 800px) {
+h2 {
+    text-align: center;
+    padding: 0;
+}
 }
 </style>
