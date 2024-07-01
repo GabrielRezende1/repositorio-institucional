@@ -46,7 +46,7 @@ export default {
       <input type="text" id="email" v-model="email" placeholder="Insira seu e-mail..."/>
 
       <label for="senha">SENHA:</label>
-      <input type="password" id="senha" v-model="senha" placeholder="Insira seu e-mail...">
+      <input type="password" id="senha" v-model="senha" placeholder="Insira sua senha...">
 
       <input type="submit" value="LOGAR"/>
       
@@ -119,7 +119,7 @@ input[type=submit] {
 input[type=submit]:hover {
   background-color: var(--blue);
   color: white;
-  font-size: 21px;
+  font-size: 22px;
 }
 
 .RouterLink {
@@ -145,6 +145,43 @@ span {
 @keyframes blinkSpan {
   50% {
     background-color: red;
+  }
+}
+
+/** Media Queries
+ */
+
+@media screen and (max-width: 800px) {
+  form {
+    width: 100%;
+  }
+
+  input[type=text], input[type=password] {
+  width: 95%;
+
+  font-size: 18px;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  font-size: 20px;
+}
+
+input[type=submit] {
+  width: 40%;
+
+  font-size: 18px;
+}
+
+input[type=submit]:hover {
+  font-size: 20px;
+}
+}
+
+@media screen and (max-width: 600px) {
+  label {
+    display: block;
+    text-align: center;
+    padding: 0;
   }
 }
 </style>

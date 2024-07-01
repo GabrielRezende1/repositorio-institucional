@@ -38,7 +38,7 @@ export default {
       <input type="text" id="nome" :value="email" placeholder="Insira seu e-mail..."/>
 
       <label for="senha">SENHA:</label>
-      <input type="password" id="senha" :value="senha" placeholder="Insira sua senha..."/>
+      <input type="password" id="senha" :value="senha" placeholder="Crie sua senha..."/>
 
       <label for="senha2">CONFIRME SUA SENHA:</label>
       <input type="password" id="senha2" :value="senha" placeholder="Repita sua senha..."/>
@@ -79,7 +79,7 @@ input[type=text], input[type=password] {
   height: 48px;
 
   padding-left: 1rem;
-  font-size: 22px;
+  font-size: 20px;
   margin: 0.5rem auto 2rem auto;
   border-radius: 10px;
   outline: 0;
@@ -89,7 +89,7 @@ input[type=text], input[type=password] {
 }
 
 input[type=text]:focus, input[type=password]:focus {
-  font-size: 24px;
+  font-size: 22px;
 }
 
 input[type=submit] {
@@ -112,7 +112,7 @@ input[type=submit] {
 input[type=submit]:hover {
   background-color: var(--blue);
   color: white;
-  font-size: 21px;
+  font-size: 22px;
 }
 
 .RouterLink {
@@ -120,5 +120,42 @@ input[type=submit]:hover {
 
   display: block;
   text-align: center;
+}
+
+/** Media Queries
+ */
+
+ @media screen and (max-width: 800px) {
+  form {
+    width: 100%;
+  }
+
+  input[type=text], input[type=password] {
+  width: 95%;
+
+  font-size: 18px;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  font-size: 20px;
+}
+
+input[type=submit] {
+  width: 40%;
+
+  font-size: 18px;
+}
+
+input[type=submit]:hover {
+  font-size: 20px;
+}
+}
+
+@media screen and (max-width: 600px) {
+  label {
+    display: block;
+    text-align: center;
+    padding: 0;
+  }
 }
 </style>
