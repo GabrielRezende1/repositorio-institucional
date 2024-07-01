@@ -66,13 +66,20 @@ div.logo img {
 /* nav */
 nav.categorias {
   list-style-type: none;
-  background-color: var(--yellow);
+}
+
+nav.categorias ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 
 nav.categorias ul li {
   display: inline-block;
-  padding: 0 1rem;
+  margin: 1px 1px;
   font-size: 16px;
+  background-color: var(--yellow);
+  border-radius: 3px;
 }
 
 nav ul li .RouterLink {

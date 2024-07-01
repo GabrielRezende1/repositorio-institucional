@@ -77,6 +77,12 @@ export default {
   nav ul li {
     display: inline-block;
     padding: 1rem 1rem;
+
+    transition: 0.4s;
+  }
+
+  nav ul li:hover {
+    background-color: var(--yellow);
   }
 
   footer nav li > a {
