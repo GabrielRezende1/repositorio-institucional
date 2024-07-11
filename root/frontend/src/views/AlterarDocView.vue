@@ -113,6 +113,7 @@ export default {
         <br>
         <h1>Alterando: <b>{{ former_nome_doc }}</b></h1>
         <hr>
+        <h1>Alterar dados do documento</h1>
         <form action="" method="post" @submit.prevent="putAlterarDoc(info.doc.id_documento)">
             <label for="tipo">Tipo de Documento:</label>
             <select name="tipo" id="tipo" v-model="tipo">
@@ -143,6 +144,7 @@ export default {
             <span v-if="updatedDoc">{{ updatedDoc }}</span>
         </form>
         <hr>
+        <h1>Alterar arquivo do documento</h1>
         <form action="" enctype="multipart/form-data" @submit.prevent="uploadFile(info.doc.id_documento)">
             <label for="file">Selecionar Arquivo: </label>
             <input type="file" id="file" accept=".pdf" ref="file" @change="readFile" required/>
@@ -166,8 +168,9 @@ h1 {
 }
 
 hr {
-    color: var(--blue);
+    background-color: var(--blue);
     margin: 1rem 0;
+    height: 5px;
 }
 
 form {

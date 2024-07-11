@@ -7,6 +7,7 @@ export default {
             data: {}, // /GET /minha-conta
             data2: {}, // /POST /minha-conta,
             data3: {}, // /PUT /login
+            h1: '', // <h1>
             nome: '',
             matricula: '', // Student
             curso: '', // Student
@@ -92,10 +93,12 @@ export default {
                 if (this.data.isStudent) {
                     this.matricula = cUser.matricula;
                     this.curso = cUser.curso;
+                    this.h1 = 'Aluno';
                 }
                 else {
                     this.idFuncional = cUser.id_funcional;
                     this.graduacao = cUser.graduacao;
+                    this.h1 = 'Professor';
                 }
             }
         })
@@ -111,6 +114,7 @@ export default {
     <section>
         <MenuBar />
         <!-- Criação de docente/discente de acordo com o email -->
+        <h1>Dados do {{ h1 }}</h1>
         <form v-if="data.isStudent" action="" method="post" @submit.prevent="postMinhaConta">
             <label for="matricula">Matrícula:</label>
             <input type="number" id="matricula" v-model="matricula"/>
@@ -136,6 +140,7 @@ export default {
         </form>
         <hr>
         <!--alteração do usuário-->
+        <h1>Dados do Usuário</h1>
         <form action="" method="post" @submit.prevent="putMeuUsuario">
             <label for="email">Email:</label>
             <input type="text" id="email" v-model="data.email" disabled>
@@ -157,9 +162,17 @@ section {
     margin: 2rem 0;
 }
 
+h1 {
+    color: var(--black);
+    font-weight: 600;
+    margin: 0 auto;
+    text-align: center;
+}
+
 hr {
-    color: var(--blue);
+    background-color: var(--blue);
     margin: 1rem 0;
+    height: 5px;
 }
 
 form {
