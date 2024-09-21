@@ -43,11 +43,11 @@ export default {
             <!--Search specific doc-->
             <form action="" method="get" @submit.prevent="search">
                 <input v-model="searchInput" type="text" placeholder="Buscar documento..." />
-                <input type="submit" value="Buscar" />
+                <input type="submit" value="Buscar Documento" />
             </form>
             <!--Search all docs-->
             <form action="" method="get" @submit.prevent="viewDocs">
-                <input type="submit" value="Ver Documentos">
+                <input type="submit" value="Todos os Documentos">
             </form>
         </div><!--search-bar-->
     </section>
@@ -77,7 +77,7 @@ div.search-bar form input[type=text]:focus {
 
 input[type=submit] {
   display: block;
-  width: 190px;
+  width: 250px;
   height: 48px;
 
   font-size: 20px;
@@ -107,11 +107,17 @@ div.search-bar {
 }
 
 input[type=submit] {
-  width: 160px;
+  width: 220px;
   height: 40px;
 
   font-size: 18px;
   margin: 0.5rem auto 0.5rem auto;
+}
+
+input[type=submit]:hover {
+  background-color: var(--blue);
+  color: white;
+  font-size: 19px;
 }
 } 
 
