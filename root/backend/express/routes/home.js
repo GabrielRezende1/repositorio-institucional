@@ -25,7 +25,7 @@ router.get("/", async (req, res) => {
 		return;
 	}
 
-	res.redirect(`/documento/?search=${req.query.search}`);
+	res.redirect(`/api/documento/?search=${req.query.search}`);
 });
 //GET /apresentacao
 router.get("/apresentacao", async(req, res) => {
