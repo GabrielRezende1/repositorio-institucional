@@ -6,7 +6,8 @@ export default {
             docs: [],
             pagination: {},
             showNextPage: true,
-            showPrevPage: true
+            showPrevPage: false,
+            typeSwitch: true //Acts as a switch
         }
     },
 
@@ -109,6 +110,13 @@ export default {
             .catch(err => {
                 console.log(err.response.data);
             });
+        },
+        changeType() {
+            if (this.typeSwitch == true) {
+                this.typeSwitch = false;
+            }else {
+                this.typeSwitch = true;
+            }
         }
     },
     
@@ -124,6 +132,24 @@ export default {
         .catch(err => {
             console.log(err.response.data);
         });
+    },
+
+    watch: {
+        typeSwitch() {
+            axios.get('http://localhost:3000/api/documento/tipo/'
+            + this.$route.params.tipo)
+            .then(res => {
+                this.docs = res.data.docRows;
+                this.pagination = res.data.pagination;
+                console.log(this.docs);
+                console.log(this.pagination);
+                this.showNextPage = true;
+                this.showPrevPage = false;
+            })
+            .catch(err => {
+                console.log(err.response.data);
+            });
+        }
     }
 }
 </script>
@@ -176,14 +202,14 @@ export default {
 
     <nav class="categorias">
       <ul>
-        <li><RouterLink to="/documento/tipo/artigo+de+evento" class="RouterLink">Artigo de Evento</RouterLink></li>
-        <li><RouterLink to="/documento/tipo/artigo+de+periodico" class="RouterLink">Artigo de Periódico</RouterLink></li>
-        <li><RouterLink to="/documento/tipo/capitulo+de+livro" class="RouterLink">Capítulo de Livro</RouterLink></li>
-        <li><RouterLink to="/documento/tipo/dissertacao" class="RouterLink">Dissertação</RouterLink></li>
-        <li><RouterLink to="/documento/tipo/livro" class="RouterLink">Livro</RouterLink></li>
-        <li><RouterLink to="/documento/tipo/monografia" class="RouterLink">Monografia</RouterLink></li>
-        <li><RouterLink to="/documento/tipo/tese" class="RouterLink">Tese</RouterLink></li>
-        <li><RouterLink to="/documento/tipo/trabalho+de+conclusao+de+curso" class="RouterLink">Trabalho de Conclusão de Curso</RouterLink></li>
+        <li @click="changeType"><RouterLink to="/documento/tipo/artigo+de+evento" class="RouterLink">Artigo de Evento</RouterLink></li>
+        <li @click="changeType"><RouterLink to="/documento/tipo/artigo+de+periodico" class="RouterLink">Artigo de Periódico</RouterLink></li>
+        <li @click="changeType"><RouterLink to="/documento/tipo/capitulo+de+livro" class="RouterLink">Capítulo de Livro</RouterLink></li>
+        <li @click="changeType"><RouterLink to="/documento/tipo/dissertacao" class="RouterLink">Dissertação</RouterLink></li>
+        <li @click="changeType"><RouterLink to="/documento/tipo/livro" class="RouterLink">Livro</RouterLink></li>
+        <li @click="changeType"><RouterLink to="/documento/tipo/monografia" class="RouterLink">Monografia</RouterLink></li>
+        <li @click="changeType"><RouterLink to="/documento/tipo/tese" class="RouterLink">Tese</RouterLink></li>
+        <li @click="changeType"><RouterLink to="/documento/tipo/trabalho+de+conclusao+de+curso" class="RouterLink">Trabalho de Conclusão de Curso</RouterLink></li>
       </ul>
     </nav><!--categorias-->
     </div><!---->
