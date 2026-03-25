@@ -15,7 +15,7 @@ export default {
     methods: {
         docDownload(id, nome_arq) {
             axios.get(`http://localhost:3000/api/documento/download/${id}/${nome_arq}`,
-            {withCredentials: true, responseType: 'blob'})
+            {responseType: 'blob'})
             .then(res => {
                 const link = document.createElement('a');
                 console.log(link);

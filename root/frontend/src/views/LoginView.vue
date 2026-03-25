@@ -14,7 +14,7 @@ export default {
       axios.post('http://localhost:3000/api/login', {
         email: this.email,
         senha: this.senha
-      })
+      }, {withCredentials: true})
       .then(res => {
         if(res.status == 200)
           this.$router.push("/");
@@ -27,7 +27,7 @@ export default {
   },
   //Trying to access login page while already logged in redirects to home page
   beforeCreate() {
-    axios.get('http://localhost:3000/api/login')
+    axios.get('http://localhost:3000/api/login', {withCredentials: true})
     .then(res => {
       console.log(res.data);
       if (res.data.token) this.$router.push("/");

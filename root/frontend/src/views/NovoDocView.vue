@@ -48,7 +48,7 @@ export default {
             form.append('palavraChave', this.palavraChave);
 
             axios.post('http://localhost:3000/api/minha-conta/novo-documento',
-            form)
+            form, {withCredentials: true})
             .then(res => {
                 this.info2 = res.data;
                 console.log(this.info2);
@@ -62,7 +62,7 @@ export default {
 
     beforeCreate() {
         axios
-            .get('http://localhost:3000/api/minha-conta/novo-documento')
+            .get('http://localhost:3000/api/minha-conta/novo-documento', {withCredentials: true})
             .then((res) => {
                 console.log(res.data);
                 this.info = res.data;

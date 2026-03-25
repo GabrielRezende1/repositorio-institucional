@@ -36,7 +36,7 @@ export default {
 
     beforeCreate() { //authToken
         axios
-            .get('http://localhost:3000/api/minha-conta/meus-documentos')
+            .get('http://localhost:3000/api/minha-conta/meus-documentos', {withCredentials: true})
             .then((res) => {
                 console.log(res.data)
                 this.data = res.data

@@ -39,8 +39,8 @@ export default {
                 data: this.data,
                 orientador: this.orientador,
                 tipo: this.tipo,
-                palavraChave: this.palavraChave
-            })
+                palavraChave: this.palavraChave,
+            }, {withCredentials: true})
             .then(res => {
                 this.info = res.data;
                 this.updatedDoc = 'Documento alterado com sucesso!';
@@ -58,7 +58,7 @@ export default {
             form.append('arquivo', new Blob([this.file], {type: 'application/pdf'}), this.file.name);
 
             axios.put(`http://localhost:3000/api/minha-conta/meus-documentos/alterar-documento/${id}/upload`,
-            form)
+            form, {withCredentials: true})
             .then(res => {
                 this.info2 = res.data;
                 this.updatedFile = 'Arquivo alterado com sucesso!';
@@ -74,7 +74,7 @@ export default {
     beforeCreate() {
         axios
             .get('http://localhost:3000/api/minha-conta/meus-documentos/alterar-documento/'
-            + this.$route.params.id)
+            + this.$route.params.id, {withCredentials: true})
             .then((res) => {
             this.info = res.data;
             console.log(this.info);

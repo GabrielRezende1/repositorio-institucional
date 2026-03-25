@@ -1,8 +1,13 @@
 const path = require('path');
 const express = require('express');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 global.__basedir = __dirname;
+corsOptions = {
+	origin: 'http://localhost:5173',
+	credentials: true
+};
 
 const routes = {
 	document: require("./routes/document"),
@@ -15,6 +20,7 @@ const routes = {
 
 const app = express();
 
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
