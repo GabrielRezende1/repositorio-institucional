@@ -130,14 +130,14 @@ router.put('/login', async (req, res) => {
 //POST /cadastro
 router.post('/cadastro', async (req, res) => {
     const email = req.body.email;
-    const senha = req.body.senha;
-    const confirmeSenha = req.body.confirmeSenha;
+    const password = req.body.password;
+    const confirmPassword = req.body.confirmPassword;
     // Check if email already exists before creating user
     const user = await db.Usuario.findOne({
         where: { email: email }
     });
-    // Regex email and senha
-    const passwordRegex = senha.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/);
+    // Regex email and password
+    const passwordRegex = password.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/);
     const emailRegex = email.match(/([a-z]+\.[a-z]+\.[0-9]+(ga|si))@(aluno|prof).faeterj-prc.faetec.rj.gov.br/g);
     //
 
@@ -164,7 +164,7 @@ router.post('/cadastro', async (req, res) => {
         return;
     }
 
-    if (senha != confirmeSenha) {
+    if (password != confirmPassword) {
         res.status(403).json({
             msg: "Você não digitou a senha corretamente!"
         });
@@ -172,7 +172,7 @@ router.post('/cadastro', async (req, res) => {
     }
 
     const salt = bcryptjs.genSaltSync(10);
-    const hash = bcryptjs.hashSync(senha, salt);
+    const hash = bcryptjs.hashSync(password, salt);
 
     await db.Usuario.create({
         email,

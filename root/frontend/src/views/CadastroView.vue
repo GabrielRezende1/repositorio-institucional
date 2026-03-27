@@ -4,7 +4,8 @@ export default {
   data() {
     return {
       email: '',
-      senha: ''
+      password: '',
+      confirmPassword: ''
     }
   },
 
@@ -13,7 +14,8 @@ export default {
       axios
       .post('http://localhost:3000/api/cadastro', {
         email: this.email,
-        senha: this.senha
+        password: this.password,
+        confirmPassword: this.confirmPassword
       })
       .then(response => {
         if (response.status == 200) {
@@ -21,7 +23,7 @@ export default {
         }
       })
       .catch(err => {
-        console.log(err);
+        console.log(err.response.data);
       });
     }
   },
@@ -33,15 +35,15 @@ export default {
 
 <template>
   <section>
-    <form method="post">
+    <form method="post" @submit.prevent="createAccount">
       <label for="email">EMAIL:</label>
-      <input type="text" id="nome" :value="email" placeholder="Insira seu e-mail..."/>
+      <input type="text" id="nome" v-model="email" placeholder="Insira seu e-mail..."/>
 
-      <label for="senha">SENHA:</label>
-      <input type="password" id="senha" :value="senha" placeholder="Crie sua senha..."/>
+      <label for="password">SENHA:</label>
+      <input type="password" id="password" v-model="password" placeholder="Crie sua senha..."/>
 
-      <label for="senha2">CONFIRME SUA SENHA:</label>
-      <input type="password" id="senha2" :value="senha" placeholder="Repita sua senha..."/>
+      <label for="confirmPassword">CONFIRME SUA SENHA:</label>
+      <input type="password" id="confirmPassword" v-model="confirmPassword" placeholder="Repita sua senha..."/>
       
       <input type="submit" value="CADASTRAR">
       <RouterLink to="/login" class="RouterLink">Já possui conta? Então faça Login</RouterLink>
