@@ -127,9 +127,9 @@ router.get("/documento/tipo/:tipo", async (req, res) => {
                 "nome_arq",
                 "resumo",
                 [db.Sequelize.fn(
-                    "DATE_FORMAT", 
+                    "TO_CHAR", 
                     db.Sequelize.col("data"), 
-                    "%d/%m/%Y"
+                    "DD-MM-YYYY"
                 ), "data"],
                 "fk_id_docente",
                 "fk_id_doc_tipo"
@@ -184,9 +184,9 @@ router.get("/documento/id/:id", async (req, res) => {
                 "nome_arq",
                 "resumo",
                 [db.Sequelize.fn(
-                    "DATE_FORMAT", 
+                    "TO_CHAR", 
                     db.Sequelize.col("data"), 
-                    "%d/%m/%Y"
+                    "DD-MM-YYYY"
                 ), "data"],
                 "fk_id_docente",
                 "fk_id_doc_tipo"
