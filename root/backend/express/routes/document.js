@@ -194,6 +194,13 @@ router.get("/documento/id/:id", async (req, res) => {
         },
         include: ["Discente", "Docente", "Doc_tipo"]
     });
+    // If document doesn't exist
+    if (doc.length == 0) {
+        res.status(400).json({
+            error: "Documento não existe! Você tentou acessar um documento manualmente."
+        });
+        return;
+    }
     // Prevent user to manually try accessing a document out of scope
     if ((doc[0].dataValues.fk_id_doc_tipo == 9) | (doc[0].dataValues.fk_id_doc_tipo == 10)) {
         res.status(400).json({
