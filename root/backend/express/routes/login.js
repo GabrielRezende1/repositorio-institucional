@@ -114,6 +114,7 @@ router.put('/login', async (req, res) => {
 
     if (!correctPassword) {
         res.status(403).json({msg: 'Você não digitou a senha corretamente!'});
+        return;
     }
 
     const salt = bcryptjs.genSaltSync(10);
