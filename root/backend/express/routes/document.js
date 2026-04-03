@@ -111,11 +111,22 @@ router.get("/documento/tipo/:tipo", async (req, res) => {
     const limit = 1; //Num. of records per page. Ideal is 40
     let lastPage = 1;
 
-    const tipo = req.params.tipo;
-    const tipoFormatado = tipo.replace(/\+/g, ' ');
+    const docTipos = {
+        "artigo+de+evento": 1,
+        "artigo+de+periodico": 2,
+        "capitulo+de+livro": 3,
+        "dissertacao": 4,
+        "livro": 5,
+        "monografia": 6,
+        "tese": 7,
+        "trabalho+de+conclusao+de+curso": 8,
+        "politica": 9,
+        "tutorial": 10
+    }
+    const paramTipo = req.params.tipo;
 
     const docTipo = await db.Doc_tipo.findOne({
-        where: { tipo: tipoFormatado }
+        where: { id_doc_tipo: docTipos[paramTipo] }
     });
     const docTipoId = docTipo.id_doc_tipo;
 
@@ -140,11 +151,6 @@ router.get("/documento/tipo/:tipo", async (req, res) => {
         offset: Number(page * limit - limit),
         limit
     });
-
-    if (!docs) {
-        res.status(400).json({ erro: "Não foi possível recuperar os dados!" });
-        return;
-    }
 
     const docCount = docs.count;
     const docRows = docs.rows;
