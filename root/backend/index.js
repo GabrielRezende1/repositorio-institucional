@@ -1,8 +1,8 @@
 require("dotenv").config();
 const fs = require('fs');
 
-const app = require('./express/app');
-const db = require('./db/models/index');
+const app = require('./src/app');
+const db = require('./src/config/index');
 
 async function assertDatabaseConnectionOk() {
 	console.log(`Verificando conexão com o Banco de Dados...`);
