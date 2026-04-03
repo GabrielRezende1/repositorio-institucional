@@ -133,16 +133,14 @@ router.post('/cadastro', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
-    // Check if email already exists before creating user
     const user = await db.Usuario.findOne({
         where: { email: email }
     });
     // Regex email and password
-    const passwordRegex = password.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/);
     const emailRegex = email.match(/([a-z]+\.[a-z]+\.[0-9]+(ga|si))@(aluno|prof).faeterj-prc.faetec.rj.gov.br/g);
-    //
-
-    if (user) { // If user doesn't exist, create one (user = email)
+    const passwordRegex = password.match(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,24}$/gm);
+    // Check if email already exists before creating user
+    if (user) {
         res.status(400).json({ err: 'Email já cadastrado!' });
         return;
     }
@@ -157,9 +155,11 @@ router.post('/cadastro', async (req, res) => {
             msg: "Senha não atende aos requisitos mínimos!",
             requisitos: [
                 "No mínimo 8 caracteres",
-                "1 letra maiúscula",
-                "1 letra minúscula",
-                "1 caractere especial"
+                "Pelo menos uma letra maiúscula",
+                "Pelo menos uma letra minúscula",
+                "Pelo menos um caractere especial",
+                "Sem espaços entre caracteres",
+                "No máximo 24 caracteres",
             ]
         });
         return;
