@@ -22,14 +22,15 @@ Assim que o projeto estiver na sua primeira versão de lançamento, instruções
 
 ### Backend
 
-[bcryptjs@2.4.3](https://www.npmjs.com/package/bcryptjs/v/2.4.3)  
-[cookie-parser@1.4.6](https://www.npmjs.com/package/cookie-parser/v/1.4.6)  
-[dotenv@16.3.1](https://www.npmjs.com/package/dotenv/v/16.3.1)  
-[express@4.18.2](https://www.npmjs.com/package/express/v/4.18.2)  
-[jsonwebtoken@9.0.1](https://www.npmjs.com/package/jsonwebtoken/v/9.0.1)  
-[multer@1.4.5-lts.1](https://www.npmjs.com/package/multer/v/1.4.5-lts.1)  
-[mysql2@3.9.3](https://www.npmjs.com/package/mysql2/v/3.9.3)  
-[sequelize@6.32.1](https://www.npmjs.com/package/sequelize/v/6.32.1)  
+[bcryptjs@3.0.3](https://www.npmjs.com/package/bcryptjs/v/3.0.3)  
+[cookie-parser@1.4.7](https://www.npmjs.com/package/cookie-parser/v/1.4.7)  
+[dotenv@16.6.1](https://www.npmjs.com/package/dotenv/v/16.6.1)  
+[express@4.22.1](https://www.npmjs.com/package/express/v/4.22.1)  
+[jsonwebtoken@9.0.3](https://www.npmjs.com/package/jsonwebtoken/v/9.0.3)  
+[multer@2.1.1](https://www.npmjs.com/package/multer/v/2.1.1)  
+[pg@8.20.0](https://www.npmjs.com/package/pg/v/8.20.0)  
+[ph-hstore@2.3.4](https://www.npmjs.com/package/pg-hstore/v/2.3.4)  
+[sequelize@6.37.8](https://www.npmjs.com/package/sequelize/v/6.37.8)  
 
 ### Frontend
 
