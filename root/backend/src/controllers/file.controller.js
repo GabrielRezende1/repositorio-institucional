@@ -1,4 +1,4 @@
-const uploadFile = require("./upload");
+const uploadFile = require("../utils/upload");
 const upload = async (req, res, next) => {
     try {
         await uploadFile(req, res);

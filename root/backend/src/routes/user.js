@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../../db/models/index");
+const db = require("../config/index");
 const authToken = require('../middlewares/auth');
 const jwt = require('jsonwebtoken');
-const fileCtrl = require("../middlewares/file.controller");
+const fileCtrl = require("../controllers/file.controller");
 const fs = require("fs");
 const idParam = require("../middlewares/idParam");
 /**

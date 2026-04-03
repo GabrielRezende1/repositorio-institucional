@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../../db/models/index");
+const db = require("../config/index");
 /**
  * /
  * /apresentacao

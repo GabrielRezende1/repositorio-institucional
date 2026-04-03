@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../../db/models/index");
+const db = require("../config/index");
 const idParam = require("../middlewares/idParam");
 /**
  * /documento
@@ -260,7 +260,7 @@ router.get("/documento/download/:id/:nome", async (req, res) => {
         return;
     }
 
-    const directoryPath = __basedir + "../../db/documents/";
+    const directoryPath = __basedir + "../../storage/";
     res.download(directoryPath + fileName, fileName, (err) => {
         if (err) {
             res.status(500).send({
