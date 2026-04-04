@@ -26,7 +26,7 @@ async function getDocumentTypes() {
  * Get institutional presentation data
  * @returns {Object} Presentation information
  */
-function getApresentacao() {
+function getPresentation() {
     return {
         apresentacao: "Bem-vindo ao repositório institucional da FAETERJ-Paracambi.",
         missao: "Armazenar, preservar, divulgar e oferecer acesso à produção científica e institucional da FAETERJ-Paracambi.",
@@ -84,7 +84,7 @@ async function getPolicyDownload(fileName) {
 
 module.exports = {
     getDocumentTypes,
-    getApresentacao,
+    getPresentation,
     getFAQ,
     getPolicies,
     getPolicyDownload

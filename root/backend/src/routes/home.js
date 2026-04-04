@@ -14,7 +14,7 @@ const homeController = require("../controllers/homeController");
 router.get("/", homeController.getHome);
 
 // GET /apresentacao - Institutional presentation
-router.get("/apresentacao", homeController.getApresentacao);
+router.get("/apresentacao", homeController.getPresentation);
 
 // GET /faq - FAQ information
 router.get("/faq", homeController.getFAQ);

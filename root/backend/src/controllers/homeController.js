@@ -25,9 +25,9 @@ async function getHome(req, res) {
 /**
  * GET /apresentacao - Get institutional presentation
  */
-async function getApresentacao(req, res) {
+async function getPresentation(req, res) {
     try {
-        const result = homeService.getApresentacao();
+        const result = homeService.getPresentation();
         res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -79,7 +79,7 @@ async function getPolicyDownload(req, res) {
 
 module.exports = {
     getHome,
-    getApresentacao,
+    getPresentation,
     getFAQ,
     getPolicies,
     getPolicyDownload
