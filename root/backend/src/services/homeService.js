@@ -49,8 +49,43 @@ function getFAQ() {
     };
 };
 
+async function getPolicies() {
+    try {
+        const policies = await db.Documento.findAll({
+                where: { fk_id_doc_tipo: 9 } //Imutable doc_type id
+            });
+        return {success: true, data: policies};
+    } catch (error) {
+        return {success: false, error: error.message};
+    }
+}
+
+async function getPolicyDownload(fileName) {
+    try {
+        const policy = await db.Documento.findOne({
+            attributes: ["nome_doc", "nome_arq", "resumo", "data"],
+            where: {
+                nome_arq: fileName,
+                fk_id_doc_tipo: 9
+            }
+        });
+
+        if (!policy) {
+            return {success: false, error: "Policy doesn't exist. Policy file name could be wrong, or the policies storage is empty."};
+        }
+
+        const directoryPath = __basedir + "../../storage/";
+
+        return {success: true, data: policy, directoryPath};
+    } catch (error) {
+        return {success: false, error: error.message};
+    }
+}
+
 module.exports = {
     getDocumentTypes,
     getApresentacao,
-    getFAQ
+    getFAQ,
+    getPolicies,
+    getPolicyDownload
 };

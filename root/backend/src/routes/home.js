@@ -6,6 +6,8 @@ const homeController = require("../controllers/homeController");
  * /
  * /apresentacao
  * /faq
+ * /politicas
+ * /tutorial
  */
 
 // GET home - Document types and search
@@ -16,5 +18,11 @@ router.get("/apresentacao", homeController.getApresentacao);
 
 // GET /faq - FAQ information
 router.get("/faq", homeController.getFAQ);
+
+// GET /politicas - Institutional policies
+router.get("/politicas", homeController.getPolicies);
+
+// GET /politicas/:nome - Download policy
+router.get("/politicas/:nome", homeController.getPolicyDownload);
 
 module.exports = router;

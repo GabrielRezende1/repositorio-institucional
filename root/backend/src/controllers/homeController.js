@@ -27,8 +27,8 @@ async function getHome(req, res) {
  */
 async function getApresentacao(req, res) {
     try {
-        const data = homeService.getApresentacao();
-        res.status(200).json(data);
+        const result = homeService.getApresentacao();
+        res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -39,15 +39,48 @@ async function getApresentacao(req, res) {
  */
 async function getFAQ(req, res) {
     try {
-        const data = homeService.getFAQ();
-        res.status(200).json(data);
+        const result = homeService.getFAQ();
+        res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
+/**
+ * GET /politicas - Get Politics documents
+ */
+async function getPolicies(req, res) {
+    try {
+        const result = await homeService.getPolicies();
+        res.status(200).json(result.data);
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+
+async function getPolicyDownload(req, res) {
+    try {
+        const fileName = req.params.nome;
+        const result = await homeService.getPolicyDownload(fileName);
+    
+        if (!result.success) {
+            return res.status(500).json({error: result.error});
+        }
+        
+        res.download(result.directoryPath + fileName, fileName, (error) => {
+            if (error) {
+                return res.status(500).json({error: "File download error. " + error.message});
+            }
+        });
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+
 module.exports = {
     getHome,
     getApresentacao,
-    getFAQ
+    getFAQ,
+    getPolicies,
+    getPolicyDownload
 };
