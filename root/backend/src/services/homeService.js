@@ -74,9 +74,56 @@ async function getPolicyDownload(fileName) {
             return {success: false, error: "Policy doesn't exist. Policy file name could be wrong, or the policies storage is empty."};
         }
 
-        const directoryPath = __basedir + "../../storage/";
+        const directoryPath = __basedir + "../../storage/policies/";
 
         return {success: true, data: policy, directoryPath};
+    } catch (error) {
+        return {success: false, error: error.message};
+    }
+}
+
+async function getTutorial() {
+    try {
+        const tutorials = await db.Documento.findAll({
+            where: { fk_id_doc_tipo: 10 }
+        });
+
+        if (!tutorials) {
+            return {success: false, error: "Não foi possível recuperar os arquivos de tutorial."};
+        }
+
+        return {
+            success: true,
+            data: {
+                tutorials,
+                text: {
+                    login: "Apenas integrantes da instituição podem se cadastrar para publicarem seus trabalhos. Caso você seja um aluno/professor da FAETERJ-PRC, você pode fazer o cadastro de usuário com o seu e-mail institucional.",
+                    documentos: "Atualmente só são aceitos documentos em PDF para upload dos trabalhos (de até 10MB em tamanho). Portanto, antes de publicá-lo, tenha certeza de ter convertido seu documento em PDF."
+                }
+            }
+        };
+    } catch (error) {
+        return {success: false, error: error.message};
+    }
+}
+
+async function getTutorialDownload(fileName) {
+    try {
+        const tutorial = await db.Documento.findOne({
+            attributes: ["nome_doc", "nome_arq", "resumo", "data"],
+            where: {
+                nome_arq: fileName,
+                fk_id_doc_tipo: 10
+            }
+        });
+
+        if (!tutorial) {
+            return {success: false, error: "Tutorial doesn't exist. Tutorial file name could be wrong, or the tutorials storage is empty."}
+        }
+
+        const directoryPath = __basedir + "../../storage/tutorials/";
+
+        return {success: true, data: tutorial, directoryPath};
     } catch (error) {
         return {success: false, error: error.message};
     }
@@ -87,5 +134,7 @@ module.exports = {
     getPresentation,
     getFAQ,
     getPolicies,
-    getPolicyDownload
+    getPolicyDownload,
+    getTutorial,
+    getTutorialDownload
 };

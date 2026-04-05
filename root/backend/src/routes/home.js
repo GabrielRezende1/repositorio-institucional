@@ -7,7 +7,9 @@ const homeController = require("../controllers/homeController");
  * /apresentacao
  * /faq
  * /politicas
+ * /politicas/:nome
  * /tutorial
+ * /tutorial/:nome
  */
 
 // GET home - Document types and search
@@ -24,5 +26,11 @@ router.get("/politicas", homeController.getPolicies);
 
 // GET /politicas/:nome - Download policy
 router.get("/politicas/:nome", homeController.getPolicyDownload);
+
+// GET /tutorial - Institutional tutorials
+router.get("/tutorial", homeController.getTutorials);
+
+// GET /tutorial/:nome - Download tutorial
+router.get("/tutorial/:nome", homeController.getTutorialDownload);
 
 module.exports = router;

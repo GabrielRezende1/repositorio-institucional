@@ -77,10 +77,40 @@ async function getPolicyDownload(req, res) {
     }
 }
 
+async function getTutorials(req, res) {
+    try {
+        const result = await homeService.getTutorial();
+        res.status(200).json(result.data);
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+
+async function getTutorialDownload(req, res) {
+    try {
+        const fileName = req.params.nome;
+        const result = await homeService.getTutorialDownload(fileName);
+
+        if(!result.success) {
+            return res.status(500).json({error: result.error});
+        }
+
+        res.download(result.directoryPath + fileName, fileName, (error) => {
+            if (error) {
+                return res.status(500).json({error: "File download error. " + error.message});
+            }
+        });
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+
 module.exports = {
     getHome,
     getPresentation,
     getFAQ,
     getPolicies,
-    getPolicyDownload
+    getPolicyDownload,
+    getTutorials,
+    getTutorialDownload
 };
