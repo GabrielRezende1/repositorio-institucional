@@ -1,202 +1,26 @@
-require('dotenv').config();
 const express = require("express");
 const router = express.Router();
-const db = require("../config/index");
-const bcryptjs = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const loginController = require("../controllers/loginController");
+
 /**
- * /login
- * /cadastro
- * /logout
+ * /login - Verify token, authenticate user, change password
+ * /cadastro - Register new user
+ * /logout - Logout user
  */
-//GET /login
-router.get('/login', async (req, res) => {
-    const token = req.cookies.token;
-    const cookies = req.cookies;
-    if (token) {
-        try {
-            const check = jwt.verify(token, process.env.JWT_SECRET);
-            console.log(check);
-            if (check) {
-                res.status(200).json({token, cookies});
-                return;
-            }
-        } catch (error) {
-            res.clearCookie('token');
-            res.status(403).json({msg: 'Token expirou!', cookies});
-        }
-    }else {
-        res.status(403).json({msg: 'Token inexistente!', cookies: req.cookies});
-    }
-});
-//POST /login
-router.post('/login', async (req, res) => {
-    const email = req.body.email;
-    const senha = req.body.senha;
 
-    db.Usuario.findOne({
-        where: {email: email}
-    })
-    .then(user => {
-        if(user == undefined) {
-            res.status(403).json({
-                err: 'Nenhuma conta cadastrada com esse email'
-            });
-            return;
-        }
+// GET /login - Verify token validity
+router.get('/login', loginController.getLogin);
 
-        let correctPassword = bcryptjs.compareSync(senha, user.senha);
+// POST /login - Authenticate user
+router.post('/login', loginController.postLogin);
 
-        if(!correctPassword) {
-            res.status(403).json({ err: 'Senha incorreta' });
-            return;
-        }
+// PUT /login - Change password
+router.put('/login', loginController.putLogin);
 
-        const token = jwt.sign({email: email}, process.env.JWT_SECRET, {expiresIn: '1h'});
-        res.cookie('token', token, {
-            httpOnly: true,
-            sameSite: 'none',
-            secure: true
-        });
-        res.json({msg: 'Você está logado', token: token});
-    })
-    .catch(err => {
-        res.status(501).json({
-            err: { message: err.message, stack: err.stack }
-        });
-    });
-});
-//PUT /login (Should be a PUT /login)
-router.put('/login', async (req, res) => {
-    console.log('put login alcançado');
-    const token = req.cookies.token;
-    const decoded = jwt.decode(token);
-    const email = decoded.email;
+// POST /cadastro - Register new user
+router.post('/cadastro', loginController.postRegister);
 
-    if (!token) {
-        res.status(401).json({msg: 'Token expirou!', token});
-        return;
-    }
-
-    const user = await db.Usuario.findOne({
-        where: {email}
-    });
-    const userId = user.id_usuario;
-    const userPwd = user.senha;
-
-    const oldPwd = req.body.senha;
-    const newPwd = req.body.novaSenha;
-    const checkPwd = req.body.confirmeSenha;
-    // Regex senha
-    const pwdRegex = newPwd.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/);
-    //
-    if (!pwdRegex) {
-        res.status(403).json({
-            msg: "Senha não atende aos requisitos mínimos!",
-            requisitos: [
-                "No mínimo 8 caracteres",
-                "1 letra maiúscula",
-                "1 letra minúscula",
-                "1 caractere especial"
-            ]
-        });
-        return;
-    }
-
-    if (newPwd != checkPwd) {
-        res.status(403).json({
-            msg: "Você não digitou a senha nova corretamente!"
-        });
-        return;
-    }
-
-    const correctPassword = bcryptjs.compareSync(oldPwd, userPwd);
-
-    if (!correctPassword) {
-        res.status(403).json({msg: 'Você não digitou a senha corretamente!'});
-        return;
-    }
-
-    const salt = bcryptjs.genSaltSync(10);
-    const hash = bcryptjs.hashSync(newPwd, salt);
-
-    const newUser = await db.Usuario.upsert({
-        id_usuario: userId,
-        email,
-        senha: hash
-    });
-
-    res.status(200).json({ msg: 'Senha alterada com sucesso!', correctPassword, newUser });
-})
-//POST /cadastro
-router.post('/cadastro', async (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
-    const user = await db.Usuario.findOne({
-        where: { email: email }
-    });
-    // Regex email and password
-    const emailRegex = email.match(/([a-z]+\.[a-z]+\.[0-9]+(ga|si))@(aluno|prof).faeterj-prc.faetec.rj.gov.br/g);
-    const passwordRegex = password.match(/^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w\d\s:])([^\s]){8,24}$/gm);
-    // Check if email already exists before creating user
-    if (user) {
-        res.status(400).json({ err: 'Email já cadastrado!' });
-        return;
-    }
-
-    if (!emailRegex) {
-        res.status(403).json({ msg: "Email não existe!" });
-        return;
-    }
-
-    if (!passwordRegex) {
-        res.status(403).json({
-            msg: "Senha não atende aos requisitos mínimos!",
-            requisitos: [
-                "No mínimo 8 caracteres",
-                "Pelo menos uma letra maiúscula",
-                "Pelo menos uma letra minúscula",
-                "Pelo menos um caractere especial",
-                "Sem espaços entre caracteres",
-                "No máximo 24 caracteres",
-            ]
-        });
-        return;
-    }
-
-    if (password != confirmPassword) {
-        res.status(403).json({
-            msg: "Você não digitou a senha corretamente!"
-        });
-        return;
-    }
-
-    const salt = bcryptjs.genSaltSync(10);
-    const hash = bcryptjs.hashSync(password, salt);
-
-    await db.Usuario.create({
-        email,
-        senha: hash
-    })
-        .then((results) => {
-            res.status(201).json({
-                mensagem: "Usuário cadastrado!",
-                cadastro: results
-            });
-            return;
-        })
-        .catch((err) => {
-            res.status(500).json({
-                err: { message: err.message, stack: err.stack }
-            });
-            return;
-        });
-});
-//DELETE /logout
-router.delete('/logout', async (req, res) => {
-    const token = req.cookies.token;
-    if (token) res.clearCookie('token').end();
-})
+// DELETE /logout - Logout user
+router.delete('/logout', loginController.deleteLogout);
 
 module.exports = router;
