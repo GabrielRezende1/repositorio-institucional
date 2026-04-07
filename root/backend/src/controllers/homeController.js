@@ -67,7 +67,8 @@ async function getPolicyDownload(req, res) {
             return res.status(500).json({error: result.error});
         }
         
-        res.download(result.directoryPath + fileName, fileName, (error) => {
+        const directoryPath = __basedir + "../../storage/policies/";
+        res.download(directoryPath + fileName, fileName, (error) => {
             if (error) {
                 return res.status(500).json({error: "File download error. " + error.message});
             }
@@ -95,7 +96,8 @@ async function getTutorialDownload(req, res) {
             return res.status(500).json({error: result.error});
         }
 
-        res.download(result.directoryPath + fileName, fileName, (error) => {
+        const directoryPath = __basedir + "../../storage/tutorials/";
+        res.download(directoryPath + fileName, fileName, (error) => {
             if (error) {
                 return res.status(500).json({error: "File download error. " + error.message});
             }

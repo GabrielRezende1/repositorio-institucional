@@ -74,9 +74,7 @@ async function getPolicyDownload(fileName) {
             return {success: false, error: "Policy doesn't exist. Policy file name could be wrong, or the policies storage is empty."};
         }
 
-        const directoryPath = __basedir + "../../storage/policies/";
-
-        return {success: true, data: policy, directoryPath};
+        return {success: true, data: policy};
     } catch (error) {
         return {success: false, error: error.message};
     }
@@ -121,9 +119,7 @@ async function getTutorialDownload(fileName) {
             return {success: false, error: "Tutorial doesn't exist. Tutorial file name could be wrong, or the tutorials storage is empty."}
         }
 
-        const directoryPath = __basedir + "../../storage/tutorials/";
-
-        return {success: true, data: tutorial, directoryPath};
+        return {success: true, data: tutorial};
     } catch (error) {
         return {success: false, error: error.message};
     }
