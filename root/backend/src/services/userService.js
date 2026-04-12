@@ -5,6 +5,63 @@ const ADMIN_EMAIL = "Admin";
 const RESTRICTED_TYPES = [9, 10]; // Política, Tutorial
 const STUDENT_EMAIL_REGEX = /@(aluno).faeterj-prc.faetec.rj.gov.br/g;
 
+// Document type to storage directory mapping
+const DOCUMENT_STORAGE_MAPPING = {
+    1: "event_articles/",
+    2: "journal_articles/",
+    3: "book_chapter/",
+    4: "dissertations/",
+    5: "books/",
+    6: "monographs/",
+    7: "theses/",
+    8: "final_course_projects/",
+    9: "policies/",
+    10: "tutorials/"
+};
+
+/**
+ * Get storage path for document type
+ * @param {number} typeId - Document type ID
+ * @returns {string} Storage directory path
+ */
+function getStoragePath(typeId) {
+    const dir = DOCUMENT_STORAGE_MAPPING[typeId] || "";
+    return `${__basedir}../../storage/${dir}`;
+}
+
+/**
+ * Get storage path for document type
+ * @param {number} typeId - Document type ID
+ * @returns {string} Storage directory path
+ */
+function getStoragePath(typeId) {
+    const dir = DOCUMENT_STORAGE_MAPPING[typeId] || "";
+    return `${__basedir}../../storage/${dir}`;
+}
+
+/**
+ * Move file from temporary storage to type-specific directory
+ * @param {string} fileName - File name
+ * @param {number} typeId - Document type ID
+ * @returns {void}
+ */
+function moveFileToTypeDirectory(fileName, typeId) {
+    const sourceFile = `${__basedir}../../storage/${fileName}`;
+    const destDir = getStoragePath(typeId);
+    const destFile = `${destDir}${fileName}`;
+    
+    // Create destination directory if it doesn't exist
+    if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
+    }
+    
+    // Move file from source to destination
+    if (fs.existsSync(sourceFile) && sourceFile !== destFile) {
+        fs.renameSync(sourceFile, destFile);
+        console.log(`Moved ${fileName} to ${DOCUMENT_STORAGE_MAPPING[typeId]}`);
+    }
+}
+
 /**
  * Determine if user is student based on email
  * @param {string} email - User email
@@ -291,6 +348,9 @@ async function createDocument(email, documentData, fileName) {
                 fk_id_doc_tipo: typeId
             });
 
+            // Move file to type-specific directory
+            moveFileToTypeDirectory(fileName, typeId);
+
             return {
                 success: true,
                 data: { msg: `Documento "${fileName}" criado com sucesso!`, document }
@@ -340,6 +400,9 @@ async function createDocument(email, documentData, fileName) {
                 fk_id_doc_tipo: typeId
             });
 
+            // Move file to type-specific directory
+            moveFileToTypeDirectory(fileName, typeId);
+
             const docKeyword = await db.Doc_pal_chave.create({
                 fk_id_palavra_chave: keyword[0].dataValues.id_palavra_chave,
                 fk_id_documento: document.id_documento
@@ -378,6 +441,9 @@ async function createDocument(email, documentData, fileName) {
             fk_id_doc_tipo: typeId
         });
 
+        // Move file to type-specific directory
+        moveFileToTypeDirectory(fileName, typeId);
+
         const docKeyword = await db.Doc_pal_chave.create({
             fk_id_palavra_chave: keyword[0].dataValues.id_palavra_chave,
             fk_id_documento: document.id_documento
@@ -393,7 +459,11 @@ async function createDocument(email, documentData, fileName) {
         };
     } catch (error) {
         try {
-            fs.unlinkSync(`${__basedir}../../storage/${fileName}`);
+            // Try to delete file from storage - try both locations
+            const fallbackPath = `${__basedir}../../storage/${fileName}`;
+            if (fs.existsSync(fallbackPath)) {
+                fs.unlinkSync(fallbackPath);
+            }
         } catch (e) {
             // File might already be deleted
         }
@@ -640,7 +710,7 @@ async function updateDocumentFile(email, docId, newFileName) {
         const userId = user.id_usuario;
         const userIsStudent = isStudent(email);
 
-        // Get old file name
+        // Get old file name and document type
         const document = await db.Documento.findOne({
             where: { id_documento: docId }
         });
@@ -651,6 +721,7 @@ async function updateDocumentFile(email, docId, newFileName) {
         }
 
         const oldFileName = document.nome_arq;
+        const typeId = document.fk_id_doc_tipo;
 
         if (userIsStudent) {
             const student = await db.Discente.findOne({
@@ -682,11 +753,17 @@ async function updateDocumentFile(email, docId, newFileName) {
             );
         }
 
-        // Delete old file
+        // Move new file to type-specific directory
+        moveFileToTypeDirectory(newFileName, typeId);
+
+        // Delete old file from type-specific directory
+        const oldFilePath = getStoragePath(typeId) + oldFileName;
         try {
-            fs.unlinkSync(`${__basedir}../../storage/${oldFileName}`);
+            if (fs.existsSync(oldFilePath)) {
+                fs.unlinkSync(oldFilePath);
+            }
         } catch (e) {
-            // File might not exist
+            console.log("Could not delete old file:", e.message);
         }
 
         return {
@@ -699,7 +776,11 @@ async function updateDocumentFile(email, docId, newFileName) {
         };
     } catch (error) {
         try {
-            fs.unlinkSync(`${__basedir}../../storage/${newFileName}`);
+            // Try to delete file from type-specific storage first, fallback to generic storage
+            const fallbackPath = `${__basedir}../../storage/${newFileName}`;
+            if (fs.existsSync(fallbackPath)) {
+                fs.unlinkSync(fallbackPath);
+            }
         } catch (e) {
             // File might already be deleted
         }

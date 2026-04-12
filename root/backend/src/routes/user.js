@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
 const authToken = require("../middlewares/auth");
-const { upload } = require("../middlewares/file.controller");
+const upload = require("../middlewares/uploadHandler");
 
 /**
  * /minha-conta - Get/create user profile
