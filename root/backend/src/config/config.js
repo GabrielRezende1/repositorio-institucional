@@ -6,6 +6,7 @@ module.exports = {
     "password": process.env.DB_PASS,
     "database": process.env.DB_BASE,
     "options": {
+      "logging": false,
       "host": process.env.DB_HOST,
       "port":process.env.DB_PORT,
       "dialect": process.env.DB_DIALECT,
@@ -19,6 +20,7 @@ module.exports = {
     "password": process.env.DB_PASS,
     "database": process.env.DB_BASE,
     "options": {
+      "logging": false,
       "host": process.env.DB_HOST,
       "port":process.env.DB_PORT,
       "dialect": process.env.DB_DIALECT,
@@ -32,6 +34,7 @@ module.exports = {
     "password": process.env.DB_PASS,
     "database": process.env.DB_BASE,
     "options": {
+      "logging": false,
       "host": process.env.DB_HOST,
       "port":process.env.DB_PORT,
       "dialect": process.env.DB_DIALECT,
