@@ -9,35 +9,36 @@ export default {
 
     mounted() {
         axios.get("http://localhost:3000/api/faq")
-        .then(res => {
-            this.data = res.data;
-            console.log(this.data);
-        })
-        .catch(err => {
-            console.log(err);
-        })
+            .then(res => {
+                this.data = res.data;
+                console.log(this.data);
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }
 }
 </script>
 
 <template>
-<section>
-    <h2>Perguntas Frequentes</h2>
-    <table>
-        <tbody>
-            <tr v-for="doc in data" :key="doc">
-                <td>{{ doc }}</td>
-            </tr><!-- v-for -->
-        </tbody>
-    </table>
-</section>
+    <section>
+        <h2>Perguntas Frequentes</h2>
+        <table>
+            <tbody>
+                <tr v-for="doc in data" :key="doc">
+                    <td>{{ doc }}</td>
+                </tr><!-- v-for -->
+            </tbody>
+        </table>
+    </section>
 </template>
 
 <style scoped>
 section {
     width: 100%;
     max-width: 1280px;
-    min-height: calc(100vh - 300px); /** 150px from headerPartial and footer */
+    min-height: calc(100vh - 300px);
+    /** 150px from headerPartial and footer */
     margin: 0 auto;
 }
 
@@ -45,7 +46,7 @@ h2 {
     padding: 0 1rem;
 }
 
-section > h2:first-child {
+section>h2:first-child {
     margin: 1rem 0;
 }
 
@@ -57,10 +58,10 @@ table {
 }
 
 table tr:nth-child(even) {
-  background-color: #D6EEEE;
+    background-color: #D6EEEE;
 }
 
-table td{
+table td {
     border-top: 2px solid var(--blue);
     font-size: 18px;
     padding: 10px;
@@ -93,9 +94,9 @@ table td a:hover {
  */
 
 @media screen and (max-width: 800px) {
-h2 {
-    text-align: center;
-    padding: 0;
-}
+    h2 {
+        text-align: center;
+        padding: 0;
+    }
 }
 </style>

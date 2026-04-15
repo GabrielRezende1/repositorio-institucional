@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import FaqView from '../views/FaqView.vue'
-import ApresentacaoView from '../views/ApresentacaoView.vue'
-import TutorialView from '../views/TutorialView.vue'
-import PoliticaView from '../views/PoliticaView.vue'
+import HomeView from '../pages/HomeView.vue'
+import FaqView from '../pages/FaqView.vue'
+import ApresentacaoView from '../pages/ApresentacaoView.vue'
+import TutorialView from '../pages/TutorialView.vue'
+import PoliticaView from '../pages/PoliticaView.vue'
 //Lazy-loading files doesn't require import
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,47 +36,47 @@ const router = createRouter({
     { // ========== logged paths ==========
       path: '/login',
       name: 'login',
-      component: () => import('@/views/LoginView.vue')
+      component: () => import('@/pages/LoginView.vue')
     },
     {
       path: '/cadastro',
       name: 'cadastro',
-      component: () => import('@/views/CadastroView.vue')
+      component: () => import('@/pages/CadastroView.vue')
     },
     {
       path: '/minha-conta',
       name: 'minha-conta',
-      component: () => import('@/views/MinhaContaView.vue')
+      component: () => import('@/pages/MinhaContaView.vue')
     },
     {
       path: '/minha-conta/meus-documentos',
       name: 'meus-documentos',
-      component: () => import('@/views/MeusDocsView.vue')
+      component: () => import('@/pages/MeusDocsView.vue')
     },
     {
       path: '/minha-conta/novo-documento',
       name: 'novo-documento',
-      component: () => import('@/views/NovoDocView.vue')
+      component: () => import('@/pages/NovoDocView.vue')
     },
     {
       path: '/minha-conta/meus-documentos/alterar-documento/:id',
       name: 'alterar-documento',
-      component: () => import('@/views/AlterarDocView.vue')
+      component: () => import('@/pages/AlterarDocView.vue')
     },
     { // ========== doc paths ==========
       path: '/documento',
       name: 'documento',
-      component: () => import('@/views/DocView.vue')
+      component: () => import('@/pages/DocView.vue')
     },
     {
       path: '/documento/id/:id',
       name: 'documentoId',
-      component: () => import('@/views/DocSingleView.vue')
+      component: () => import('@/pages/DocSingleView.vue')
     },
     {
       path: '/documento/tipo/:tipo',
       name: 'documentoTipo',
-      component: () => import('@/views/DocTypeView.vue')
+      component: () => import('@/pages/DocTypeView.vue')
     }
   ]
 })
