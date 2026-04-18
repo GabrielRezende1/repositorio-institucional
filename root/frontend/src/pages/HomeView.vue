@@ -41,7 +41,7 @@ export default {
 <template>
     <div class="container">
         <div class="logo">
-            <RouterLink to="/" class="RouterLink"><img alt="logo do site" src="@/assets/faeterj-prc-logo.png" />
+            <RouterLink to="/" class="RouterLink"><img alt="logo do site" src="@/assets/images/faeterj-prc-logo.png" />
             </RouterLink>
         </div><!--logo-->
 

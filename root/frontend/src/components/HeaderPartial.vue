@@ -56,7 +56,7 @@ export default {
 
         <div class="flex">
           <div class="logo">
-            <RouterLink to="/" class="RouterLink"><img alt="logo do site" src="@/assets/faeterj-prc-logo.png"/></RouterLink>
+            <RouterLink to="/" class="RouterLink"><img alt="logo do site" src="@/assets/images/faeterj-prc-logo.png"/></RouterLink>
           </div><!--logo-->
 
           <div class="general-opt">
