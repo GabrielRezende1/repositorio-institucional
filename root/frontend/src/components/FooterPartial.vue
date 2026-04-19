@@ -1,39 +1,9 @@
-<script>
-import IconMariaDB from "@/components/icons/IconMariaDB.vue";
-import IconExpress from "@/components/icons/IconExpress.vue";
-import IconVue from "@/components/icons/IconVue.vue";
-import IconNode from "@/components/icons/IconNode.vue";
-import IconArrowUp from "@/components/icons/IconArrowUp.vue";
-export default {
-  // Properties returned from data() become reactive state
-  // and will be exposed on `this`.
-  data() {
-    return {
-      
-    }
-  },
-  // Methods are functions that mutate state and trigger updates.
-  // They can be bound as event handlers in templates.
-  methods: {
-    goBackUp() {
-
-    }
-  },
-
-  components: {
-    IconMariaDB,
-    IconExpress,
-    IconVue,
-    IconNode,
-    IconArrowUp
-  },
-  // Lifecycle hooks are called at different stages
-  // of a component's lifecycle.
-  // This function will be called when the component is mounted.
-  mounted() {
-
-  }
-}
+<script setup>
+import IconMariaDB from "@/components/icons/IconMariaDB.vue"
+import IconExpress from "@/components/icons/IconExpress.vue"
+import IconVue from "@/components/icons/IconVue.vue"
+import IconNode from "@/components/icons/IconNode.vue"
+import IconArrowUp from "@/components/icons/IconArrowUp.vue"
 </script>
 
 <template>

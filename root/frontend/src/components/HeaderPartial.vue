@@ -1,53 +1,35 @@
-<script>
+<script setup>
 //TODO user-account doesn't change when pushing to '/' from /login
-import axios from 'axios';
-import IconUser from '@/components/icons/IconUser.vue';
-export default {
-  // Properties returned from data() become reactive state
-  // and will be exposed on `this`.
-  data() {
-    return {
-      imgLogo: '',
-      searchInput: '',
-      disconnected: true
-    }
-  },
-  // Methods are functions that mutate state and trigger updates.
-  // They can be bound as event handlers in templates.
-  methods: {
-    logout() {
-      axios.delete('http://localhost:3000/api/logout', {withCredentials: true})
-      .then(res => {
-        console.log(res.data);
-        this.disconnected = true;
-        this.$router.push('/');
-      })
-      .catch(err => {
-        console.log(err.response.data)
-      })
-    }
-  },
-  components: {
-    IconUser
-  },
-  // Lifecycle hooks are called at different stages
-  // of RouterLink component's lifecycle.
-  // This function will be called when the component is mounted.
-  mounted() {
-      //authToken
-      axios
-      .get('http://localhost:3000/api/login', {withCredentials: true})
-      .then((res) => {
-          console.log(res.data);
-          console.log('você está logado!');
-          this.disconnected = false;
-      })
-      .catch((err) => {
-          console.log(err.response.data);
-          this.disconnected = true;
-      })
-  }
+import axios from 'axios'
+import IconUser from '@/components/icons/IconUser.vue'
+import { ref, onMounted } from 'vue'
+
+const disconnected = ref(true)
+
+function logout() {
+  axios.delete('http://localhost:3000/api/logout', { withCredentials: true })
+    .then(res => {
+      console.log(res.data);
+      disconnected.value = true;
+      $router.push('/');
+    })
+    .catch(err => {
+      console.log(err.response);
+    })
 }
+
+onMounted(() => {
+  axios.get('http://localhost:3000/api/login', { withCredentials: true })
+    .then((res) => {
+      console.log(res.data);
+      console.log('você está logado!');
+      disconnected.value = false;
+    })
+    .catch((err) => {
+      console.log(err.response);
+      disconnected.value = true;
+    })
+})
 </script>
 
 <template>
@@ -89,7 +71,7 @@ export default {
             <div v-else>
               <RouterLink to="/minha-conta" class="RouterLink icon-user"><IconUser /></RouterLink><!--add login img-->
               <RouterLink to="/minha-conta" class="RouterLink">Conta</RouterLink><!--add login img-->
-              <RouterLink to="/" @click.prevent="logout()" class="RouterLink">Logout</RouterLink>
+              <RouterLink to="/" @click.prevent="logout" class="RouterLink">Logout</RouterLink>
             </div>
           </div><!--user-account-->
 

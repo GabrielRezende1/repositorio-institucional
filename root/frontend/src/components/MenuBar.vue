@@ -1,9 +1,15 @@
 <template>
     <nav class="menu">
         <ul>
-            <li><RouterLink to="/minha-conta" class="RouterLink">Meus Dados</RouterLink></li>
-            <li><RouterLink to="/minha-conta/meus-documentos" class="RouterLink">Meus Documentos</RouterLink></li>
-            <li><RouterLink to="/minha-conta/novo-documento" class="RouterLink">Novo Documento</RouterLink></li>
+            <li>
+                <RouterLink to="/minha-conta" class="RouterLink">Meus Dados</RouterLink>
+            </li>
+            <li>
+                <RouterLink to="/minha-conta/meus-documentos" class="RouterLink">Meus Documentos</RouterLink>
+            </li>
+            <li>
+                <RouterLink to="/minha-conta/novo-documento" class="RouterLink">Novo Documento</RouterLink>
+            </li>
         </ul>
     </nav><!--menu-->
 </template>
