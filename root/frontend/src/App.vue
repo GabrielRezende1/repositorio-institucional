@@ -1,7 +1,7 @@
 <script setup>
 import { RouterView } from 'vue-router';
-import HeaderPartial from './components/HeaderPartial.vue';
-import FooterPartial from './components/FooterPartial.vue';
+import HeaderPartial from '@/components/HeaderPartial.vue';
+import FooterPartial from '@/components/FooterPartial.vue';
 </script>
 
 <template>

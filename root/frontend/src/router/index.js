@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../pages/HomeView.vue'
-import FaqView from '../pages/FaqView.vue'
-import ApresentacaoView from '../pages/ApresentacaoView.vue'
-import TutorialView from '../pages/TutorialView.vue'
-import PoliticaView from '../pages/PoliticaView.vue'
+import HomeView from '@/pages/HomeView.vue'
+import FaqView from '@/pages/FaqView.vue'
+import ApresentacaoView from '@/pages/ApresentacaoView.vue'
+import TutorialView from '@/pages/TutorialView.vue'
+import PoliticaView from '@/pages/PoliticaView.vue'
 //Lazy-loading files doesn't require import
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
