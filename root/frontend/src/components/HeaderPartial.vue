@@ -1,34 +1,29 @@
 <script setup>
-//TODO user-account doesn't change when pushing to '/' from /login
-import axios from 'axios'
-import IconUser from '@/components/icons/IconUser.vue'
-import { ref, onMounted } from 'vue'
+// TODO user-account doesn't change when pushing to '/' from /login
+import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import IconUser from '@/components/icons/IconUser.vue';
+import { logout, checkLogin } from '../services/loginService';
 
-const disconnected = ref(true)
+const router = useRouter();
+const disconnected = ref(true);
 
-function logout() {
-  axios.delete('http://localhost:3000/api/logout', { withCredentials: true })
-    .then(res => {
-      console.log(res.data);
+async function logoutRes() {
+    const result = await logout();
+    if (result.success) {
       disconnected.value = true;
-      $router.push('/');
-    })
-    .catch(err => {
-      console.log(err.response);
-    })
+      router.push('/');
+    }
 }
 
-onMounted(() => {
-  axios.get('http://localhost:3000/api/login', { withCredentials: true })
-    .then((res) => {
-      console.log(res.data);
-      console.log('você está logado!');
+onMounted(async () => {
+    const result  = await checkLogin();
+    if (result.success && result.data) {
       disconnected.value = false;
-    })
-    .catch((err) => {
-      console.log(err.response);
+    }else {
       disconnected.value = true;
-    })
+    }
 })
 </script>
 
@@ -71,7 +66,7 @@ onMounted(() => {
             <div v-else>
               <RouterLink to="/minha-conta" class="RouterLink icon-user"><IconUser /></RouterLink><!--add login img-->
               <RouterLink to="/minha-conta" class="RouterLink">Conta</RouterLink><!--add login img-->
-              <RouterLink to="/" @click.prevent="logout" class="RouterLink">Logout</RouterLink>
+              <RouterLink to="/" @click.prevent="logoutRes" class="RouterLink">Logout</RouterLink>
             </div>
           </div><!--user-account-->
 

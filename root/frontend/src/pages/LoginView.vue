@@ -1,56 +1,45 @@
-<script>
-import axios from 'axios'
-export default {
-    data() {
-        return {
-            email: '',
-            senha: '',
-            senhaErrada: ''
-        }
-    },
+<script setup>
+import { onBeforeMount, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+import { login, checkLogin, logout } from '../services/loginService';
 
-    methods: {
-        logInUser() {
-            axios.post('http://localhost:3000/api/login', {
-                email: this.email,
-                senha: this.senha
-            }, { withCredentials: true })
-                .then(res => {
-                    if (res.status == 200)
-                        this.$router.push("/");
-                })
-                .catch(err => {
-                    this.senhaErrada = "Usuário ou senha incorretos!";
-                    console.log(err.response.data);
-                });
-        }
-    },
-    //Trying to access login page while already logged in redirects to home page
-    beforeCreate() {
-        axios.get('http://localhost:3000/api/login', { withCredentials: true })
-            .then(res => {
-                console.log(res.data);
-                if (res.data.token) this.$router.push("/");
-            })
-            .catch(err => {
-                console.log(err.response.data);
-            });
+const router = useRouter();
+
+const form = reactive({ // use reactive() instead of ref() for object data
+    email: '',
+    senha: '',
+    senhaErrada: ''
+});
+
+async function loginUser() {
+    const result = await login(form.email, form.senha);
+    if(!result.success) {
+        form.senhaErrada = "Usuário ou senha incorretos!";
+        return;
     }
+    router.push('/');
 }
+//Trying to access login page while already logged in redirects to home page
+onBeforeMount(async () => {
+    const result = await checkLogin();
+    if (result.success) {
+        router.push('/');
+    }
+})
 </script>
 
 <template>
     <section>
-        <form action="" method="get" @submit.prevent="logInUser">
+        <form action="" method="get" @submit.prevent="loginUser">
             <label for="email">E-MAIL:</label>
-            <input type="text" id="email" v-model="email" placeholder="Insira seu e-mail..." />
+            <input type="text" id="email" v-model="form.email" placeholder="Insira seu e-mail..." />
 
             <label for="senha">SENHA:</label>
-            <input type="password" id="senha" v-model="senha" placeholder="Insira sua senha...">
+            <input type="password" id="senha" v-model="form.senha" placeholder="Insira sua senha...">
 
             <input type="submit" value="LOGAR" />
 
-            <span v-if="senhaErrada">{{ senhaErrada }}</span>
+            <span v-if="form.senhaErrada">{{ form.senhaErrada }}</span>
             <RouterLink to="/cadastro" class="RouterLink">Não possui conta? Então cadastre-se</RouterLink>
         </form>
     </section>
