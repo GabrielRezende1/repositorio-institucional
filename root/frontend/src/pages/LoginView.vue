@@ -3,9 +3,13 @@ import { onBeforeMount, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { login, checkLogin, logout } from '@/services/loginService';
 import { useAuthStore } from '@/stores/authStore';
+import { useAuthCheck } from '@/composables/useAuthCheck';
 
 const router = useRouter();
-const auth = useAuthStore();
+const authStore = useAuthStore();
+//Trying to access login page while already logged in redirects to home page
+const authCheck = useAuthCheck();
+authCheck.checkAuth();
 
 const form = reactive({ // use reactive() instead of ref() for object data
     email: '',
@@ -19,16 +23,9 @@ async function loginUser() {
         form.senhaErrada = "Usuário ou senha incorretos!";
         return;
     }
-    auth.connected = true;
+    authStore.changeConnection();
     router.push('/');
 }
-//Trying to access login page while already logged in redirects to home page
-onBeforeMount(async () => {
-    const result = await checkLogin();
-    if (result.success) {
-        router.push('/');
-    }
-})
 </script>
 
 <template>
