@@ -4,15 +4,16 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import IconUser from '@/components/icons/IconUser.vue';
-import { logout, checkLogin } from '../services/loginService';
+import { logout, checkLogin } from '@/services/loginService';
+import { useAuthStore } from '@/stores/authStore';
 
 const router = useRouter();
-const disconnected = ref(true);
+const auth = useAuthStore();
 
 async function logoutRes() {
     const result = await logout();
     if (result.success) {
-      disconnected.value = true;
+      auth.connected = false;
       router.push('/');
     }
 }
@@ -20,9 +21,9 @@ async function logoutRes() {
 onMounted(async () => {
     const result  = await checkLogin();
     if (result.success && result.data) {
-      disconnected.value = false;
+      auth.connected = true;
     }else {
-      disconnected.value = true;
+      auth.connected = false;
     }
 })
 </script>
@@ -59,10 +60,10 @@ onMounted(async () => {
           </div><!--general-opt-->
 
           <div class="user-account">
-            <div v-if="disconnected">
+            <div v-if="!auth.connected">
               <RouterLink to="/login" class="RouterLink">Login</RouterLink>
               <RouterLink to="/cadastro" class="RouterLink">Cadastro</RouterLink>
-            </div><!--disconnected-->
+            </div><!--logged out user-->
             <div v-else>
               <RouterLink to="/minha-conta" class="RouterLink icon-user"><IconUser /></RouterLink><!--add login img-->
               <RouterLink to="/minha-conta" class="RouterLink">Conta</RouterLink><!--add login img-->

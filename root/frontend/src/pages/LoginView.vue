@@ -1,9 +1,11 @@
 <script setup>
 import { onBeforeMount, reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import { login, checkLogin, logout } from '../services/loginService';
+import { login, checkLogin, logout } from '@/services/loginService';
+import { useAuthStore } from '@/stores/authStore';
 
 const router = useRouter();
+const auth = useAuthStore();
 
 const form = reactive({ // use reactive() instead of ref() for object data
     email: '',
@@ -17,6 +19,7 @@ async function loginUser() {
         form.senhaErrada = "Usuário ou senha incorretos!";
         return;
     }
+    auth.connected = true;
     router.push('/');
 }
 //Trying to access login page while already logged in redirects to home page
