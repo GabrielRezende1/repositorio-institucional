@@ -5,10 +5,14 @@
                 <RouterLink to="/minha-conta" class="RouterLink">Meus Dados</RouterLink>
             </li>
             <li>
-                <RouterLink to="/minha-conta/meus-documentos" class="RouterLink">Meus Documentos</RouterLink>
+                <RouterLink to="/minha-conta/meus-documentos" class="RouterLink">
+                    Meus Documentos
+                </RouterLink>
             </li>
             <li>
-                <RouterLink to="/minha-conta/novo-documento" class="RouterLink">Novo Documento</RouterLink>
+                <RouterLink to="/minha-conta/novo-documento" class="RouterLink">
+                    Novo Documento
+                </RouterLink>
             </li>
         </ul>
     </nav><!--menu-->
@@ -50,13 +54,13 @@
  */
 
 @media screen and (max-width: 800px) {
-  .menu {
-    width: 100%;
-  }
+    .menu {
+        width: 100%;
+    }
 
-  .menu > ul li {
-    display: block;
-    text-align: center;
-  }
+    .menu > ul li {
+        display: block;
+        text-align: center;
+    }
 }
 </style>

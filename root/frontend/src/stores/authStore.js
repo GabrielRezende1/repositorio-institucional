@@ -7,11 +7,11 @@ export const useAuthStore = defineStore('auth', () => {
 
     function changeConnection(bool) {
         if (!bool) {
-            connected.value = true;
-            return;
+            connected.value = true
+            return
         }
-        connected.value = false;
-        useRouter().push('/');
+        connected.value = false
+        useRouter().push('/')
     }
 
     return { connected, changeConnection }

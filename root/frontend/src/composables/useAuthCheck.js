@@ -10,7 +10,7 @@ export function useAuthCheck() {
 
     const checkAuth = async () => {
         const result = await checkLogin()
-        
+
         if (result.success && result.data) {
             router.push('/')
         }

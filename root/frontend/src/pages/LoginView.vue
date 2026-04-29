@@ -1,30 +1,31 @@
 <script setup>
-import { onBeforeMount, reactive } from 'vue';
-import { useRouter } from 'vue-router';
-import { login, checkLogin, logout } from '@/services/loginService';
-import { useAuthStore } from '@/stores/authStore';
-import { useAuthCheck } from '@/composables/useAuthCheck';
+import { onBeforeMount, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { login, checkLogin, logout } from '@/services/loginService'
+import { useAuthStore } from '@/stores/authStore'
+import { useAuthCheck } from '@/composables/useAuthCheck'
 
-const router = useRouter();
-const authStore = useAuthStore();
+const router = useRouter()
+const authStore = useAuthStore()
 //Trying to access login page while already logged in redirects to home page
-const authCheck = useAuthCheck();
-authCheck.checkAuth();
+const authCheck = useAuthCheck()
+authCheck.checkAuth()
 
-const form = reactive({ // use reactive() instead of ref() for object data
+const form = reactive({
+    // use reactive() instead of ref() for object data
     email: '',
     senha: '',
     senhaErrada: ''
-});
+})
 
 async function loginUser() {
-    const result = await login(form.email, form.senha);
-    if(!result.success) {
-        form.senhaErrada = "Usuário ou senha incorretos!";
-        return;
+    const result = await login(form.email, form.senha)
+    if (!result.success) {
+        form.senhaErrada = 'Usuário ou senha incorretos!'
+        return
     }
-    authStore.changeConnection();
-    router.push('/');
+    authStore.changeConnection()
+    router.push('/')
 }
 </script>
 
@@ -35,12 +36,19 @@ async function loginUser() {
             <input type="text" id="email" v-model="form.email" placeholder="Insira seu e-mail..." />
 
             <label for="senha">SENHA:</label>
-            <input type="password" id="senha" v-model="form.senha" placeholder="Insira sua senha...">
+            <input
+                type="password"
+                id="senha"
+                v-model="form.senha"
+                placeholder="Insira sua senha..."
+            />
 
             <input type="submit" value="LOGAR" />
 
             <span v-if="form.senhaErrada">{{ form.senhaErrada }}</span>
-            <RouterLink to="/cadastro" class="RouterLink">Não possui conta? Então cadastre-se</RouterLink>
+            <RouterLink to="/cadastro" class="RouterLink">
+                Não possui conta? Então cadastre-se
+            </RouterLink>
         </form>
     </section>
 </template>
@@ -70,8 +78,8 @@ label {
     font-weight: 600;
 }
 
-input[type=text],
-input[type=password] {
+input[type='text'],
+input[type='password'] {
     display: block;
     width: 85%;
     height: 48px;
@@ -86,12 +94,12 @@ input[type=password] {
     transition: 0.4s;
 }
 
-input[type=text]:focus,
-input[type=password]:focus {
+input[type='text']:focus,
+input[type='password']:focus {
     font-size: 22px;
 }
 
-input[type=submit] {
+input[type='submit'] {
     display: block;
     width: 30%;
     height: 48px;
@@ -108,7 +116,7 @@ input[type=submit] {
     transition: 0.4s;
 }
 
-input[type=submit]:hover {
+input[type='submit']:hover {
     background-color: var(--blue);
     color: white;
     font-size: 22px;
@@ -148,25 +156,25 @@ span {
         width: 100%;
     }
 
-    input[type=text],
-    input[type=password] {
+    input[type='text'],
+    input[type='password'] {
         width: 95%;
 
         font-size: 18px;
     }
 
-    input[type=text]:focus,
-    input[type=password]:focus {
+    input[type='text']:focus,
+    input[type='password']:focus {
         font-size: 20px;
     }
 
-    input[type=submit] {
+    input[type='submit'] {
         width: 40%;
 
         font-size: 18px;
     }
 
-    input[type=submit]:hover {
+    input[type='submit']:hover {
         font-size: 20px;
     }
 }

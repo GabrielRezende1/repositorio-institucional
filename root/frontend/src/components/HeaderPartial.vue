@@ -1,242 +1,270 @@
 <script setup>
 // TODO user-account doesn't change when pushing to '/' from /login
-import axios from 'axios';
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import IconUser from '@/components/icons/IconUser.vue';
-import { logout, checkLogin } from '@/services/loginService';
-import { useAuthStore } from '@/stores/authStore';
+import axios from 'axios'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import IconUser from '@/components/icons/IconUser.vue'
+import { logout, checkLogin } from '@/services/loginService'
+import { useAuthStore } from '@/stores/authStore'
 
-const router = useRouter();
-const auth = useAuthStore();
+const router = useRouter()
+const auth = useAuthStore()
 
 async function logoutRes() {
-    const result = await logout();
+    const result = await logout()
     if (result.success) {
-      auth.connected = false;
-      router.push('/');
+        auth.connected = false
+        router.push('/')
     }
 }
 
 onMounted(async () => {
-    const result  = await checkLogin();
+    const result = await checkLogin()
     if (result.success && result.data) {
-      auth.connected = true;
-    }else {
-      auth.connected = false;
+        auth.connected = true
+    } else {
+        auth.connected = false
     }
 })
 </script>
 
 <template>
-  <header>
-    <div class="container">
+    <header>
+        <div class="container">
+            <div class="flex">
+                <div class="logo">
+                <RouterLink to="/" class="RouterLink">
+                    <img alt="logo do site" src="@/assets/images/faeterj-prc-logo.png"/>
+                </RouterLink>
+            </div><!--logo-->
 
-        <div class="flex">
-          <div class="logo">
-            <RouterLink to="/" class="RouterLink"><img alt="logo do site" src="@/assets/images/faeterj-prc-logo.png"/></RouterLink>
-          </div><!--logo-->
+                <div class="general-opt">
+                    <nav>
+                        <ul>
+                            <li>
+                                <RouterLink to="/apresentacao" class="RouterLink">
+                                    Apresentação
+                                </RouterLink>
+                            </li>
+                            <li><RouterLink to="/faq" class="RouterLink">FAQ</RouterLink></li>
+                            <li>
+                                <RouterLink to="/politicas" class="RouterLink">
+                                    Política
+                                </RouterLink>
+                            </li>
+                            <li>
+                                <RouterLink to="/tutorial" class="RouterLink">Tutorial</RouterLink>
+                            </li>
+                        </ul>
+                    </nav>
+                </div><!--general-opt-->
 
-          <div class="general-opt">
-            <nav>
-              <ul>
-                <li><RouterLink to="/apresentacao" class="RouterLink">Apresentação</RouterLink></li>
-                <li><RouterLink to="/faq" class="RouterLink">FAQ</RouterLink></li>
-                <li><RouterLink to="/politicas" class="RouterLink">Política</RouterLink></li>
-                <li><RouterLink to="/tutorial" class="RouterLink">Tutorial</RouterLink></li>
-              </ul>
-            </nav>
-          </div><!--general-opt-->
+                <div class="general-opt-mobile">
+                    <nav>
+                        <ul>
+                            <li>
+                                <RouterLink to="/apresentacao" class="RouterLink">
+                                    Apresentação
+                                </RouterLink>
+                            </li>
+                            <li><RouterLink to="/faq" class="RouterLink">FAQ</RouterLink></li>
+                            <li>
+                                <RouterLink to="/politicas" class="RouterLink">
+                                    Política
+                                </RouterLink>
+                            </li>
+                            <li>
+                                <RouterLink to="/tutorial" class="RouterLink">Tutorial</RouterLink>
+                            </li>
+                        </ul>
+                    </nav>
+                </div><!--general-opt-->
 
-          <div class="general-opt-mobile">
-            <nav>
-              <ul>
-                <li><RouterLink to="/apresentacao" class="RouterLink">Apresentação</RouterLink></li>
-                <li><RouterLink to="/faq" class="RouterLink">FAQ</RouterLink></li>
-                <li><RouterLink to="/politicas" class="RouterLink">Política</RouterLink></li>
-                <li><RouterLink to="/tutorial" class="RouterLink">Tutorial</RouterLink></li>
-              </ul>
-            </nav>
-          </div><!--general-opt-->
-
-          <div class="user-account">
-            <div v-if="!auth.connected">
-              <RouterLink to="/login" class="RouterLink">Login</RouterLink>
-              <RouterLink to="/cadastro" class="RouterLink">Cadastro</RouterLink>
-            </div><!--logged out user-->
-            <div v-else>
-              <RouterLink to="/minha-conta" class="RouterLink icon-user"><IconUser /></RouterLink><!--add login img-->
-              <RouterLink to="/minha-conta" class="RouterLink">Conta</RouterLink><!--add login img-->
-              <RouterLink to="/" @click.prevent="logoutRes" class="RouterLink">Logout</RouterLink>
-            </div>
-          </div><!--user-account-->
-
-        </div><!--flex-->
-
-    </div><!--container-->
-  </header>
+                <div class="user-account">
+                    <div v-if="!auth.connected">
+                        <RouterLink to="/login" class="RouterLink">Login</RouterLink>
+                        <RouterLink to="/cadastro" class="RouterLink">Cadastro</RouterLink>
+                    </div><!--logged out user-->
+                    <div v-else>
+                        <RouterLink to="/minha-conta" class="RouterLink icon-user">
+                            <IconUser />
+                        </RouterLink><!--add login img-->
+                        <RouterLink to="/minha-conta" class="RouterLink">
+                            Conta
+                        </RouterLink><!--add login img-->
+                        <RouterLink to="/" @click.prevent="logoutRes" class="RouterLink">
+                            Logout
+                        </RouterLink>
+                    </div>
+                </div><!--user-account-->
+            </div><!--flex-->
+        </div><!--container-->
+    </header>
 </template>
 
 <style scoped>
-
 header {
-  max-width: 100vw;
-  height: 150px;
-  padding: 0 2rem;
-  background-color: var(--blue);
+    max-width: 100vw;
+    height: 150px;
+    padding: 0 2rem;
+    background-color: var(--blue);
 }
 
 .RouterLink {
-  color: var(--yellow);
-  margin: 2px 5px;
-  border-radius: 4px;
+    color: var(--yellow);
+    margin: 2px 5px;
+    border-radius: 4px;
 }
 
 .RouterLink:hover {
-  background-color: var(--light-blue);
+    background-color: var(--light-blue);
 }
 
 div.logo > .RouterLink:hover { /* Logo img */
-  background-color: transparent;
+    background-color: transparent;
 }
 
 div.logo img {
-  background-color: white;
-  border-radius: 10%;
+    background-color: white;
+    border-radius: 10%;
 }
 
 div.container {
-  max-width: 1280px;
-  height: 100%; /* inherit from: header */
-  margin: 0 auto;
+    max-width: 1280px;
+    height: 100%; /* inherit from: header */
+    margin: 0 auto;
 }
 
 .flex {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 
-  height: 100%; /* inherit from: container => header */
+    height: 100%; /* inherit from: container => header */
 }
 
-div.logo, div.general-opt, div.search-bar, div.user-account {
-  padding: 0 1rem 0 1rem;
+div.logo,
+div.general-opt,
+div.search-bar,
+div.user-account {
+    padding: 0 1rem 0 1rem;
 }
 
 div.logo {
-  width: 15%;
+    width: 15%;
 }
 
 div.logo > .RouterLink img {
-  width: 80%;
+    width: 80%;
 }
 
-div.user-account, div.general-opt {
-  width: 20%;
+div.user-account,
+div.general-opt {
+    width: 20%;
 }
 
 div.general-opt-mobile {
-  display: none;
+    display: none;
 }
 
 div.user-account {
-  text-align: center;
+    text-align: center;
 }
 
 div.user-account .RouterLink {
+    font-weight: 600;
+    border-radius: 10px;
+    border: 0;
+    background-color: var(--yellow);
+    color: var(--black);
+    cursor: pointer;
 
-  font-weight: 600;
-  border-radius: 10px;
-  border: 0;
-  background-color: var(--yellow);
-  color: var(--black);
-  cursor: pointer;
-
-  transition: 0.4s;
+    transition: 0.4s;
 }
 
 div.user-account .RouterLink:hover {
-  background-color: greenyellow;
+    background-color: greenyellow;
 }
 
 div.user-account .icon-user:first-child {
-  background-color: var(--light-blue);
+    background-color: var(--light-blue);
 
-  width: 60px;
-  border-radius: 50%;
+    width: 60px;
+    border-radius: 50%;
 
-  display: block;
-  position: relative;
-  transform: translateX(-50%);
-  left: 50%;
+    display: block;
+    position: relative;
+    transform: translateX(-50%);
+    left: 50%;
 }
 
 div.user-account .icon-user:first-child:hover {
-  background-color: greenyellow;
+    background-color: greenyellow;
 }
 
-div.user-account > .RouterLink, div.user-account > div > .RouterLink {
-  padding: 0 0.5rem;
-  font-weight: bold;
+div.user-account > .RouterLink,
+div.user-account > div > .RouterLink {
+    padding: 0 0.5rem;
+    font-weight: bold;
 }
 
 nav li {
-  list-style-type: none;
-  text-align: center;
+    list-style-type: none;
+    text-align: center;
 }
 
 nav .RouterLink {
-  display: inline-block;
-  padding: 0 1rem;
+    display: inline-block;
+    padding: 0 1rem;
 }
 
 /** Media Queries
  */
 
 @media screen and (max-width: 900px) {
-  div.logo {
-    width: 25%;
-  }
-} 
+    div.logo {
+        width: 25%;
+    }
+}
 
 @media screen and (max-width: 800px) {
-  header {
-    height: auto;
-  }
+    header {
+        height: auto;
+    }
 
-  .flex {
-    flex-direction: column;
-    padding: 1rem 0;
-  }
+    .flex {
+        flex-direction: column;
+        padding: 1rem 0;
+    }
 
-  div.search-bar, div.user-account {
-    width: 100%;
-  }
+    div.search-bar,
+    div.user-account {
+        width: 100%;
+    }
 
-  div.logo {
-    width: 25%;
-    text-align: center;
-  }
+    div.logo {
+        width: 25%;
+        text-align: center;
+    }
 
-  div.general-opt {
-    display: none;
-  }
+    div.general-opt {
+        display: none;
+    }
 
-  div.general-opt-mobile {
-    display: block;
-  }
+    div.general-opt-mobile {
+        display: block;
+    }
 
-  nav li {
-    display: block;
-    text-align: center;
-  }
+    nav li {
+        display: block;
+        text-align: center;
+    }
 }
 
 @media screen and (max-width: 600px) {
-  div.logo {
-    width: 50%;
-  }
+    div.logo {
+        width: 50%;
+    }
 }
-
 </style>

@@ -1,21 +1,23 @@
 @import './base.css';
 
 #app {
-  max-width: 100%;
-  margin: 0 auto;
-  
-  font-weight: normal;
-  background-color: var(--light-blue);
+    max-width: 100%;
+    margin: 0 auto;
+
+    font-weight: normal;
+    background-color: var(--light-blue);
 }
 
-a, .RouterLink {
-  text-decoration: none;
-  color: var(--black);
-  transition: 0.4s;
+a,
+.RouterLink {
+    text-decoration: none;
+    color: var(--black);
+    transition: 0.4s;
 }
 
 @media (hover: hover) {
-  a:hover, .RouterLink:hover {
-    background-color: var(--yellow);
-  }
+    a:hover,
+    .RouterLink:hover {
+        background-color: var(--yellow);
+    }
 }
