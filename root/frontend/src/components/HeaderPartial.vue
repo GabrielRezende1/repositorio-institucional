@@ -1,7 +1,6 @@
 <script setup>
 // TODO user-account doesn't change when pushing to '/' from /login
-import axios from 'axios'
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import IconUser from '@/components/icons/IconUser.vue'
 import { logout, checkLogin } from '@/services/loginService'

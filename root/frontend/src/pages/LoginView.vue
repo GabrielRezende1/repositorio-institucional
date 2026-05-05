@@ -1,7 +1,7 @@
 <script setup>
-import { onBeforeMount, reactive } from 'vue'
+import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { login, checkLogin, logout } from '@/services/loginService'
+import { login } from '@/services/loginService'
 import { useAuthStore } from '@/stores/authStore'
 import { useAuthCheck } from '@/composables/useAuthCheck'
 
