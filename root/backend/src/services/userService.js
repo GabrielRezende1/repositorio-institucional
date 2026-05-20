@@ -525,6 +525,7 @@ async function getDocumentForEdit(email, docId) {
                     isStudent: true,
                     doc,
                     teachers,
+                    student,
                     docKeyword
                 }
             };
@@ -558,6 +559,7 @@ async function getDocumentForEdit(email, docId) {
                 userId,
                 isStudent: false,
                 doc,
+                teacher,
                 docKeyword
             }
         };
