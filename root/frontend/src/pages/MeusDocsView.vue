@@ -1,70 +1,62 @@
-<script>
+<script setup>
 import axios from 'axios'
 import MenuBar from '@/components/MenuBar.vue'
-export default {
-    components: {
-        MenuBar
-    },
+import { reactive, onMounted } from 'vue';
+import { RouterLink } from 'vue-router'
 
-    data() {
-        return {
-            myDocuments: []
-        }
-    },
+const documents = reactive([])
 
-    methods: {
-        deleteDocument(documento_id) {
-            axios.delete('http://localhost:3000/api/meus-documentos/' + documento_id, { withCredentials: true })
-                .then(res => {
-                    if (res.status == 200) {
-                        this.myDocuments = this.myDocuments.filter(d => d.documento_id !== documento_id);
-                        alert("Documento deletado com sucesso!");
-                    }
-                })
-                .catch(err => {
-                    alert(err.response.data);
-                    console.log(err.response.data);
-                });
-        },
-
-        downloadFile(nome_arq) {
-            axios.get('http://localhost:3000/api/download/' + nome_arq,
-                { responseType: 'blob' })
-                .then(res => {
-                    const link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(
-                        new Blob([res.data], { type: 'application/pdf' })
-                    );
-                    document.body.appendChild(link);
-                    link.setAttribute('download', nome_arq);
-                    link.click();
-                    link.remove();
-                    URL.revokeObjectURL(link.href);
-                })
-                .catch(err => {
-                    console.log(err.response.data);
-                });
-        }
-    },
-
-    mounted() {
-        axios.get('http://localhost:3000/api/meus-documentos', { withCredentials: true })
-            .then(res => {
-                this.myDocuments = res.data;
-                console.log(res.data);
-            })
-            .catch(err => {
-                console.log(err);
-            })
-    }
+function deleteDocument(documento_id) {
+    axios.delete('http://localhost:3000/api/minha-conta/meus-documentos/' + documento_id, { withCredentials: true })
+        .then(res => {
+            if (res.status == 200) {
+                documents.values = documents.values.filter(d => d.documento_id !== documento_id);
+                alert("Documento deletado com sucesso!");
+            }
+        })
+        .catch(err => {
+            alert(err.response.data);
+            console.log(err.response.data);
+        });
 }
+
+function downloadFile(nome_arq) {
+    axios.get('http://localhost:3000/api/download/' + nome_arq,
+        { responseType: 'blob' })
+        .then(res => {
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(
+                new Blob([res.data], { type: 'application/pdf' })
+            );
+            document.body.appendChild(link);
+            link.setAttribute('download', nome_arq);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(link.href);
+        })
+        .catch(err => {
+            console.log(err.response.data);
+        });
+}
+
+onMounted(() => {
+    axios.get('http://localhost:3000/api/minha-conta/meus-documentos', { withCredentials: true })
+        .then(res => {
+            documents.push(...res.data.docs);
+            console.log(res.data);
+        })
+        .catch(err => {
+            console.log(err.response.data);
+        })
+})
+
 </script>
 
 <template>
     <MenuBar />
     <section>
         <h2>Meus Documentos</h2>
-        <table v-if="myDocuments.length">
+        <table v-if="documents.length">
             <thead>
                 <tr>
                     <th>Título</th>
@@ -74,16 +66,16 @@ export default {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="documento in myDocuments" :key="documento.documento_id">
-                    <td>{{ documento.titulo }}</td>
-                    <td>{{ documento.tipo_documento }}</td>
-                    <td>{{ new Date(documento.data_criacao).toLocaleDateString() }}</td>
+                <tr v-for="document in documents" :key="document.id_documento">
+                    <td>{{ document.nome_doc }}</td>
+                    <td>{{ document.Doc_tipo.tipo }}</td>
+                    <td>{{ new Date(document.data).toLocaleDateString() }}</td>
                     <td>
-                        <RouterLink :to="'/documento/' + documento.documento_id" class="action">Visualizar</RouterLink>
-                        <RouterLink :to="'/alterar-documento/' + documento.documento_id" class="action">Alterar
+                        <RouterLink :to="'/documento/id/' + document.id_documento" class="action">Visualizar</RouterLink>
+                        <RouterLink :to="'/minha-conta/meus-documentos/alterar-documento/' + document.id_documento" class="action">Alterar
                         </RouterLink>
-                        <button @click="deleteDocument(documento.documento_id)" class="delete-btn">Deletar</button>
-                        <button @click="downloadFile(documento.nome_arq)" class="download-btn">Download</button>
+                        <button @click="deleteDocument(document.id_documento)" class="delete-btn">Deletar</button>
+                        <button @click="downloadFile(document.nome_arq)" class="download-btn">Download</button>
                     </td>
                 </tr>
             </tbody>

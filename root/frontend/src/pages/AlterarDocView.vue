@@ -1,80 +1,101 @@
-<script>
+<script setup>
 import axios from 'axios'
+import { computed, reactive, ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import MenuBar from '@/components/MenuBar.vue'
-export default {
-    components: {
-        MenuBar
-    },
 
-    data() {
-        return {
-            titulo: '',
-            descricao: '',
-            tipo: '',
-            autores: '',
-            ano: new Date().getFullYear(),
-            documento_id: this.$route.params.id,
-            arquivo: null,
-            sucesso: '',
-            erros: ''
-        }
-    },
+const route = useRoute()
+const router = useRouter()
 
-    methods: {
-        updateDocument() {
-            const formData = new FormData();
-            formData.append('titulo', this.titulo);
-            formData.append('descricao', this.descricao);
-            formData.append('tipo', this.tipo);
-            formData.append('autores', this.autores);
-            formData.append('ano', this.ano);
-            if (this.arquivo) {
-                formData.append('arquivo', this.arquivo);
-            }
-
-            axios.put('http://localhost:3000/api/alterar-documento/' + this.documento_id,
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    withCredentials: true
-                }
-            )
-                .then(res => {
-                    if (res.status == 200) {
-                        this.sucesso = "Documento atualizado com sucesso!";
-                        setTimeout(() => {
-                            this.$router.push("/meus-documentos");
-                        }, 2000);
-                    }
-                })
-                .catch(err => {
-                    this.erros = err.response.data.message;
-                    console.log(err.response.data);
-                });
-        },
-
-        handleFileUpload(event) {
-            this.arquivo = event.target.files[0];
-        }
-    },
-
-    mounted() {
-        axios.get('http://localhost:3000/api/alterar-documento/' + this.documento_id, { withCredentials: true })
-            .then(res => {
-                this.titulo = res.data.titulo;
-                this.descricao = res.data.descricao;
-                this.tipo = res.data.tipo_documento;
-                this.autores = res.data.autores;
-                this.ano = res.data.ano;
-                console.log(res.data);
-            })
-            .catch(err => {
-                console.log(err);
-            })
+const success = ref('')
+const error = ref('')
+const isStudent = ref(false)
+const student = ref('')
+const teacher = ref('')
+const teachers = reactive([])
+const user = computed(() => {
+    if (isStudent) {
+        return student
     }
+    return teacher
+})
+const today = computed(() => {
+    return new Date().toISOString().split('T')[0]
+})
+
+const form = reactive({
+    title: '',
+    description: '',
+    type: '',
+    authors: user,
+    date: new Date().getDate(),
+    doc_id: route.params.id,
+    file: null
+})
+
+function updateDocument() {
+    const formData = new FormData();
+    formData.append('title', form.title);
+    formData.append('description', form.description);
+    formData.append('type', form.type);
+    formData.append('authors', form.authors);
+    formData.append('data', form.date);
+    if (form.file) {
+        formData.append('file', form.file);
+    }
+
+    axios.put(
+        'http://localhost:3000/api/minha-conta/meus-documentos/alterar-documento/' + form.doc_id,
+        formData,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            withCredentials: true
+        }
+    )
+        .then(res => {
+            if (res.status == 200) {
+                form.sucesso = 'Documento atualizado com sucesso!';
+                setTimeout(() => {
+                    router.push('/minha-conta/meus-documentos')
+                }, 2000);
+            }
+        })
+        .catch(err => {
+            form.erros = err.response.data.message;
+            console.log(err.response.data);
+        });
 }
+
+function handleFileUpload(event) {
+    form.file = event.target.files[0];
+}
+
+onMounted(() => {
+    axios.get(
+        'http://localhost:3000/api/minha-conta/meus-documentos/alterar-documento/' + form.doc_id,
+        { withCredentials: true }
+    )
+        .then(res => {
+            const doc = res.data.doc
+            isStudent.value = res.data.isStudent
+            student.value = res.data.student
+            teacher.value = res.data.teacher
+            teachers.value = res.data.teachers
+
+            form.title = doc.nome_doc;
+            form.description = doc.resumo;
+            form.type = doc.Doc_tipo.tipo;
+            form.authors = doc.authors;
+            form.date = doc.data;
+            console.log(res.data.doc);
+            console.log(new Date().getFullYear());
+        })
+        .catch(err => {
+            console.log(err.response.data);
+        })
+})  
 </script>
 
 <template>
@@ -82,38 +103,38 @@ export default {
     <section>
         <h2>Alterar Documento</h2>
         <form action="" method="put" @submit.prevent="updateDocument" enctype="multipart/form-data">
-            <label for="titulo">TÍTULO:</label>
-            <input type="text" id="titulo" v-model="titulo" placeholder="Insira o título do documento..." />
+            <label for="title">TÍTULO:</label>
+            <input type="text" id="title" v-model="form.title" placeholder="Insira o título do documento..." />
 
-            <label for="descricao">DESCRIÇÃO:</label>
-            <textarea id="descricao" v-model="descricao" placeholder="Descreva o documento..."></textarea>
+            <label for="description">DESCRIÇÃO:</label>
+            <textarea id="description" v-model="form.description" placeholder="Descreva o documento..."></textarea>
 
-            <label for="tipo">TIPO DE DOCUMENTO:</label>
-            <select id="tipo" v-model="tipo">
+            <label for="type">TIPO DE DOCUMENTO:</label>
+            <select id="type" v-model="form.type">
                 <option value="">Selecione uma opção</option>
-                <option value="artigo_de_evento">Artigo de Evento</option>
-                <option value="artigo_de_periodico">Artigo de Periódico</option>
-                <option value="capitulo_de_livro">Capítulo de Livro</option>
-                <option value="dissertacao">Dissertação</option>
-                <option value="livro">Livro</option>
-                <option value="monografia">Monografia</option>
-                <option value="tese">Tese</option>
-                <option value="trabalho_de_conclusao_de_curso">Trabalho de Conclusão de Curso</option>
+                <option value="Artigo de Evento">Artigo de Evento</option>
+                <option value="Artigo de Periódico">Artigo de Periódico</option>
+                <option value="Capítulo de Livro">Capítulo de Livro</option>
+                <option value="Dissertação">Dissertação</option>
+                <option value="Livro">Livro</option>
+                <option value="Monografia">Monografia</option>
+                <option value="Tese">Tese</option>
+                <option value="Trabalho de Conclusão de Curso">Trabalho de Conclusão de Curso</option>
             </select>
 
-            <label for="autores">AUTORES:</label>
-            <input type="text" id="autores" v-model="autores" placeholder="Insira os autores do documento..." />
+            <label for="authors">AUTORES:</label>
+            <input type="text" id="authors" v-model="form.authors" placeholder="Insira os autores do documento..." />
 
-            <label for="ano">ANO:</label>
-            <input type="number" id="ano" v-model="ano" placeholder="Insira o ano do documento..." />
+            <label for="date">ANO:</label>
+            <input type="date" min="2012-10-29" :max="today" id="data" v-model="form.date" placeholder="Insira o ano do documento..." />
 
-            <label for="arquivo">ARQUIVO (PDF) - Deixar em branco para manter o atual:</label>
-            <input type="file" id="arquivo" @change="handleFileUpload" accept=".pdf" />
+            <label for="file">ARQUIVO (PDF) - Deixar em branco para manter o atual:</label>
+            <input type="file" id="file" @change="handleFileUpload" accept=".pdf" />
 
             <input type="submit" value="ATUALIZAR DOCUMENTO" />
 
-            <span v-if="sucesso" class="success">{{ sucesso }}</span>
-            <span v-if="erros" class="error">{{ erros }}</span>
+            <span v-if="success" class="success">{{ success }}</span>
+            <span v-if="error" class="error">{{ error }}</span>
         </form>
     </section>
 </template>
