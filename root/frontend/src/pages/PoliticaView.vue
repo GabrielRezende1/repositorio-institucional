@@ -1,47 +1,40 @@
-<script>
+<script setup>
 import axios from 'axios'
+import { ref, onMounted } from 'vue'
 
-export default {
-    data() {
-        return {
-            politica: {}
-        }
-    },
+const politica = ref({})
 
-    methods: {
-        downloadFile(nome_arq) {
-            axios.get('http://localhost:3000/api/politicas/' + nome_arq,
-                { responseType: 'blob' })
-                .then(res => {
-                    const link = document.createElement('a');
-                    console.log(link);
-                    link.href = window.URL.createObjectURL(
-                        new Blob([res.data], { type: 'application/pdf' })
-                    );
-                    document.body.appendChild(link);
-                    link.setAttribute('download', nome_arq);
-                    link.click();
-                    //Clear link ans URL
-                    link.remove();
-                    URL.revokeObjectURL(link.href);
-                })
-                .catch(err => {
-                    console.log(err.response.data);
-                });
-        }
-    },
-
-    mounted() {
-        axios.get('http://localhost:3000/api/politicas')
-            .then(res => {
-                this.politica = res.data;
-                console.log(this.politica);
-            })
-            .catch(err => {
-                console.log(err);
-            })
-    }
+function downloadFile(nome_arq) {
+    axios.get('http://localhost:3000/api/politicas/' + nome_arq,
+        { responseType: 'blob' })
+        .then(res => {
+            const link = document.createElement('a');
+            console.log(link);
+            link.href = window.URL.createObjectURL(
+                new Blob([res.data], { type: 'application/pdf' })
+            );
+            document.body.appendChild(link);
+            link.setAttribute('download', nome_arq);
+            link.click();
+            //Clear link ans URL
+            link.remove();
+            URL.revokeObjectURL(link.href);
+        })
+        .catch(err => {
+            console.log(err.response.data);
+        });
 }
+
+onMounted(() => {
+    axios.get('http://localhost:3000/api/politicas')
+        .then(res => {
+            politica.value = res.data;
+            console.log(politica.value);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+})
 </script>
 
 <template>

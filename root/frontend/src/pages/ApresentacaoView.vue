@@ -1,23 +1,19 @@
-<script>
+<script setup>
 import axios from 'axios'
-export default {
-    data() {
-        return {
-            data: {}
-        }
-    },
+import { ref, onMounted } from 'vue'
 
-    mounted() {
-        axios.get("http://localhost:3000/api/apresentacao")
-        .then(res => {
-            this.data = res.data;
-            console.log(this.data);
-        })
-        .catch(err => {
-            console.log(err);
-        })
-    }
-}
+const data = ref({})
+
+onMounted(() => {
+    axios.get("http://localhost:3000/api/apresentacao")
+    .then(res => {
+        data.value = res.data;
+        console.log(data.value);
+    })
+    .catch(err => {
+        console.log(err);
+    })
+})
 </script>
 
 <template>

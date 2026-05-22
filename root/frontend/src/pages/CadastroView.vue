@@ -1,39 +1,35 @@
-<script>
+<script setup>
 import axios from 'axios'
-export default {
-    data() {
-        return {
-            nome: '',
-            email: '',
-            senha: '',
-            confirmaSenha: '',
-            tipo: '',
-            erros: ''
-        }
-    },
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-    methods: {
-        registerUser() {
-            if (this.senha !== this.confirmaSenha) {
-                this.erros = "Senhas não conferem!";
-                return;
-            }
-            axios.post('http://localhost:3000/api/cadastro', {
-                nome: this.nome,
-                email: this.email,
-                senha: this.senha,
-                tipo: this.tipo
-            })
-                .then(res => {
-                    if (res.status == 201)
-                        this.$router.push("/login");
-                })
-                .catch(err => {
-                    this.erros = err.response.data.message;
-                    console.log(err.response.data);
-                });
-        }
+const router = useRouter()
+const nome = ref('')
+const email = ref('')
+const senha = ref('')
+const confirmaSenha = ref('')
+const tipo = ref('')
+const erros = ref('')
+
+function registerUser() {
+    if (senha.value !== confirmaSenha.value) {
+        erros.value = "Senhas não conferem!";
+        return;
     }
+    axios.post('http://localhost:3000/api/cadastro', {
+        nome: nome.value,
+        email: email.value,
+        senha: senha.value,
+        tipo: tipo.value
+    })
+    .then(res => {
+        if (res.status == 201)
+            router.push("/login");
+    })
+    .catch(err => {
+        erros.value = err.response.data.message;
+        console.log(err.response.data);
+    });
 }
 </script>
 

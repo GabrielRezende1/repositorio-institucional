@@ -1,61 +1,53 @@
-<script>
+<script setup>
 import axios from 'axios'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import MenuBar from '@/components/MenuBar.vue'
-export default {
-    components: {
-        MenuBar
-    },
 
-    data() {
-        return {
-            titulo: '',
-            descricao: '',
-            tipo: '',
-            autores: '',
-            ano: new Date().getFullYear(),
-            arquivo: null,
-            sucesso: '',
-            erros: ''
+const router = useRouter()
+const titulo = ref('')
+const descricao = ref('')
+const tipo = ref('')
+const autores = ref('')
+const ano = ref(new Date().getFullYear())
+const arquivo = ref(null)
+const sucesso = ref('')
+const erros = ref('')
+
+function createDocument() {
+    const formData = new FormData();
+    formData.append('titulo', titulo.value);
+    formData.append('descricao', descricao.value);
+    formData.append('tipo', tipo.value);
+    formData.append('autores', autores.value);
+    formData.append('ano', ano.value);
+    formData.append('arquivo', arquivo.value);
+
+    axios.post('http://localhost:3000/api/novo-documento',
+        formData,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            withCredentials: true
         }
-    },
+    )
+        .then(res => {
+            if (res.status == 201) {
+                sucesso.value = "Documento criado com sucesso!";
+                setTimeout(() => {
+                    router.push("/meus-documentos");
+                }, 2000);
+            }
+        })
+        .catch(err => {
+            erros.value = err.response.data.message;
+            console.log(err.response.data);
+        });
+}
 
-    methods: {
-        createDocument() {
-            const formData = new FormData();
-            formData.append('titulo', this.titulo);
-            formData.append('descricao', this.descricao);
-            formData.append('tipo', this.tipo);
-            formData.append('autores', this.autores);
-            formData.append('ano', this.ano);
-            formData.append('arquivo', this.arquivo);
-
-            axios.post('http://localhost:3000/api/novo-documento',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    withCredentials: true
-                }
-            )
-                .then(res => {
-                    if (res.status == 201) {
-                        this.sucesso = "Documento criado com sucesso!";
-                        setTimeout(() => {
-                            this.$router.push("/meus-documentos");
-                        }, 2000);
-                    }
-                })
-                .catch(err => {
-                    this.erros = err.response.data.message;
-                    console.log(err.response.data);
-                });
-        },
-
-        handleFileUpload(event) {
-            this.arquivo = event.target.files[0];
-        }
-    }
+function handleFileUpload(event) {
+    arquivo.value = event.target.files[0];
 }
 </script>
 

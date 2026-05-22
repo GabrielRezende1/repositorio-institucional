@@ -1,92 +1,86 @@
-<script>
+<script setup>
 import axios from 'axios'
-export default {
-    data() {
-        return {
-            allDocuments: [],
-            displayedDocuments: [],
-            searchInput: '',
-            currentPage: 1,
-            documentsPerPage: 5
-        }
-    },
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
-    methods: {
-        search() {
-            const searchTerm = this.searchInput.toLowerCase();
-            this.displayedDocuments = this.allDocuments.filter(doc =>
-                doc.titulo.toLowerCase().includes(searchTerm) ||
-                doc.autores.toLowerCase().includes(searchTerm) ||
-                doc.descricao.toLowerCase().includes(searchTerm)
+const route = useRoute()
+const allDocuments = ref([])
+const displayedDocuments = ref([])
+const searchInput = ref('')
+const currentPage = ref(1)
+const documentsPerPage = 5
+
+function search() {
+    const searchTerm = searchInput.value.toLowerCase();
+    displayedDocuments.value = allDocuments.value.filter(doc =>
+        doc.titulo.toLowerCase().includes(searchTerm) ||
+        doc.autores.toLowerCase().includes(searchTerm) ||
+        doc.descricao.toLowerCase().includes(searchTerm)
+    );
+    currentPage.value = 1;
+}
+
+function downloadFile(id_doc, nome_arq) {
+    axios.get('http://localhost:3000/api/download/' + id_doc + '/' + nome_arq,
+        { responseType: 'blob' })
+        .then(res => {
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(
+                new Blob([res.data], { type: 'application/pdf' })
             );
-            this.currentPage = 1;
-        },
+            document.body.appendChild(link);
+            link.setAttribute('download', nome_arq);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(link.href);
+        })
+        .catch(err => {
+            console.log(err.response.data);
+        });
+}
 
-        downloadFile(nome_arq) {
-            axios.get('http://localhost:3000/api/download/' + nome_arq,
-                { responseType: 'blob' })
-                .then(res => {
-                    const link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(
-                        new Blob([res.data], { type: 'application/pdf' })
-                    );
-                    document.body.appendChild(link);
-                    link.setAttribute('download', nome_arq);
-                    link.click();
-                    link.remove();
-                    URL.revokeObjectURL(link.href);
-                })
-                .catch(err => {
-                    console.log(err.response.data);
-                });
-        },
-
-        previousPage() {
-            if (this.currentPage > 1) {
-                this.currentPage--;
-            }
-        },
-
-        nextPage() {
-            const totalPages = Math.ceil(this.displayedDocuments.length / this.documentsPerPage);
-            if (this.currentPage < totalPages) {
-                this.currentPage++;
-            }
-        }
-    },
-
-    computed: {
-        paginatedDocuments() {
-            const startIndex = (this.currentPage - 1) * this.documentsPerPage;
-            const endIndex = startIndex + this.documentsPerPage;
-            return this.displayedDocuments.slice(startIndex, endIndex);
-        },
-
-        totalPages() {
-            return Math.ceil(this.displayedDocuments.length / this.documentsPerPage);
-        }
-    },
-
-    mounted() {
-        const searchQuery = this.$route.query.search;
-
-        axios.get('http://localhost:3000/api/documento')
-            .then(res => {
-                this.allDocuments = res.data;
-                this.displayedDocuments = res.data;
-
-                if (searchQuery) {
-                    this.searchInput = searchQuery;
-                    this.search();
-                }
-
-                console.log(res.data);
-            })
-            .catch(err => {
-                console.log(err);
-            });
+function previousPage() {
+    if (currentPage.value > 1) {
+        currentPage.value--;
     }
 }
+
+function nextPage() {
+    const totalPages = Math.ceil(displayedDocuments.value.length / documentsPerPage);
+    if (currentPage.value < totalPages) {
+        currentPage.value++;
+    }
+}
+
+const paginatedDocuments = computed(() => {
+    const startIndex = (currentPage.value - 1) * documentsPerPage;
+    const endIndex = startIndex + documentsPerPage;
+    return displayedDocuments.value.slice(startIndex, endIndex);
+})
+
+const totalPages = computed(() => {
+    return Math.ceil(displayedDocuments.value.length / documentsPerPage);
+})
+
+onMounted(() => {
+    const searchQuery = route.query.search;
+
+    axios.get('http://localhost:3000/api/documento')
+        .then(res => {
+            allDocuments.value = res.data;
+            displayedDocuments.value = res.data;
+
+            if (searchQuery) {
+                searchInput.value = searchQuery;
+                search();
+            }
+
+            console.log(res.data);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+})
 </script>
 
 <template>
@@ -109,7 +103,7 @@ export default {
                 <div class="actions">
                     <RouterLink :to="'/documento/' + documento.documento_id" class="action-btn">Ver Detalhes
                     </RouterLink>
-                    <button @click="downloadFile(documento.nome_arq)" class="action-btn download-btn">Download</button>
+                    <button @click="downloadFile(documento.id_documento, documento.nome_arq)" class="action-btn download-btn">Download</button>
                 </div>
             </div>
         </div>

@@ -1,45 +1,35 @@
-<script>
+<script setup>
 import axios from 'axios'
+import { ref, onMounted } from 'vue'
 import MenuBar from '@/components/MenuBar.vue'
-export default {
-    components: {
-        MenuBar
-    },
 
-    data() {
-        return {
-            dataUser: {}
-        }
-    },
+const dataUser = ref({})
 
-    methods: {
-        updateUser() {
-            axios.put('http://localhost:3000/api/minha-conta', {
-                nome: this.dataUser.nome,
-                email: this.dataUser.email
-            }, { withCredentials: true })
-                .then(res => {
-                    if (res.status == 200)
-                        alert("Dados atualizados com sucesso!");
-                })
-                .catch(err => {
-                    alert(err.response.data);
-                    console.log(err.response.data);
-                });
-        }
-    },
-
-    mounted() {
-        axios.get('http://localhost:3000/api/minha-conta', { withCredentials: true })
-            .then(res => {
-                this.dataUser = res.data;
-                console.log(res.data);
-            })
-            .catch(err => {
-                console.log(err);
-            })
-    }
+function updateUser() {
+    axios.put('http://localhost:3000/api/minha-conta', {
+        nome: dataUser.value.nome,
+        email: dataUser.value.email
+    }, { withCredentials: true })
+        .then(res => {
+            if (res.status == 200)
+                alert("Dados atualizados com sucesso!");
+        })
+        .catch(err => {
+            alert(err.response.data);
+            console.log(err.response.data);
+        });
 }
+
+onMounted(() => {
+    axios.get('http://localhost:3000/api/minha-conta', { withCredentials: true })
+        .then(res => {
+            dataUser.value = res.data;
+            console.log(res.data);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+})
 </script>
 
 <template>

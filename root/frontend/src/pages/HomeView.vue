@@ -1,40 +1,36 @@
-<script>
-import axios from 'axios';
-export default {
-    data() {
-        return {
-            searchInput: '',
-            docType: []
-        }
-    },
+<script setup>
+import axios from 'axios'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-    methods: {
-        search() {
-            if (this.searchInput) {
-                axios.get('http://localhost:3000/api/?search=' + this.searchInput)
-                    .then(res => {
-                        console.log(res.data);
-                        console.log(this.searchInput);
-                        this.$router.push('/documento?search=' + this.searchInput);
-                    })
-                    .catch(err => {
-                        console.log(err.response.data);
-                    });
-            }
-        },
+const router = useRouter()
+const searchInput = ref('')
+const docType = ref([])
 
-        viewDocs() {
-            axios.get('http://localhost:3000/api/documento')
-                .then(res => {
-                    console.log('todos os documentos')
-                    console.log(res.data);
-                    this.$router.push('/documento');
-                })
-                .catch(err => {
-                    console.log(err.response.data);
-                });
-        }
+function search() {
+    if (searchInput.value) {
+        axios.get('http://localhost:3000/api/?search=' + searchInput.value)
+            .then(res => {
+                console.log(res.data);
+                console.log(searchInput.value);
+                router.push('/documento?search=' + searchInput.value);
+            })
+            .catch(err => {
+                console.log(err.response.data);
+            });
     }
+}
+
+function viewDocs() {
+    axios.get('http://localhost:3000/api/documento')
+        .then(res => {
+            console.log('todos os documentos')
+            console.log(res.data);
+            router.push('/documento');
+        })
+        .catch(err => {
+            console.log(err.response.data);
+        });
 }
 </script>
 

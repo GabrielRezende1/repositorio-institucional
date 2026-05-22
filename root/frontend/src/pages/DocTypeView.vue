@@ -1,101 +1,95 @@
-<script>
+<script setup>
 import axios from 'axios'
-export default {
-    data() {
-        return {
-            docType: this.$route.params.tipo.replace(/\+/g, ' '),
-            documents: [],
-            displayedDocuments: [],
-            currentPage: 1,
-            documentsPerPage: 5,
-            docTypes: [
-                'artigo+de+evento',
-                'artigo+de+periodico',
-                'capitulo+de+livro',
-                'dissertacao',
-                'livro',
-                'monografia',
-                'tese',
-                'trabalho+de+conclusao+de+curso'
-            ],
-            docTypeLabels: {
-                'artigo de evento': 'Artigo de Evento',
-                'artigo de periodico': 'Artigo de Periódico',
-                'capitulo de livro': 'Capítulo de Livro',
-                'dissertacao': 'Dissertação',
-                'livro': 'Livro',
-                'monografia': 'Monografia',
-                'tese': 'Tese',
-                'trabalho de conclusao de curso': 'Trabalho de Conclusão de Curso'
-            }
-        }
-    },
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
-    methods: {
-        fetchDocuments(tipo) {
-            const displayType = tipo.replace(/\+/g, ' ');
-            axios.get('http://localhost:3000/api/documento/tipo/' + displayType)
-                .then(res => {
-                    this.documents = res.data;
-                    this.displayedDocuments = res.data;
-                    this.docType = displayType;
-                    this.currentPage = 1;
-                    console.log(res.data);
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-        },
+const route = useRoute()
+const docType = ref(route.params.tipo.replace(/\+/g, ' '))
+const documents = ref([])
+const displayedDocuments = ref([])
+const currentPage = ref(1)
+const documentsPerPage = 5
+const docTypes = [
+    'artigo+de+evento',
+    'artigo+de+periodico',
+    'capitulo+de+livro',
+    'dissertacao',
+    'livro',
+    'monografia',
+    'tese',
+    'trabalho+de+conclusao+de+curso'
+]
+const docTypeLabels = {
+    'artigo de evento': 'Artigo de Evento',
+    'artigo de periodico': 'Artigo de Periódico',
+    'capitulo de livro': 'Capítulo de Livro',
+    'dissertacao': 'Dissertação',
+    'livro': 'Livro',
+    'monografia': 'Monografia',
+    'tese': 'Tese',
+    'trabalho de conclusao de curso': 'Trabalho de Conclusão de Curso'
+}
 
-        downloadFile(nome_arq) {
-            axios.get('http://localhost:3000/api/download/' + nome_arq,
-                { responseType: 'blob' })
-                .then(res => {
-                    const link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(
-                        new Blob([res.data], { type: 'application/pdf' })
-                    );
-                    document.body.appendChild(link);
-                    link.setAttribute('download', nome_arq);
-                    link.click();
-                    link.remove();
-                    URL.revokeObjectURL(link.href);
-                })
-                .catch(err => {
-                    console.log(err.response.data);
-                });
-        },
+function fetchDocuments(tipo) {
+    const displayType = tipo.replace(/\+/g, ' ');
+    axios.get('http://localhost:3000/api/documento/tipo/' + displayType)
+        .then(res => {
+            documents.value = res.data;
+            displayedDocuments.value = res.data;
+            docType.value = displayType;
+            currentPage.value = 1;
+            console.log(res.data);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+}
 
-        previousPage() {
-            if (this.currentPage > 1) {
-                this.currentPage--;
-            }
-        },
+function downloadFile(id_doc, nome_arq) {
+    axios.get('http://localhost:3000/api/download/' + id_doc + '/' + nome_arq,
+        { responseType: 'blob' })
+        .then(res => {
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(
+                new Blob([res.data], { type: 'application/pdf' })
+            );
+            document.body.appendChild(link);
+            link.setAttribute('download', nome_arq);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(link.href);
+        })
+        .catch(err => {
+            console.log(err.response.data);
+        });
+}
 
-        nextPage() {
-            const totalPages = Math.ceil(this.displayedDocuments.length / this.documentsPerPage);
-            if (this.currentPage < totalPages) {
-                this.currentPage++;
-            }
-        }
-    },
-
-    computed: {
-        paginatedDocuments() {
-            const startIndex = (this.currentPage - 1) * this.documentsPerPage;
-            const endIndex = startIndex + this.documentsPerPage;
-            return this.displayedDocuments.slice(startIndex, endIndex);
-        },
-
-        totalPages() {
-            return Math.ceil(this.displayedDocuments.length / this.documentsPerPage);
-        }
-    },
-
-    mounted() {
-        this.fetchDocuments(this.$route.params.tipo);
+function previousPage() {
+    if (currentPage.value > 1) {
+        currentPage.value--;
     }
 }
+
+function nextPage() {
+    const totalPages = Math.ceil(displayedDocuments.value.length / documentsPerPage);
+    if (currentPage.value < totalPages) {
+        currentPage.value++;
+    }
+}
+
+const paginatedDocuments = computed(() => {
+    const startIndex = (currentPage.value - 1) * documentsPerPage;
+    const endIndex = startIndex + documentsPerPage;
+    return displayedDocuments.value.slice(startIndex, endIndex);
+})
+
+const totalPages = computed(() => {
+    return Math.ceil(displayedDocuments.value.length / documentsPerPage);
+})
+
+onMounted(() => {
+    fetchDocuments(route.params.tipo);
+})
 </script>
 
 <template>
@@ -144,7 +138,7 @@ export default {
                 <div class="actions">
                     <RouterLink :to="'/documento/' + documento.documento_id" class="action-btn">Ver Detalhes
                     </RouterLink>
-                    <button @click="downloadFile(documento.nome_arq)" class="action-btn download-btn">Download</button>
+                    <button @click="downloadFile(documento.id_documento, documento.nome_arq)" class="action-btn download-btn">Download</button>
                 </div>
             </div>
         </div>

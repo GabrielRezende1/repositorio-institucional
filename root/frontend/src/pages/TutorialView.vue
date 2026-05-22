@@ -1,47 +1,40 @@
-<script>
+<script setup>
 import axios from 'axios'
+import { ref, onMounted } from 'vue'
 
-export default {
-    data() {
-        return {
-            tutorial: {}
-        }
-    },
+const tutorial = ref({})
 
-    methods: {
-        downloadFile(nome_arq) {
-            axios.get('http://localhost:3000/api/tutorial/documentos/' + nome_arq,
-                { responseType: 'blob' })
-                .then(res => {
-                    const link = document.createElement('a');
-                    console.log(link);
-                    link.href = window.URL.createObjectURL(
-                        new Blob([res.data], { type: 'application/pdf' })
-                    );
-                    document.body.appendChild(link);
-                    link.setAttribute('download', nome_arq);
-                    link.click();
-                    //Clear link ans URL
-                    link.remove();
-                    URL.revokeObjectURL(link.href);
-                })
-                .catch(err => {
-                    console.log(err.response.data);
-                });
-        }
-    },
-
-    mounted() {
-        axios.get('http://localhost:3000/api/tutorial')
-            .then(res => {
-                this.tutorial = res.data;
-                console.log(this.tutorial);
-            })
-            .catch(err => {
-                console.log(err);
-            })
-    }
+function downloadFile(nome_arq) {
+    axios.get('http://localhost:3000/api/tutorial/' + nome_arq,
+        { responseType: 'blob' })
+        .then(res => {
+            const link = document.createElement('a');
+            console.log(link);
+            link.href = window.URL.createObjectURL(
+                new Blob([res.data], { type: 'application/pdf' })
+            );
+            document.body.appendChild(link);
+            link.setAttribute('download', nome_arq);
+            link.click();
+            //Clear link ans URL
+            link.remove();
+            URL.revokeObjectURL(link.href);
+        })
+        .catch(err => {
+            console.log(err.response.data);
+        });
 }
+
+onMounted(() => {
+    axios.get('http://localhost:3000/api/tutorial')
+        .then(res => {
+            tutorial.value = res.data;
+            console.log(tutorial.value);
+        })
+        .catch(err => {
+            console.log(err);
+        })
+})
 </script>
 
 <template>
