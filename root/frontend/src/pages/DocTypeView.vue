@@ -1,7 +1,7 @@
 <script setup>
-import axios from 'axios'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { getDocumentsByType, downloadDocument } from '@/services/documentService'
 
 const route = useRoute()
 const docType = ref(route.params.tipo.replace(/\+/g, ' '))
@@ -30,38 +30,34 @@ const docTypeLabels = {
     'trabalho de conclusao de curso': 'Trabalho de Conclusão de Curso'
 }
 
-function fetchDocuments(tipo) {
-    const displayType = tipo.replace(/\+/g, ' ');
-    axios.get('http://localhost:3000/api/documento/tipo/' + displayType)
-        .then(res => {
-            documents.value = res.data;
-            displayedDocuments.value = res.data;
-            docType.value = displayType;
-            currentPage.value = 1;
-            console.log(res.data);
-        })
-        .catch(err => {
-            console.log(err);
-        });
+async function fetchDocuments(tipo) {
+    const result = await getDocumentsByType(tipo)
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    documents.value = result.data;
+    displayedDocuments.value = result.data;
+    docType.value = tipo.replace(/\+/g, ' ');
+    currentPage.value = 1;
+    console.log(result.data);
 }
 
-function downloadFile(id_doc, nome_arq) {
-    axios.get('http://localhost:3000/api/download/' + id_doc + '/' + nome_arq,
-        { responseType: 'blob' })
-        .then(res => {
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(
-                new Blob([res.data], { type: 'application/pdf' })
-            );
-            document.body.appendChild(link);
-            link.setAttribute('download', nome_arq);
-            link.click();
-            link.remove();
-            URL.revokeObjectURL(link.href);
-        })
-        .catch(err => {
-            console.log(err.response.data);
-        });
+async function downloadFile(id_doc, nome_arq) {
+    const result = await downloadDocument(id_doc, nome_arq)
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(
+        new Blob([result.data], { type: 'application/pdf' })
+    );
+    document.body.appendChild(link);
+    link.setAttribute('download', nome_arq);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
 }
 
 function previousPage() {

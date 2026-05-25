@@ -1,57 +1,52 @@
 <script setup>
-import axios from 'axios'
 import MenuBar from '@/components/MenuBar.vue'
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router'
 import { useAuthCheck } from '@/composables/useAuthCheck'
+import { getUserDocuments } from '@/services/userService'
+import { deleteDocument, downloadDocument } from '@/services/documentService'
 
 const auth = useAuthCheck()
 auth.checkOut()
 
 const documents = ref([])
 
-function deleteDocument(documento_id) {
-    axios.delete('http://localhost:3000/api/minha-conta/meus-documentos/' + documento_id, { withCredentials: true })
-        .then(res => {
-            if (res.status == 200) {
-                documents.value = documents.value.filter(d => d.documento_id !== documento_id);
-                alert("Documento deletado com sucesso!");
-            }
-        })
-        .catch(err => {
-            alert(err.response.data);
-            console.log(err.response.data);
-        });
+async function deleteDoc(documento_id) {
+    const result = await deleteDocument(documento_id)
+    if (!result.success && result.status != 200) {
+        alert(result.error || "Erro ao deletar documento");
+        console.log(result.error);
+        return
+    }
+    documents.value = documents.value.filter(d => d.id_documento !== documento_id);
+    alert("Documento deletado com sucesso!");
 }
 
-function downloadFile(nome_arq) {
-    axios.get('http://localhost:3000/api/download/' + nome_arq,
-        { responseType: 'blob' })
-        .then(res => {
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(
-                new Blob([res.data], { type: 'application/pdf' })
-            );
-            document.body.appendChild(link);
-            link.setAttribute('download', nome_arq);
-            link.click();
-            link.remove();
-            URL.revokeObjectURL(link.href);
-        })
-        .catch(err => {
-            console.log(err.response.data);
-        });
+async function downloadFile(id_doc, nome_arq) {
+    const result = await downloadDocument(id_doc, nome_arq)
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(
+        new Blob([result.data], { type: 'application/pdf' })
+    );
+    document.body.appendChild(link);
+    link.setAttribute('download', nome_arq);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
 }
 
-onMounted(() => {
-    axios.get('http://localhost:3000/api/minha-conta/meus-documentos', { withCredentials: true })
-        .then(res => {
-            documents.value = res.data.docs;
-            console.log(res.data);
-        })
-        .catch(err => {
-            console.log(err.response.data);
-        })
+onMounted(async () => {
+    const result = await getUserDocuments()
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    documents.value = result.data.docs;
+    console.log(result.data);
 })
 
 </script>
@@ -78,8 +73,8 @@ onMounted(() => {
                         <RouterLink :to="'/documento/id/' + document.id_documento" class="action">Visualizar</RouterLink>
                         <RouterLink :to="'/minha-conta/meus-documentos/alterar-documento/' + document.id_documento" class="action">Alterar
                         </RouterLink>
-                        <button @click="deleteDocument(document.id_documento)" class="delete-btn">Deletar</button>
-                        <button @click="downloadFile(document.nome_arq)" class="download-btn">Download</button>
+                        <button @click="deleteDoc(document.id_documento)" class="delete-btn">Deletar</button>
+                        <button @click="downloadFile(document.id_documento, document.nome_arq)" class="download-btn">Download</button>
                     </td>
                 </tr>
             </tbody>

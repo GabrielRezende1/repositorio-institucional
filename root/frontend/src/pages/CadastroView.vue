@@ -1,8 +1,8 @@
 <script setup>
-import axios from 'axios'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthCheck } from '@/composables/useAuthCheck'
+import { registerUser } from '@/services/userService'
 
 const router = useRouter()
 const auth = useAuthCheck()
@@ -15,31 +15,24 @@ const confirmaSenha = ref('')
 const tipo = ref('')
 const erros = ref('')
 
-function registerUser() {
+async function registerUserHandler() {
     if (senha.value !== confirmaSenha.value) {
         erros.value = "Senhas não conferem!";
         return;
     }
-    axios.post('http://localhost:3000/api/cadastro', {
-        nome: nome.value,
-        email: email.value,
-        senha: senha.value,
-        tipo: tipo.value
-    })
-    .then(res => {
-        if (res.status == 201)
-            router.push("/login");
-    })
-    .catch(err => {
-        erros.value = err.response.data.message;
-        console.log(err.response.data);
-    });
+    const result = await registerUser(nome.value, email.value, senha.value, tipo.value)
+    if (result.success && result.status == 201) {
+        router.push("/login");
+    } else {
+        erros.value = result.error?.message || "Erro ao registrar usuário";
+        console.log(result.error);
+    }
 }
 </script>
 
 <template>
     <section>
-        <form action="" method="post" @submit.prevent="registerUser">
+        <form action="" method="post" @submit.prevent="registerUserHandler">
             <label for="nome">NOME:</label>
             <input type="text" id="nome" v-model="nome" placeholder="Insira seu nome..." />
 

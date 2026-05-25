@@ -1,36 +1,35 @@
 <script setup>
-import axios from 'axios'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import * as homeService from '@/services/homeService'
 
 const router = useRouter()
 const searchInput = ref('')
 const docType = ref([])
 
-function search() {
-    if (searchInput.value) {
-        axios.get('http://localhost:3000/api/?search=' + searchInput.value)
-            .then(res => {
-                console.log(res.data);
-                console.log(searchInput.value);
-                router.push('/documento?search=' + searchInput.value);
-            })
-            .catch(err => {
-                console.log(err.response.data);
-            });
+async function search() {
+    if (!searchInput.value) {
+        return
     }
+    const result = await homeService.searchDocuments(searchInput.value)
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    console.log(result.data);
+    console.log(searchInput.value);
+    router.push('/documento?search=' + searchInput.value);
 }
 
-function viewDocs() {
-    axios.get('http://localhost:3000/api/documento')
-        .then(res => {
-            console.log('todos os documentos')
-            console.log(res.data);
-            router.push('/documento');
-        })
-        .catch(err => {
-            console.log(err.response.data);
-        });
+async function viewDocs() {
+    const result = await homeService.viewAllDocuments()
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    console.log('todos os documentos')
+    console.log(result.data);
+    router.push('/documento');
 }
 </script>
 

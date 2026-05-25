@@ -1,7 +1,7 @@
 <script setup>
-import axios from 'axios'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { getAllDocuments, downloadDocument } from '@/services/documentService'
 
 const route = useRoute()
 const allDocuments = ref([])
@@ -20,23 +20,21 @@ function search() {
     currentPage.value = 1;
 }
 
-function downloadFile(id_doc, nome_arq) {
-    axios.get('http://localhost:3000/api/download/' + id_doc + '/' + nome_arq,
-        { responseType: 'blob' })
-        .then(res => {
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(
-                new Blob([res.data], { type: 'application/pdf' })
-            );
-            document.body.appendChild(link);
-            link.setAttribute('download', nome_arq);
-            link.click();
-            link.remove();
-            URL.revokeObjectURL(link.href);
-        })
-        .catch(err => {
-            console.log(err.response.data);
-        });
+async function downloadFile(id_doc, nome_arq) {
+    const result = await downloadDocument(id_doc, nome_arq)
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(
+        new Blob([result.data], { type: 'application/pdf' })
+    );
+    document.body.appendChild(link);
+    link.setAttribute('download', nome_arq);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
 }
 
 function previousPage() {
@@ -62,24 +60,20 @@ const totalPages = computed(() => {
     return Math.ceil(displayedDocuments.value.length / documentsPerPage);
 })
 
-onMounted(() => {
+onMounted(async () => {
     const searchQuery = route.query.search;
-
-    axios.get('http://localhost:3000/api/documento')
-        .then(res => {
-            allDocuments.value = res.data;
-            displayedDocuments.value = res.data;
-
-            if (searchQuery) {
-                searchInput.value = searchQuery;
-                search();
-            }
-
-            console.log(res.data);
-        })
-        .catch(err => {
-            console.log(err);
-        });
+    const result = await getAllDocuments()
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    allDocuments.value = result.data;
+    displayedDocuments.value = result.data;
+    if (searchQuery) {
+        searchInput.value = searchQuery;
+        search();
+    }
+    console.log(result.data);
 })
 </script>
 

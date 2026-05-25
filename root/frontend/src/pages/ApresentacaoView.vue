@@ -1,18 +1,17 @@
 <script setup>
-import axios from 'axios'
 import { ref, onMounted } from 'vue'
+import { getApresentacao } from '@/services/homeService'
 
 const data = ref({})
 
-onMounted(() => {
-    axios.get("http://localhost:3000/api/apresentacao")
-    .then(res => {
-        data.value = res.data;
-        console.log(data.value);
-    })
-    .catch(err => {
-        console.log(err);
-    })
+onMounted(async () => {
+    const result = await getApresentacao()
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    data.value = result.data;
+    console.log(data.value);
 })
 </script>
 

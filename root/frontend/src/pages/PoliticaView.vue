@@ -1,39 +1,36 @@
 <script setup>
-import axios from 'axios'
 import { ref, onMounted } from 'vue'
+import { getPoliticas, downloadPoliticaFile } from '@/services/homeService'
 
 const politica = ref({})
 
-function downloadFile(nome_arq) {
-    axios.get('http://localhost:3000/api/politicas/' + nome_arq,
-        { responseType: 'blob' })
-        .then(res => {
-            const link = document.createElement('a');
-            console.log(link);
-            link.href = window.URL.createObjectURL(
-                new Blob([res.data], { type: 'application/pdf' })
-            );
-            document.body.appendChild(link);
-            link.setAttribute('download', nome_arq);
-            link.click();
-            //Clear link ans URL
-            link.remove();
-            URL.revokeObjectURL(link.href);
-        })
-        .catch(err => {
-            console.log(err.response.data);
-        });
+async function downloadFile(nome_arq) {
+    const result = await downloadPoliticaFile(nome_arq)
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    const link = document.createElement('a');
+    console.log(link);
+    link.href = window.URL.createObjectURL(
+        new Blob([result.data], { type: 'application/pdf' })
+    );
+    document.body.appendChild(link);
+    link.setAttribute('download', nome_arq);
+    link.click();
+    //Clear link ans URL
+    link.remove();
+    URL.revokeObjectURL(link.href);
 }
 
-onMounted(() => {
-    axios.get('http://localhost:3000/api/politicas')
-        .then(res => {
-            politica.value = res.data;
-            console.log(politica.value);
-        })
-        .catch(err => {
-            console.log(err);
-        })
+onMounted(async () => {
+    const result = await getPoliticas()
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    politica.value = result.data;
+    console.log(politica.value);
 })
 </script>
 

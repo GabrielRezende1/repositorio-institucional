@@ -1,80 +1,77 @@
 <script setup>
-import axios from 'axios'
-import { ref, onMounted } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
+import { getDocumentById, downloadDocument } from '@/services/documentService'
 
 const route = useRoute()
 const documento_id = route.params.id
-const documento = ref({})
+const doc = ref({})
 
-function downloadFile(id_doc, nome_arq) {
-    axios.get('http://localhost:3000/api/download/' + id_doc + '/' + nome_arq,
-        { responseType: 'blob' })
-        .then(res => {
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(
-                new Blob([res.data], { type: 'application/pdf' })
-            );
-            document.body.appendChild(link);
-            link.setAttribute('download', nome_arq);
-            link.click();
-            link.remove();
-            URL.revokeObjectURL(link.href);
-        })
-        .catch(err => {
-            console.log(err.response.data);
-        });
+async function downloadFile(id_doc, nome_arq) {
+    const result = await downloadDocument(id_doc, nome_arq)
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(
+        new Blob([result.data], { type: 'application/pdf' })
+    );
+    document.body.appendChild(link);
+    link.setAttribute('download', nome_arq);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
 }
 
-onMounted(() => {
-    axios.get('http://localhost:3000/api/documento/id/' + documento_id)
-        .then(res => {
-            documento.value = res.data;
-            console.log(res.data);
-            console.log(documento.value.doc[0]);
-        })
-        .catch(err => {
-            console.log(err);
-        })
+onBeforeMount(async () => {
+    const result = await getDocumentById(documento_id)
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    doc.value = result.data;
+    console.log(result.data);
+    console.log(doc.value.doc[0]);
 })
 </script>
 
 <template>
     <section>
-        <div v-if="documento.doc[0].nome_doc" class="document-container">
-            <h2>{{ documento.doc[0].nome_doc }}</h2>
+        <div v-if="doc.doc[0].nome_doc" class="document-container">
+            <h2>{{ doc.doc[0].nome_doc }}</h2>
 
             <div class="doc-info">
                 <div class="info-group">
                     <strong>Tipo de Documento:</strong>
-                    <p>{{ documento.doc[0].Doc_tipo.tipo }}</p>
+                    <p>{{ doc.doc[0].Doc_tipo.tipo }}</p>
                 </div>
 
                 <div class="info-group">
                     <!--TODO: Create computed property to change name based on user role-->
                     <strong>Autores:</strong>
-                    <p>{{ documento.autores }}</p>
+                    <p>{{ doc.doc[0].Discente.nome }}</p>
                 </div>
 
                 <div class="info-group">
                     <strong>Ano:</strong>
-                    <p>{{ documento.doc[0].data }}</p>
+                    <p>{{ doc.doc[0].data }}</p>
                 </div>
 
                 <div class="info-group">
                     <!--TODO: Only works if I enable timestamps in backend database-->
                     <strong>Data de Submissão:</strong>
-                    <p>{{ new Date(documento.data_criacao).toLocaleDateString() }}</p>
+                    <p>{{ new Date(doc.data_criacao).toLocaleDateString() }}</p>
                 </div>
 
                 <div class="info-group">
                     <strong>Descrição:</strong>
-                    <p class="description">{{ documento.doc[0].resumo }}</p>
+                    <p class="description">{{ doc.doc[0].resumo }}</p>
                 </div>
             </div>
 
             <div class="actions">
-                <button @click="downloadFile(documento.id_documento, documento.nome_arq)" class="download-btn">Download do Documento</button>
+                <button @click="downloadFile(doc.doc[0].id_documento, doc.doc[0].nome_arq)" class="download-btn">Download do Documento</button>
                 <RouterLink to="/documento" class="back-btn">Voltar à Lista</RouterLink>
             </div>
         </div>

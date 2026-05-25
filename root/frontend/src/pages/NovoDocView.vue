@@ -1,8 +1,8 @@
 <script setup>
-import axios from 'axios'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthCheck } from '@/composables/useAuthCheck'
+import { createDocument } from '@/services/documentService'
 import MenuBar from '@/components/MenuBar.vue'
 
 const router = useRouter()
@@ -18,7 +18,7 @@ const arquivo = ref(null)
 const sucesso = ref('')
 const erros = ref('')
 
-function createDocument() {
+async function createDoc() {
     const formData = new FormData();
     formData.append('titulo', titulo.value);
     formData.append('descricao', descricao.value);
@@ -27,27 +27,16 @@ function createDocument() {
     formData.append('ano', ano.value);
     formData.append('arquivo', arquivo.value);
 
-    axios.post('http://localhost:3000/api/novo-documento',
-        formData,
-        {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
-            withCredentials: true
-        }
-    )
-        .then(res => {
-            if (res.status == 201) {
-                sucesso.value = "Documento criado com sucesso!";
-                setTimeout(() => {
-                    router.push("/meus-documentos");
-                }, 2000);
-            }
-        })
-        .catch(err => {
-            erros.value = err.response.data.message;
-            console.log(err.response.data);
-        });
+    const result = await createDocument(formData)
+    if (!result.success && !result.status == 201) {
+        erros.value = result.error?.message || "Erro ao criar documento";
+        console.log(result.error);
+        return
+    }
+    sucesso.value = "Documento criado com sucesso!";
+    setTimeout(() => {
+        router.push("/meus-documentos");
+    }, 2000);
 }
 
 function handleFileUpload(event) {
@@ -59,7 +48,7 @@ function handleFileUpload(event) {
     <MenuBar />
     <section>
         <h2>Novo Documento</h2>
-        <form action="" method="post" @submit.prevent="createDocument" enctype="multipart/form-data">
+        <form action="" method="post" @submit.prevent="createDoc" enctype="multipart/form-data">
             <label for="titulo">TÍTULO:</label>
             <input type="text" id="titulo" v-model="titulo" placeholder="Insira o título do documento..." />
 

@@ -1,7 +1,7 @@
 <script setup>
-import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import { useAuthCheck } from '@/composables/useAuthCheck'
+import { getUserProfile, updateUserProfile } from '@/services/userService'
 import MenuBar from '@/components/MenuBar.vue'
 
 const auth = useAuthCheck()
@@ -9,30 +9,24 @@ auth.checkOut()
 
 const dataUser = ref({})
 
-function updateUser() {
-    axios.put('http://localhost:3000/api/minha-conta', {
-        nome: dataUser.value.nome,
-        email: dataUser.value.email
-    }, { withCredentials: true })
-        .then(res => {
-            if (res.status == 200)
-                alert("Dados atualizados com sucesso!");
-        })
-        .catch(err => {
-            alert(err.response.data);
-            console.log(err.response.data);
-        });
+async function updateUser() {
+    const result = await updateUserProfile(dataUser.value.nome, dataUser.value.email)
+    if (!result.success && !result.status == 200) {
+        alert(result.error || "Erro ao atualizar dados");
+        console.log(result.error);
+        return
+    }
+    alert("Dados atualizados com sucesso!");
 }
 
-onMounted(() => {
-    axios.get('http://localhost:3000/api/minha-conta', { withCredentials: true })
-        .then(res => {
-            dataUser.value = res.data;
-            console.log(res.data);
-        })
-        .catch(err => {
-            console.log(err);
-        })
+onMounted(async () => {
+    const result = await getUserProfile()
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    dataUser.value = result.data;
+    console.log(result.data);
 })
 </script>
 

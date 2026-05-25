@@ -1,9 +1,9 @@
 <script setup>
-import axios from 'axios'
 import { computed, reactive, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthCheck } from '@/composables/useAuthCheck'
 import MenuBar from '@/components/MenuBar.vue'
+import { getDocumentById, updateDocument } from '@/services/documentService'
 
 const route = useRoute()
 const router = useRouter()
@@ -30,7 +30,7 @@ const form = reactive({
     file: null
 })
 
-function updateDocument() {
+async function updateDoc() {
     const formData = new FormData();
     formData.append('title', form.title);
     formData.append('description', form.description);
@@ -41,56 +41,41 @@ function updateDocument() {
         formData.append('file', form.file);
     }
 
-    axios.put(
-        'http://localhost:3000/api/minha-conta/meus-documentos/alterar-documento/' + form.doc_id,
-        formData,
-        {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
-            withCredentials: true
-        }
-    )
-        .then(res => {
-            if (res.status == 200) {
-                form.sucesso = 'Documento atualizado com sucesso!';
-                setTimeout(() => {
-                    router.push('/minha-conta/meus-documentos')
-                }, 2000);
-            }
-        })
-        .catch(err => {
-            form.erros = err.response.data.message;
-            console.log(err.response.data);
-        });
+    const result = await updateDocument(form.doc_id, formData)
+    if (!result.success) {
+        error.value = result.error;
+        console.log(result.error);
+        return
+    }
+    success.value = 'Documento atualizado com sucesso!';
+    setTimeout(() => {
+        router.push('/minha-conta/meus-documentos')
+    }, 2000);
 }
 
 function handleFileUpload(event) {
     form.file = event.target.files[0];
 }
 
-onMounted(() => {
-    axios.get(
-        'http://localhost:3000/api/minha-conta/meus-documentos/alterar-documento/' + form.doc_id,
-        { withCredentials: true }
-    )
-        .then(res => {
-            const doc = res.data.doc
-            isStudent.value = res.data.isStudent
-            student.value = res.data.student
-            teacher.value = res.data.teacher
-            teachers.value = res.data.teachers
+onMounted(async () => {
+    const result = await getDocumentById(form.doc_id)
+    if (!result.success) {
+        console.log(result.error)
+        return
+    }
 
-            form.title = doc.nome_doc;
-            form.description = doc.resumo;
-            form.type = doc.Doc_tipo.tipo;
-            form.authors = isStudent.value ? student.value.nome : teacher.value.nome;
-            form.date = doc.data;
-            console.log(res.data);
-        })
-        .catch(err => {
-            console.log(err.response.data);
-        })
+    const doc = result.data.doc
+    isStudent.value = result.data.isStudent
+    student.value = result.data.student
+    teacher.value = result.data.teacher
+    teachers.value = result.data.teachers
+
+    form.title = doc.nome_doc
+    form.description = doc.resumo
+    form.type = doc.Doc_tipo.tipo
+    form.authors = isStudent.value ? student.value.nome : teacher.value.nome
+    form.date = doc.data
+    console.log(result.data)
 })  
 </script>
 
@@ -98,7 +83,7 @@ onMounted(() => {
     <MenuBar />
     <section>
         <h2>Alterar Documento</h2>
-        <form action="" method="put" @submit.prevent="updateDocument" enctype="multipart/form-data">
+        <form action="" method="put" @submit.prevent="updateDoc" enctype="multipart/form-data">
             <label for="title">TÍTULO:</label>
             <input type="text" id="title" v-model="form.title" placeholder="Insira o título do documento..." />
 
