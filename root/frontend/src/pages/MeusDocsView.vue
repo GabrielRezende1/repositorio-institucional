@@ -1,16 +1,16 @@
 <script setup>
 import axios from 'axios'
 import MenuBar from '@/components/MenuBar.vue'
-import { reactive, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router'
 
-const documents = reactive([])
+const documents = ref([])
 
 function deleteDocument(documento_id) {
     axios.delete('http://localhost:3000/api/minha-conta/meus-documentos/' + documento_id, { withCredentials: true })
         .then(res => {
             if (res.status == 200) {
-                documents.values = documents.values.filter(d => d.documento_id !== documento_id);
+                documents.value = documents.value.filter(d => d.documento_id !== documento_id);
                 alert("Documento deletado com sucesso!");
             }
         })
@@ -42,7 +42,7 @@ function downloadFile(nome_arq) {
 onMounted(() => {
     axios.get('http://localhost:3000/api/minha-conta/meus-documentos', { withCredentials: true })
         .then(res => {
-            documents.push(...res.data.docs);
+            documents.value = res.data.docs;
             console.log(res.data);
         })
         .catch(err => {
