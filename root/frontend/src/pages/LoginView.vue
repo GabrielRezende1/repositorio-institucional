@@ -7,9 +7,8 @@ import { useAuthCheck } from '@/composables/useAuthCheck'
 
 const router = useRouter()
 const authStore = useAuthStore()
-//Trying to access login page while already logged in redirects to home page
 const authCheck = useAuthCheck()
-authCheck.checkAuth()
+authCheck.checkIn()
 
 const form = reactive({
     // use reactive() instead of ref() for object data

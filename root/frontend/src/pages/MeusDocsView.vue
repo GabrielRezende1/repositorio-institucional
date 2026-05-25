@@ -3,6 +3,10 @@ import axios from 'axios'
 import MenuBar from '@/components/MenuBar.vue'
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router'
+import { useAuthCheck } from '@/composables/useAuthCheck'
+
+const auth = useAuthCheck()
+auth.checkOut()
 
 const documents = ref([])
 

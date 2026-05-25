@@ -2,8 +2,12 @@
 import axios from 'axios'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthCheck } from '@/composables/useAuthCheck'
 
 const router = useRouter()
+const auth = useAuthCheck()
+auth.checkIn()
+
 const nome = ref('')
 const email = ref('')
 const senha = ref('')

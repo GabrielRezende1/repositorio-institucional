@@ -8,15 +8,22 @@ import { checkLogin } from '@/services/loginService'
 export function useAuthCheck() {
     const router = useRouter()
 
-    const checkAuth = async () => {
+    async function checkIn() {
         const result = await checkLogin()
 
-        if (result.success && result.data) {
+        if (result.success && result.data)
             router.push('/')
-        }
+    }
+
+    async function checkOut() {
+        const result = await checkLogin()
+
+        if (!result.success)
+            router.push('/')
     }
 
     return {
-        checkAuth
+        checkIn,
+        checkOut
     }
 }

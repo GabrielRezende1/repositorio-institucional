@@ -2,9 +2,13 @@
 import axios from 'axios'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthCheck } from '@/composables/useAuthCheck'
 import MenuBar from '@/components/MenuBar.vue'
 
 const router = useRouter()
+const auth = useAuthCheck()
+auth.checkOut()
+
 const titulo = ref('')
 const descricao = ref('')
 const tipo = ref('')

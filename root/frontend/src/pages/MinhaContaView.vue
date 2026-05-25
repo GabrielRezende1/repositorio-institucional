@@ -1,7 +1,11 @@
 <script setup>
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
+import { useAuthCheck } from '@/composables/useAuthCheck'
 import MenuBar from '@/components/MenuBar.vue'
+
+const auth = useAuthCheck()
+auth.checkOut()
 
 const dataUser = ref({})
 

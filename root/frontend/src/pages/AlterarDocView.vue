@@ -2,10 +2,13 @@
 import axios from 'axios'
 import { computed, reactive, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthCheck } from '@/composables/useAuthCheck'
 import MenuBar from '@/components/MenuBar.vue'
 
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthCheck()
+auth.checkOut()
 
 const success = ref('')
 const error = ref('')
