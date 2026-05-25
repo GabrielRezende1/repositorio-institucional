@@ -13,12 +13,6 @@ const isStudent = ref(false)
 const student = ref('')
 const teacher = ref('')
 const teachers = reactive([])
-const user = computed(() => {
-    if (isStudent) {
-        return student
-    }
-    return teacher
-})
 const today = computed(() => {
     return new Date().toISOString().split('T')[0]
 })
@@ -27,7 +21,7 @@ const form = reactive({
     title: '',
     description: '',
     type: '',
-    authors: user,
+    authors: '',
     date: new Date().getDate(),
     doc_id: route.params.id,
     file: null
@@ -87,10 +81,9 @@ onMounted(() => {
             form.title = doc.nome_doc;
             form.description = doc.resumo;
             form.type = doc.Doc_tipo.tipo;
-            form.authors = doc.authors;
+            form.authors = isStudent.value ? student.value.nome : teacher.value.nome;
             form.date = doc.data;
-            console.log(res.data.doc);
-            console.log(new Date().getFullYear());
+            console.log(res.data);
         })
         .catch(err => {
             console.log(err.response.data);
