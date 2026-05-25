@@ -23,7 +23,7 @@ async function loginUser() {
         form.senhaErrada = 'Usuário ou senha incorretos!'
         return
     }
-    authStore.changeConnection()
+    authStore.connected = true
     router.push('/')
 }
 </script>
