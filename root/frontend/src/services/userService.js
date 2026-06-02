@@ -30,13 +30,14 @@ export async function updateUserProfile(nome, email) {
 }
 
 // Register user
-export async function registerUser(nome, email, senha, tipo) {
+export async function registerUser(name, email, password, confirmPassword, type) {
     try {
         const res = await axios.post('http://localhost:3000/api/cadastro', {
-            nome: nome,
+            name: name,
             email: email,
-            senha: senha,
-            tipo: tipo
+            password: password,
+            confirmPassword: confirmPassword,
+            type: type
         })
         return { success: true, data: res.data, status: res.status }
     } catch (err) {

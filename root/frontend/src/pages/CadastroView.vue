@@ -2,29 +2,30 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthCheck } from '@/composables/useAuthCheck'
+import { useFormValidation } from '@/composables/useFormValidation'
 import { registerUser } from '@/services/userService'
 
 const router = useRouter()
 const auth = useAuthCheck()
 auth.checkIn()
 
-const nome = ref('')
+const { formErrors, validatePasswordMatch, setError, clearMessages } = useFormValidation()
+
+const name = ref('')
 const email = ref('')
-const senha = ref('')
-const confirmaSenha = ref('')
-const tipo = ref('')
-const erros = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const type = ref('')
 
 async function registerUserHandler() {
-    if (senha.value !== confirmaSenha.value) {
-        erros.value = "Senhas não conferem!";
+    if (!validatePasswordMatch(password.value, confirmPassword.value)) {
         return;
     }
-    const result = await registerUser(nome.value, email.value, senha.value, tipo.value)
+    const result = await registerUser(name.value, email.value, password.value,confirmPassword.value, type.value)
     if (result.success && result.status == 201) {
         router.push("/login");
     } else {
-        erros.value = result.error?.message || "Erro ao registrar usuário";
+        setError(result.error?.message || "Erro ao registrar usuário");
         console.log(result.error);
     }
 }
@@ -33,20 +34,20 @@ async function registerUserHandler() {
 <template>
     <section>
         <form action="" method="post" @submit.prevent="registerUserHandler">
-            <label for="nome">NOME:</label>
-            <input type="text" id="nome" v-model="nome" placeholder="Insira seu nome..." />
+            <label for="name">NOME:</label>
+            <input type="text" id="name" v-model="name" placeholder="Insira seu nome..." />
 
             <label for="email">E-MAIL:</label>
             <input type="text" id="email" v-model="email" placeholder="Insira seu e-mail..." />
 
-            <label for="senha">SENHA:</label>
-            <input type="password" id="senha" v-model="senha" placeholder="Insira sua senha...">
+            <label for="password">SENHA:</label>
+            <input type="password" id="password" v-model="password" placeholder="Insira sua senha...">
 
-            <label for="confirmaSenha">CONFIRME A SENHA:</label>
-            <input type="password" id="confirmaSenha" v-model="confirmaSenha" placeholder="Confirme sua senha...">
+            <label for="confirmPassword">CONFIRME A SENHA:</label>
+            <input type="password" id="confirmPassword" v-model="confirmPassword" placeholder="Confirme sua senha...">
 
-            <label for="tipo">TIPO DE USUÁRIO:</label>
-            <select id="tipo" v-model="tipo">
+            <label for="type">TIPO DE USUÁRIO:</label>
+            <select id="type" v-model="type">
                 <option value="">Selecione uma opção</option>
                 <option value="docente">Docente</option>
                 <option value="discente">Discente</option>
@@ -54,7 +55,7 @@ async function registerUserHandler() {
 
             <input type="submit" value="REGISTRAR" />
 
-            <span v-if="erros">{{ erros }}</span>
+            <span v-if="formErrors">{{ formErrors }}</span>
             <RouterLink to="/login" class="RouterLink">Já possui conta? Faça login</RouterLink>
         </form>
     </section>
