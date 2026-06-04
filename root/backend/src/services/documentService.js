@@ -164,11 +164,7 @@ async function getDocumentsByType(tipo, page = 1) {
                     "nome_doc",
                     "nome_arq",
                     "resumo",
-                    [db.Sequelize.fn(
-                        "TO_CHAR",
-                        db.Sequelize.col("data"),
-                        "DD-MM-YYYY"
-                    ), "data"],
+                    "data",
                     "fk_id_docente",
                     "fk_id_doc_tipo"
                 ]
@@ -215,11 +211,7 @@ async function getDocumentById(id) {
                     "nome_doc",
                     "nome_arq",
                     "resumo",
-                    [db.Sequelize.fn(
-                        "TO_CHAR",
-                        db.Sequelize.col("data"),
-                        "DD-MM-YYYY"
-                    ), "data"],
+                    "data",
                     "fk_id_docente",
                     "fk_id_discente",
                     "fk_id_doc_tipo"
