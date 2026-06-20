@@ -159,32 +159,6 @@ async function updateDocument(req, res) {
 }
 
 /**
- * PUT /minha-conta/meus-documentos/alterar-documento/:id/upload - Update document file
- */
-async function updateDocumentFile(req, res) {
-    try {
-        const token = req.cookies.token;
-        const decoded = require('jsonwebtoken').decode(token);
-        const email = decoded.email;
-        const docId = idParam(req);
-
-        if (!req.file) {
-            return res.status(400).json({ error: "Nenhum arquivo foi enviado" });
-        }
-
-        const result = await userService.updateDocumentFile(email, docId, req.file.originalname);
-
-        if (!result.success) {
-            return res.status(400).json({ error: result.error });
-        }
-
-        res.status(200).json(result.data);
-    } catch (error) {
-        res.status(401).json({ err: { message: error.message, stack: error.stack } });
-    }
-}
-
-/**
  * DELETE /minha-conta/meus-documentos/:id - Delete document
  */
 async function deleteDocument(req, res) {
