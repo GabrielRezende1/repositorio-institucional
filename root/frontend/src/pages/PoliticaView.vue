@@ -1,26 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getPoliticas, downloadPoliticaFile } from '@/services/homeService'
+import { getPoliticas } from '@/services/homeService'
+import { useFileDownload } from '@/composables/useFileDownload'
 
 const politica = ref({})
+const { downloadPolicy } = useFileDownload()
 
 async function downloadFile(nome_arq) {
-    const result = await downloadPoliticaFile(nome_arq)
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    const link = document.createElement('a');
-    console.log(link);
-    link.href = window.URL.createObjectURL(
-        new Blob([result.data], { type: 'application/pdf' })
-    );
-    document.body.appendChild(link);
-    link.setAttribute('download', nome_arq);
-    link.click();
-    //Clear link ans URL
-    link.remove();
-    URL.revokeObjectURL(link.href);
+    await downloadPolicy(nome_arq)
 }
 
 onMounted(async () => {
@@ -38,7 +25,7 @@ onMounted(async () => {
     <section>
         <h2>Políticas</h2>
         <ul>
-            <li v-for="key in politica.politicas" :key="key">
+            <li v-for="key in politica" :key="key">
                 <a href="#" @click.prevent="downloadFile(key.nome_arq)">{{ key.nome_arq }}</a>
             </li>
         </ul>
