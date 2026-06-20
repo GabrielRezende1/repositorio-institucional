@@ -43,6 +43,10 @@ export async function downloadDocument(id_doc, nome_arq) {
     }
 }
 
+/**
+ * LOGGED USER ROUTES
+ */
+
 // Create document
 export async function createDocument(formData) {
     try {
@@ -62,6 +66,18 @@ export async function createDocument(formData) {
     }
 }
 
+// Get document for edit
+export async function getDocumentForEdit(id) {
+    try {
+        const res = await axios.get(
+            'http://localhost:3000/api/minha-conta/meus-documentos/alterar-documento/' + id,
+        {withCredentials: true})
+        return { success: true, data: res.data, status: res.status}
+    } catch (err) {
+        return { success: false, error: err.response?.data }
+    }
+}
+
 // Update document
 export async function updateDocument(id, formData) {
     try {
@@ -70,7 +86,7 @@ export async function updateDocument(id, formData) {
             formData,
             {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
                 },
                 withCredentials: true
             }
