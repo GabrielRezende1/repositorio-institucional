@@ -142,7 +142,11 @@ async function updateDocument(req, res) {
         const email = decoded.email;
         const docId = idParam(req);
 
-        const result = await userService.updateDocument(email, docId, req.body);
+        const result = await userService.updateDocument(
+            email,
+            docId,
+            req.body,
+            req.file);
 
         if (!result.success) {
             return res.status(400).json({ error: result.error });

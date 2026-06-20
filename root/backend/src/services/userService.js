@@ -573,14 +573,14 @@ async function getDocumentForEdit(email, docId) {
  * @param {string} email - User email
  * @param {number} docId - Document ID
  * @param {Object} updateData - Document update data
+ * @param {Object} file - Optional uploaded file (req.file from multer)
  * @returns {Object} Updated document
  */
-async function updateDocument(email, docId, updateData) {
+async function updateDocument(email, docId, updateData, file) {
     try {
-        const { titulo, resumo, data, orientador, tipo, palavraChave } = updateData;
+        const { title, abstract, date, advisor, type, keywords } = updateData;
 
         const user = await db.Usuario.findOne({ where: { email } });
-
         if (!user) {
             return { success: false, error: "Usuário não encontrado" };
         }
@@ -588,12 +588,10 @@ async function updateDocument(email, docId, updateData) {
         const userId = user.id_usuario;
         const userIsStudent = isStudent(email);
 
-        const typeRecord = await db.Doc_tipo.findOne({ where: { tipo } });
-
+        const typeRecord = await db.Doc_tipo.findOne({ where: { tipo: type } });
         if (!typeRecord) {
             return { success: false, error: "Tipo de documento não encontrado" };
         }
-
         const typeId = typeRecord.id_doc_tipo;
 
         if (userIsStudent) {
@@ -601,40 +599,67 @@ async function updateDocument(email, docId, updateData) {
             const student = await db.Discente.findOne({
                 where: { fk_id_usuario: userId }
             });
-
             if (!student) {
                 return { success: false, error: "Perfil de estudante não encontrado" };
             }
 
             const teacher = await db.Docente.findOne({
-                where: { nome: { [db.Sequelize.Op.like]: orientador } }
+                where: { nome: { [db.Sequelize.Op.like]: advisor } }
             });
-
             if (!teacher) {
                 return { success: false, error: "Professor orientador não encontrado" };
             }
-
             // Process multiple keywords
-            const palavrasChaveArray = palavraChave.split(",").map(p => p.trim());
+            const keywordsArr = keywords.split(",").map(p => p.trim());
             const keywordsData = [];
-
-            for (const keyword of palavrasChaveArray) {
+            for (const keyword of keywordsArr) {
                 const keywordRecord = await db.Palavra_chave.findOrCreate({
                     where: { nome: keyword }
                 });
                 keywordsData.push(keywordRecord[0].dataValues.id_palavra_chave);
             }
-
-            await db.Documento.update(
-                {
-                    nome_doc: titulo,
-                    resumo,
-                    data,
-                    fk_id_docente: teacher.id_docente,
-                    fk_id_doc_tipo: typeId
-                },
-                { where: { id_documento: docId, fk_id_discente: student.id_discente } }
-            );
+            // Handle optional file upload
+            if (file) {
+                const document = await db.Documento.findOne({
+                    where: { id_documento: docId }
+                });
+                const newFileName = file.filename;
+                const oldFileName = document.nome_arq
+                // Update document record with new filename
+                await db.Documento.update(
+                    {
+                        nome_doc: title,
+                        nome_arq: newFileName,
+                        resumo: abstract,
+                        data: date,
+                        fk_id_docente: teacher.id_docente,
+                        fk_id_doc_tipo: typeId
+                    },
+                    { where: { id_documento: docId, fk_id_discente: student.id_discente } }
+                );
+                // Move file to type-specific directory
+                moveFileToTypeDirectory(newFileName, typeId);
+                // Delete old file
+                try {
+                    const oldFilePath = getStoragePath(typeId) + oldFileName;
+                    if (fs.existsSync(oldFilePath)) {
+                        fs.unlinkSync(oldFilePath);
+                    }
+                } catch (e) {
+                    console.log("Could not delete old file:", e.message);
+                }
+            }else {
+                await db.Documento.update(
+                    {
+                        nome_doc: title,
+                        resumo: abstract,
+                        data: date,
+                        fk_id_docente: teacher.id_docente,
+                        fk_id_doc_tipo: typeId
+                    },
+                    { where: { id_documento: docId, fk_id_discente: student.id_discente } }
+                );
+            }
 
             // Update keywords
             const docKeywords = [];
@@ -658,24 +683,52 @@ async function updateDocument(email, docId, updateData) {
         const teacher = await db.Docente.findOne({
             where: { fk_id_usuario: userId }
         });
-
         if (!teacher) {
             return { success: false, error: "Perfil de professor não encontrado" };
         }
 
         const keyword = await db.Palavra_chave.findOrCreate({
-            where: { nome: palavraChave }
+            where: { nome: keyword }
         });
 
-        await db.Documento.update(
-            {
-                nome_doc: titulo,
-                resumo,
-                data,
-                fk_id_doc_tipo: typeId
-            },
-            { where: { id_documento: docId, fk_id_docente: teacher.id_docente } }
-        );
+        if (file) {
+            const document = await db.Documento.findOne({
+                where: { id_documento: docId }
+            });
+            const newFileName = file.filename;
+            const oldFileName = document.nome_arq
+            // Update document record with new filename
+            await db.Documento.update(
+                {
+                    nome_doc: title,
+                    resumo: abstract,
+                    data: date,
+                    fk_id_doc_tipo: typeId
+                },
+                { where: { id_documento: docId, fk_id_docente: teacher.id_docente } }
+            );
+            // Move file to type-specific directory
+            moveFileToTypeDirectory(newFileName, typeId);
+            // Delete old file
+            try {
+                const oldFilePath = getStoragePath(typeId) + oldFileName;
+                if (fs.existsSync(oldFilePath)) {
+                    fs.unlinkSync(oldFilePath);
+                }
+            } catch (e) {
+                console.log("Could not delete old file:", e.message);
+            }
+        }else {
+            await db.Documento.update(
+                {
+                    nome_doc: title,
+                    resumo: abstract,
+                    data: date,
+                    fk_id_doc_tipo: typeId
+                },
+                { where: { id_documento: docId, fk_id_docente: teacher.id_docente } }
+            );
+        }
 
         const docKeyword = await db.Doc_pal_chave.findOrCreate({
             where: {

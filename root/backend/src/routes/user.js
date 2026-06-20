@@ -31,10 +31,7 @@ router.post("/minha-conta/novo-documento", authToken, upload, userController.cre
 router.get("/minha-conta/meus-documentos/alterar-documento/:id", authToken, userController.getDocumentForEdit);
 
 // PUT /minha-conta/meus-documentos/alterar-documento/:id - Update document metadata
-router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, userController.updateDocument);
-
-// PUT /minha-conta/meus-documentos/alterar-documento/:id/upload - Update document file
-router.put("/minha-conta/meus-documentos/alterar-documento/:id/upload", authToken, upload, userController.updateDocumentFile);
+router.put("/minha-conta/meus-documentos/alterar-documento/:id", authToken, upload, userController.updateDocument);
 
 // DELETE /minha-conta/meus-documentos/:id - Delete document
 router.delete("/minha-conta/meus-documentos/:id", authToken, userController.deleteDocument);

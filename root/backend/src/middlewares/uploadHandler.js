@@ -3,9 +3,6 @@ const uploadFile = require("../utils/upload");
 module.exports = async function upload(req, res, next) {
     try {
         await uploadFile(req, res);
-        if (req.file == undefined) {
-            return res.status(400).json({ msg: "Carregue um documento, por favor!" });
-        }
         next();
     } catch (err) { // error handling
         if (err.code == "LIMIT_FILE_SIZE") {
