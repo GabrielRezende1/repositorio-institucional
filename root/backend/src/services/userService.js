@@ -778,6 +778,5 @@ module.exports = {
     createDocument,
     getDocumentForEdit,
     updateDocument,
-    updateDocumentFile,
     deleteDocument
 };
