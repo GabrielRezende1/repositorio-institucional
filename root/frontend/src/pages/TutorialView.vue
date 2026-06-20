@@ -1,26 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getTutorial, downloadTutorialFile } from '@/services/homeService'
+import { getTutorial } from '@/services/homeService'
+import { useFileDownload } from '@/composables/useFileDownload'
 
 const tutorial = ref({})
+const { downloadTutorial } = useFileDownload()
 
 async function downloadFile(nome_arq) {
-    const result = await downloadTutorialFile(nome_arq)
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    const link = document.createElement('a');
-    console.log(link);
-    link.href = window.URL.createObjectURL(
-        new Blob([result.data], { type: 'application/pdf' })
-    );
-    document.body.appendChild(link);
-    link.setAttribute('download', nome_arq);
-    link.click();
-    //Clear link ans URL
-    link.remove();
-    URL.revokeObjectURL(link.href);
+    await downloadTutorial(nome_arq)
 }
 
 onMounted(async () => {
