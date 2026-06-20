@@ -11,8 +11,8 @@ import { ref } from 'vue'
  */
 export function useDocumentSearch() {
     const searchInput = ref('')
-
-    function searchDocuments(allDocuments, searchFields = ['titulo', 'autores', 'descricao']) {
+    //TODO Discente.nome not working
+    function searchDocuments(allDocuments, searchFields = ['nome_arq', 'Discente.nome', 'resumo']) {
         if (!searchInput.value) {
             return allDocuments
         }

@@ -1,63 +1,41 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getAllDocuments, downloadDocument } from '@/services/documentService'
+import { getAllDocuments } from '@/services/documentService'
+import { useFileDownload } from '@/composables/useFileDownload'
+import { usePagination } from '@/composables/usePagination'
+import { useDocumentSearch } from '@/composables/useDocumentSearch'
 
 const route = useRoute()
 const allDocuments = ref([])
 const displayedDocuments = ref([])
-const searchInput = ref('')
-const currentPage = ref(1)
-const documentsPerPage = 5
+const { downloadDocumentFile } = useFileDownload()
+const { currentPage, previousPage, nextPage, getPaginatedItems, getTotalPages, resetPagination } = usePagination(5)
+const { searchInput, searchDocuments, clearSearch } = useDocumentSearch()
 
 function search() {
-    const searchTerm = searchInput.value.toLowerCase();
-    displayedDocuments.value = allDocuments.value.filter(doc =>
-        doc.titulo.toLowerCase().includes(searchTerm) ||
-        doc.autores.toLowerCase().includes(searchTerm) ||
-        doc.descricao.toLowerCase().includes(searchTerm)
-    );
-    currentPage.value = 1;
+    displayedDocuments.value = searchDocuments(allDocuments.value)
+    resetPagination()
 }
 
 async function downloadFile(id_doc, nome_arq) {
-    const result = await downloadDocument(id_doc, nome_arq)
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(
-        new Blob([result.data], { type: 'application/pdf' })
-    );
-    document.body.appendChild(link);
-    link.setAttribute('download', nome_arq);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(link.href);
+    await downloadDocumentFile(id_doc, nome_arq)
 }
 
-function previousPage() {
-    if (currentPage.value > 1) {
-        currentPage.value--;
-    }
+function handlePreviousPage() {
+    previousPage()
 }
 
-function nextPage() {
-    const totalPages = Math.ceil(displayedDocuments.value.length / documentsPerPage);
-    if (currentPage.value < totalPages) {
-        currentPage.value++;
-    }
+function handleNextPage() {
+    nextPage(displayedDocuments.value.length)
 }
 
 const paginatedDocuments = computed(() => {
-    const startIndex = (currentPage.value - 1) * documentsPerPage;
-    const endIndex = startIndex + documentsPerPage;
-    return displayedDocuments.value.slice(startIndex, endIndex);
+    return getPaginatedItems(displayedDocuments.value);
 })
 
 const totalPages = computed(() => {
-    return Math.ceil(displayedDocuments.value.length / documentsPerPage);
+    return getTotalPages(displayedDocuments.value.length);
 })
 
 onMounted(async () => {
@@ -67,8 +45,8 @@ onMounted(async () => {
         console.log(result.error);
         return
     }
-    allDocuments.value = result.data;
-    displayedDocuments.value = result.data;
+    allDocuments.value = result.data.docRows;
+    displayedDocuments.value = result.data.docRows;
     if (searchQuery) {
         searchInput.value = searchQuery;
         search();
@@ -88,16 +66,21 @@ onMounted(async () => {
         </div>
 
         <div v-if="paginatedDocuments.length" class="documents-list">
-            <div v-for="documento in paginatedDocuments" :key="documento.documento_id" class="doc-card">
-                <h3>{{ documento.titulo }}</h3>
-                <p><strong>Área:</strong> {{ documento.tipo_documento }}</p>
-                <p><strong>Autores:</strong> {{ documento.autores }}</p>
-                <p><strong>Ano:</strong> {{ documento.ano }}</p>
-                <p><strong>Descrição:</strong> {{ documento.descricao.substring(0, 200) }}...</p>
+            <div v-for="doc in paginatedDocuments" :key="doc.id_documento" class="doc-card">
+                <h3>{{ doc.nome_doc }}</h3>
+                <p><strong>Tipo:</strong> {{ doc.Doc_tipo.tipo }}</p>
+                <div v-if="doc.Discente">
+                    <p><strong>Autores:</strong> {{ doc.Discente.nome }}</p>
+                </div>
+                <div v-else>
+                    <p><strong>Autores:</strong> {{ doc.Docente.nome }}</p>
+                </div>
+                <p><strong>Data:</strong> {{ doc.data }}</p>
+                <p><strong>Descrição:</strong> {{ doc.resumo.substring(0, 200) }}...</p>
                 <div class="actions">
-                    <RouterLink :to="'/documento/' + documento.documento_id" class="action-btn">Ver Detalhes
+                    <RouterLink :to="'/documento/' + doc.id_documento" class="action-btn">Ver Detalhes
                     </RouterLink>
-                    <button @click="downloadFile(documento.id_documento, documento.nome_arq)" class="action-btn download-btn">Download</button>
+                    <button @click="downloadFile(doc.id_documento, doc.nome_arq)" class="action-btn download-btn">Download</button>
                 </div>
             </div>
         </div>
@@ -106,9 +89,9 @@ onMounted(async () => {
         </div>
 
         <div v-if="totalPages > 1" class="pagination">
-            <button @click="previousPage" :disabled="currentPage === 1" class="pagination-btn">← Anterior</button>
+            <button @click="handlePreviousPage" :disabled="currentPage === 1" class="pagination-btn">← Anterior</button>
             <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
-            <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination-btn">Próxima →</button>
+            <button @click="handleNextPage" :disabled="currentPage === totalPages" class="pagination-btn">Próxima →</button>
         </div>
     </section>
 </template>
