@@ -1,27 +1,16 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
-import { getDocumentById, downloadDocument } from '@/services/documentService'
+import { getDocumentById } from '@/services/documentService'
+import { useFileDownload } from '@/composables/useFileDownload'
 
 const route = useRoute()
 const documento_id = route.params.id
 const doc = ref({})
+const { downloadDocumentFile } = useFileDownload()
 
 async function downloadFile(id_doc, nome_arq) {
-    const result = await downloadDocument(id_doc, nome_arq)
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(
-        new Blob([result.data], { type: 'application/pdf' })
-    );
-    document.body.appendChild(link);
-    link.setAttribute('download', nome_arq);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(link.href);
+    await downloadDocumentFile(id_doc, nome_arq)
 }
 
 onBeforeMount(async () => {
