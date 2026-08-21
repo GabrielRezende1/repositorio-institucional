@@ -3,13 +3,15 @@ import MenuBar from '@/components/MenuBar.vue'
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router'
 import { useAuthCheck } from '@/composables/useAuthCheck'
+import { useFileDownload } from '@/composables/useFileDownload'
 import { getUserDocuments } from '@/services/userService'
-import { deleteDocument, downloadDocument } from '@/services/documentService'
+import { deleteDocument } from '@/services/documentService'
 
 const auth = useAuthCheck()
 auth.checkOut()
 
 const documents = ref([])
+const { downloadDocumentFile } = useFileDownload()
 
 async function deleteDoc(documento_id) {
     const result = await deleteDocument(documento_id)
@@ -23,20 +25,7 @@ async function deleteDoc(documento_id) {
 }
 
 async function downloadFile(id_doc, nome_arq) {
-    const result = await downloadDocument(id_doc, nome_arq)
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(
-        new Blob([result.data], { type: 'application/pdf' })
-    );
-    document.body.appendChild(link);
-    link.setAttribute('download', nome_arq);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(link.href);
+    await downloadDocumentFile(id_doc, nome_arq)
 }
 
 onMounted(async () => {
