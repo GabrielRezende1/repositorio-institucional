@@ -78,7 +78,7 @@ onMounted(async () => {
                 <p><strong>Data:</strong> {{ doc.data }}</p>
                 <p><strong>Descrição:</strong> {{ doc.resumo.substring(0, 200) }}...</p>
                 <div class="actions">
-                    <RouterLink :to="'/documento/' + doc.id_documento" class="action-btn">Ver Detalhes
+                    <RouterLink :to="'/documento/id/' + doc.id_documento" class="action-btn">Ver Detalhes
                     </RouterLink>
                     <button @click="downloadFile(doc.id_documento, doc.nome_arq)" class="action-btn download-btn">Download</button>
                 </div>

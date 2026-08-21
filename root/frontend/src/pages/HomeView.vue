@@ -77,7 +77,7 @@ async function viewDocs() {
                     <RouterLink to="/documento/tipo/tese" class="RouterLink">Tese</RouterLink>
                 </li>
                 <li>
-                    <RouterLink to="/documento/tipo/trabalho+de+conclusao+de+curso" class="RouterLink">Trabalho de
+                    <RouterLink to="/documento/tipo/tcc" class="RouterLink">Trabalho de
                         Conclusão de Curso</RouterLink>
                 </li>
             </ul>
