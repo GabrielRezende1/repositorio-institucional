@@ -1,24 +1,15 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
-import { getDocumentsByType, downloadDocument } from '@/services/documentService'
+import { getDocumentsByType } from '@/services/documentService'
+import { useFileDownload } from '@/composables/useFileDownload'
+import { usePagination } from '@/composables/usePagination'
 
 const route = useRoute()
 const docType = ref(route.params.tipo.replace(/\+/g, ' '))
-const documents = ref([])
-const displayedDocuments = ref([])
-const currentPage = ref(1)
-const documentsPerPage = 5
-const docTypes = [
-    'artigo+de+evento',
-    'artigo+de+periodico',
-    'capitulo+de+livro',
-    'dissertacao',
-    'livro',
-    'monografia',
-    'tese',
-    'trabalho+de+conclusao+de+curso'
-]
+const documents = ref({})
+const { downloadDocumentFile } = useFileDownload()
+const { currentPage, previousPage, nextPage, getPaginatedItems, getTotalPages, resetPagination } = usePagination(5)
 const docTypeLabels = {
     'artigo de evento': 'Artigo de Evento',
     'artigo de periodico': 'Artigo de Periódico',
@@ -27,7 +18,7 @@ const docTypeLabels = {
     'livro': 'Livro',
     'monografia': 'Monografia',
     'tese': 'Tese',
-    'trabalho de conclusao de curso': 'Trabalho de Conclusão de Curso'
+    'tcc': 'Trabalho de Conclusão de Curso'
 }
 
 async function fetchDocuments(tipo) {
@@ -37,53 +28,32 @@ async function fetchDocuments(tipo) {
         return
     }
     documents.value = result.data;
-    displayedDocuments.value = result.data;
     docType.value = tipo.replace(/\+/g, ' ');
-    currentPage.value = 1;
+    resetPagination();
     console.log(result.data);
 }
 
 async function downloadFile(id_doc, nome_arq) {
-    const result = await downloadDocument(id_doc, nome_arq)
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(
-        new Blob([result.data], { type: 'application/pdf' })
-    );
-    document.body.appendChild(link);
-    link.setAttribute('download', nome_arq);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(link.href);
+    await downloadDocumentFile(id_doc, nome_arq)
 }
 
-function previousPage() {
-    if (currentPage.value > 1) {
-        currentPage.value--;
-    }
+function handlePreviousPage() {
+    previousPage()
 }
 
-function nextPage() {
-    const totalPages = Math.ceil(displayedDocuments.value.length / documentsPerPage);
-    if (currentPage.value < totalPages) {
-        currentPage.value++;
-    }
+function handleNextPage() {
+    nextPage(documents.value.pagination.total_documents)
 }
 
 const paginatedDocuments = computed(() => {
-    const startIndex = (currentPage.value - 1) * documentsPerPage;
-    const endIndex = startIndex + documentsPerPage;
-    return displayedDocuments.value.slice(startIndex, endIndex);
+    return getPaginatedItems(documents.value.docRows);
 })
 
 const totalPages = computed(() => {
-    return Math.ceil(displayedDocuments.value.length / documentsPerPage);
+    return getTotalPages(documents.value.docRows.length);
 })
 
-onMounted(() => {
+onBeforeMount(() => {
     fetchDocuments(route.params.tipo);
 })
 </script>
@@ -95,32 +65,44 @@ onMounted(() => {
         <nav class="categorias">
             <ul>
                 <li>
-                    <RouterLink to="/documento/tipo/artigo+de+evento" class="category-link">Artigo de Evento
+                    <RouterLink to="/documento/tipo/artigo+de+evento" class="category-link">
+                        Artigo de Evento
                     </RouterLink>
                 </li>
                 <li>
-                    <RouterLink to="/documento/tipo/artigo+de+periodico" class="category-link">Artigo de Periódico
+                    <RouterLink to="/documento/tipo/artigo+de+periodico" class="category-link">
+                        Artigo de Periódico
                     </RouterLink>
                 </li>
                 <li>
-                    <RouterLink to="/documento/tipo/capitulo+de+livro" class="category-link">Capítulo de Livro
+                    <RouterLink to="/documento/tipo/capitulo+de+livro" class="category-link">
+                        Capítulo de Livro
                     </RouterLink>
                 </li>
                 <li>
-                    <RouterLink to="/documento/tipo/dissertacao" class="category-link">Dissertação</RouterLink>
+                    <RouterLink to="/documento/tipo/dissertacao" class="category-link">
+                        Dissertação
+                    </RouterLink>
                 </li>
                 <li>
-                    <RouterLink to="/documento/tipo/livro" class="category-link">Livro</RouterLink>
+                    <RouterLink to="/documento/tipo/livro" class="category-link">
+                        Livro
+                    </RouterLink>
                 </li>
                 <li>
-                    <RouterLink to="/documento/tipo/monografia" class="category-link">Monografia</RouterLink>
+                    <RouterLink to="/documento/tipo/monografia" class="category-link">
+                        Monografia
+                    </RouterLink>
                 </li>
                 <li>
-                    <RouterLink to="/documento/tipo/tese" class="category-link">Tese</RouterLink>
+                    <RouterLink to="/documento/tipo/tese" class="category-link">
+                        Tese
+                    </RouterLink>
                 </li>
                 <li>
-                    <RouterLink to="/documento/tipo/trabalho+de+conclusao+de+curso" class="category-link">Trabalho de
-                        Conclusão de Curso</RouterLink>
+                    <RouterLink to="/documento/tipo/tcc" class="category-link">Trabalho de
+                        Conclusão de Curso
+                    </RouterLink>
                 </li>
             </ul>
         </nav>
@@ -128,11 +110,16 @@ onMounted(() => {
         <div v-if="paginatedDocuments.length" class="documents-list">
             <div v-for="documento in paginatedDocuments" :key="documento.documento_id" class="doc-card">
                 <h3>{{ documento.titulo }}</h3>
-                <p><strong>Autores:</strong> {{ documento.autores }}</p>
-                <p><strong>Ano:</strong> {{ documento.ano }}</p>
-                <p><strong>Descrição:</strong> {{ documento.descricao.substring(0, 150) }}...</p>
+                <div v-if="documento.Discente">
+                    <p><strong>Autores:</strong> {{ documento.Discente.nome }}</p>
+                </div>
+                <div v-else>
+                    <p><strong>Autores:</strong> {{ documento.Docente.nome }}</p>
+                </div>
+                <p><strong>Data:</strong> {{ documento.data }}</p>
+                <p><strong>Resumo:</strong> {{ documento.resumo.substring(0, 150) }}...</p>
                 <div class="actions">
-                    <RouterLink :to="'/documento/' + documento.documento_id" class="action-btn">Ver Detalhes
+                    <RouterLink :to="'/documento/' + documento.id_documento" class="action-btn">Ver Detalhes
                     </RouterLink>
                     <button @click="downloadFile(documento.id_documento, documento.nome_arq)" class="action-btn download-btn">Download</button>
                 </div>
@@ -143,9 +130,9 @@ onMounted(() => {
         </div>
 
         <div v-if="totalPages > 1" class="pagination">
-            <button @click="previousPage" :disabled="currentPage === 1" class="pagination-btn">← Anterior</button>
+            <button @click="handlePreviousPage" :disabled="currentPage === 1" class="pagination-btn">← Anterior</button>
             <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
-            <button @click="nextPage" :disabled="currentPage === totalPages" class="pagination-btn">Próxima →</button>
+            <button @click="handleNextPage" :disabled="currentPage === totalPages" class="pagination-btn">Próxima →</button>
         </div>
     </section>
 </template>
