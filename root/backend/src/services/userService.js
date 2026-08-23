@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const db = require("../config/index");
 const fs = require("fs");
 
@@ -297,15 +298,29 @@ async function getUserDocuments(email) {
 async function getNewDocumentForm(email) {
     try {
         const userIsStudent = isStudent(email);
-        let teachers = null;
+        let advisors = null;
 
         if (userIsStudent) {
-            teachers = await db.Docente.findAll();
+            advisors = await db.Usuario.findAll({
+                attributes: {
+                    exclude: [
+                        "id_usuario",
+                        "email",
+                        "senha"
+                    ]
+                },
+                where: {
+                    email: {
+                        [db.Sequelize.Op.like]: email.match(/si@/g) ? "%si@prof%" : "%ga@prof%"
+                    }
+                },
+                include: ["Docente"]
+            });
         }
 
         return {
             success: true,
-            data: { email, teachers, isStudent: userIsStudent }
+            data: { email, advisors, isStudent: userIsStudent }
         };
     } catch (error) {
         return { success: false, error: error.message };

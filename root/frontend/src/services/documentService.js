@@ -47,6 +47,19 @@ export async function downloadDocument(id_doc, nome_arq) {
  * LOGGED USER ROUTES
  */
 
+// Get document for creation
+export async function getNewDocumentForm() {
+    try {
+        const res = await axios.get(
+            'http://localhost:3000/api/minha-conta/novo-documento',
+            {withCredentials: true}
+        )
+        return { success: true, data: res.data, status: res.status }
+    } catch (err) {
+        return { success: false, error: err.response?.data }
+    }
+}
+
 // Create document
 export async function createDocument(formData) {
     try {

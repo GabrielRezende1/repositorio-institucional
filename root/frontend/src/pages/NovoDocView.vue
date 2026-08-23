@@ -1,39 +1,45 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthCheck } from '@/composables/useAuthCheck'
+import { useFormValidation } from '@/composables/useFormValidation'
 import { createDocument } from '@/services/documentService'
+import { getNewDocumentForm } from '@/services/documentService'
 import MenuBar from '@/components/MenuBar.vue'
 
 const router = useRouter()
 const auth = useAuthCheck()
 auth.checkOut()
 
-const titulo = ref('')
-const descricao = ref('')
-const tipo = ref('')
-const autores = ref('')
-const ano = ref(new Date().getFullYear())
-const arquivo = ref(null)
-const sucesso = ref('')
-const erros = ref('')
+const { formErrors, formSuccess, setError, setSuccess, clearMessages } = useFormValidation()
+
+const title = ref('')
+const description = ref('')
+const type = ref('')
+const authors = ref('')
+const advisor = ref('')
+const date = ref(new Date().toISOString().split('T')[0])
+const file = ref(null)
+
+const userData = ref({})
 
 async function createDoc() {
+    clearMessages()
     const formData = new FormData();
-    formData.append('titulo', titulo.value);
-    formData.append('descricao', descricao.value);
-    formData.append('tipo', tipo.value);
-    formData.append('autores', autores.value);
-    formData.append('ano', ano.value);
-    formData.append('arquivo', arquivo.value);
+    formData.append('title', title.value);
+    formData.append('description', desription.value);
+    formData.append('type', type.value);
+    formData.append('authors', authors.value);
+    formData.append('date', date.value);
+    formData.append('file', file.value);
 
     const result = await createDocument(formData)
     if (!result.success && !result.status == 201) {
-        erros.value = result.error?.message || "Erro ao criar documento";
+        setError(result.error?.message || "Erro ao criar documento");
         console.log(result.error);
         return
     }
-    sucesso.value = "Documento criado com sucesso!";
+    setSuccess("Documento criado com sucesso!");
     setTimeout(() => {
         router.push("/meus-documentos");
     }, 2000);
@@ -42,6 +48,16 @@ async function createDoc() {
 function handleFileUpload(event) {
     arquivo.value = event.target.files[0];
 }
+
+onBeforeMount(async () => {
+    const result = await getNewDocumentForm()
+    if (!result.success) {
+        console.log(result.error);
+        return
+    }
+    userData.value = result.data;
+    console.log(result.data);
+})
 </script>
 
 <template>
@@ -49,14 +65,14 @@ function handleFileUpload(event) {
     <section>
         <h2>Novo Documento</h2>
         <form action="" method="post" @submit.prevent="createDoc" enctype="multipart/form-data">
-            <label for="titulo">TÍTULO:</label>
-            <input type="text" id="titulo" v-model="titulo" placeholder="Insira o título do documento..." />
+            <label for="title">TÍTULO:</label>
+            <input type="text" id="title" v-model="title" placeholder="Insira o título do documento..." />
 
-            <label for="descricao">DESCRIÇÃO:</label>
-            <textarea id="descricao" v-model="descricao" placeholder="Descreva o documento..."></textarea>
+            <label for="description">DESCRIÇÃO:</label>
+            <textarea id="description" v-model="description" placeholder="Resumo do documento..."></textarea>
 
-            <label for="tipo">TIPO DE DOCUMENTO:</label>
-            <select id="tipo" v-model="tipo">
+            <label for="type">TIPO DE DOCUMENTO:</label>
+            <select id="type" v-model="type">
                 <option value="">Selecione uma opção</option>
                 <option value="artigo_de_evento">Artigo de Evento</option>
                 <option value="artigo_de_periodico">Artigo de Periódico</option>
@@ -65,22 +81,30 @@ function handleFileUpload(event) {
                 <option value="livro">Livro</option>
                 <option value="monografia">Monografia</option>
                 <option value="tese">Tese</option>
-                <option value="trabalho_de_conclusao_de_curso">Trabalho de Conclusão de Curso</option>
+                <option value="tcc">Trabalho de Conclusão de Curso</option>
             </select>
 
-            <label for="autores">AUTORES:</label>
-            <input type="text" id="autores" v-model="autores" placeholder="Insira os autores do documento..." />
+            <label for="authors">AUTORES:</label>
+            <input type="text" id="authors" v-model="authors" placeholder="Insira os autores do documento..." />
 
-            <label for="ano">ANO:</label>
-            <input type="number" id="ano" v-model="ano" placeholder="Insira o ano do documento..." />
+            <div v-if="type == 'tcc'">
+                <label for="advisor">ORIENTADOR:</label>
+                <select id="advisor" v-model="advisor">
+                    <option value="" selected>Selecione uma opção</option>
+                    <option v-for="advisor in userData.advisors" :value="advisor.Docente.nome">{{advisor.Docente.nome}}</option>
+                </select>
+            </div>
 
-            <label for="arquivo">ARQUIVO (PDF):</label>
-            <input type="file" id="arquivo" @change="handleFileUpload" accept=".pdf" required />
+            <label for="data">DATA:</label>
+            <input type="date" id="data" v-model="date" placeholder="Insira a data do documento..." />
+
+            <label for="file">ARQUIVO (PDF):</label>
+            <input type="file" id="file" @change="handleFileUpload" accept=".pdf" required />
 
             <input type="submit" value="CRIAR DOCUMENTO" />
 
-            <span v-if="sucesso" class="success">{{ sucesso }}</span>
-            <span v-if="erros" class="error">{{ erros }}</span>
+            <span v-if="formSuccess" class="success">{{ formSuccess }}</span>
+            <span v-if="formErrors" class="error">{{ formErrors }}</span>
         </form>
     </section>
 </template>
