@@ -11,7 +11,7 @@ const allDocuments = ref([])
 const displayedDocuments = ref([])
 const { downloadDocumentFile } = useFileDownload()
 const { currentPage, previousPage, nextPage, getPaginatedItems, getTotalPages, resetPagination } = usePagination(5)
-const { searchInput, searchDocuments, clearSearch } = useDocumentSearch()
+const { searchInput, searchDocuments } = useDocumentSearch()
 
 function search() {
     displayedDocuments.value = searchDocuments(allDocuments.value)

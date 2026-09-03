@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getPoliticas } from '@/services/homeService'
+import { getPoliticas } from '@/services/contentService'
 import { useFileDownload } from '@/composables/useFileDownload'
 
 const politica = ref({})

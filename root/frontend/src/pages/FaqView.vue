@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getFaq } from '@/services/homeService'
+import { getFaq } from '@/services/contentService'
 
 const data = ref({})
 

@@ -1,12 +1,12 @@
 import { downloadDocument } from '@/services/documentService'
-import { downloadTutorialFile, downloadPoliticaFile } from '@/services/homeService'
+import { downloadTutorialFile, downloadPoliticaFile } from '@/services/contentService'
 
 /**
  * useFileDownload Composable
  *
  * REFACTORED: Now uses service layer for all file downloads
  * - documentService: for document PDFs
- * - homeService: for tutorial and policy files
+ * - contentService: for tutorial and policy files
  *
  * USED IN COMPONENTS:
  * - TutorialView.vue (downloadFile method)

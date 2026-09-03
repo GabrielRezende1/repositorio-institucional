@@ -5,7 +5,6 @@ import * as homeService from '@/services/homeService'
 
 const router = useRouter()
 const searchInput = ref('')
-const docType = ref([])
 
 async function search() {
     if (!searchInput.value) {

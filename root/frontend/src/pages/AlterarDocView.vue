@@ -119,7 +119,7 @@ onMounted(async () => {
             <label v-if="isStudent" for="advisors">ORIENTADOR:</label>
             <select v-if="isStudent" id="advisors" v-model="form.advisor">
                 <option value="">Selecione um orientador</option>
-                <option v-for="advisor in teachers" :value="advisor.nome">{{ advisor.nome }}</option>
+                <option v-for="advisor in teachers" :key="advisor.id_docente" :value="advisor.nome">{{ advisor.nome }}</option>
             </select>
 
             <label for="date">ANO:</label>

@@ -9,7 +9,7 @@ const router = useRouter()
 const auth = useAuthCheck()
 auth.checkIn()
 
-const { formErrors, validatePasswordMatch, setError, clearMessages } = useFormValidation()
+const { formErrors, validatePasswordMatch, setError } = useFormValidation()
 
 const name = ref('')
 const email = ref('')

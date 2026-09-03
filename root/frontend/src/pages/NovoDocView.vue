@@ -27,11 +27,11 @@ async function createDoc() {
     clearMessages()
     const formData = new FormData();
     formData.append('title', title.value);
-    formData.append('description', desription.value);
+    formData.append('description', description.value);
     formData.append('type', type.value);
     formData.append('authors', authors.value);
     formData.append('date', date.value);
-    formData.append('file', file.value);
+    formData.append('arquivo', file.value);
 
     const result = await createDocument(formData)
     if (!result.success && !result.status == 201) {
@@ -46,7 +46,7 @@ async function createDoc() {
 }
 
 function handleFileUpload(event) {
-    arquivo.value = event.target.files[0];
+    file.value = event.target.files[0];
 }
 
 onBeforeMount(async () => {
@@ -91,7 +91,7 @@ onBeforeMount(async () => {
                 <label for="advisor">ORIENTADOR:</label>
                 <select id="advisor" v-model="advisor">
                     <option value="" selected>Selecione uma opção</option>
-                    <option v-for="advisor in userData.advisors" :value="advisor.Docente.nome">{{advisor.Docente.nome}}</option>
+                    <option v-for="advisor in userData.advisors" :key="advisor.Docente.id_docente" :value="advisor.Docente.nome">{{ advisor.Docente.nome }}</option>
                 </select>
             </div>
 

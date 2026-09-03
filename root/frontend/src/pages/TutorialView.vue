@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getTutorial } from '@/services/homeService'
+import { getTutorial } from '@/services/contentService'
 import { useFileDownload } from '@/composables/useFileDownload'
 
 const tutorial = ref({})
