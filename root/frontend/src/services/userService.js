@@ -1,38 +1,35 @@
-import axios from 'axios'
+import apiClient, { getApiError } from '@/api/axios'
 
 // Get user profile
 export async function getUserProfile() {
     try {
-        const res = await axios.get('http://localhost:3000/api/minha-conta', {
-            withCredentials: true
-        })
-        return { success: true, data: res.data }
+        const res = await apiClient.get('/minha-conta')
+        return { success: true, data: res.data, status: res.status }
     } catch (err) {
-        return { success: false, error: err.response?.data }
+        return { success: false, error: getApiError(err), status: err.response?.status }
     }
 }
 
 // Update user profile
 export async function updateUserProfile(nome, email) {
     try {
-        const res = await axios.put(
-            'http://localhost:3000/api/minha-conta',
+        const res = await apiClient.put(
+            '/minha-conta',
             {
                 nome: nome,
                 email: email
             },
-            { withCredentials: true }
         )
         return { success: true, data: res.data, status: res.status }
     } catch (err) {
-        return { success: false, error: err.response?.data }
+        return { success: false, error: getApiError(err), status: err.response?.status }
     }
 }
 
 // Register user
 export async function registerUser(name, email, password, confirmPassword, type) {
     try {
-        const res = await axios.post('http://localhost:3000/api/cadastro', {
+        const res = await apiClient.post('/cadastro', {
             name: name,
             email: email,
             password: password,
@@ -41,18 +38,16 @@ export async function registerUser(name, email, password, confirmPassword, type)
         })
         return { success: true, data: res.data, status: res.status }
     } catch (err) {
-        return { success: false, error: err.response?.data }
+        return { success: false, error: getApiError(err), status: err.response?.status }
     }
 }
 
 // Get user's documents
 export async function getUserDocuments() {
     try {
-        const res = await axios.get('http://localhost:3000/api/minha-conta/meus-documentos', {
-            withCredentials: true
-        })
-        return { success: true, data: res.data }
+        const res = await apiClient.get('/minha-conta/meus-documentos')
+        return { success: true, data: res.data, status: res.status }
     } catch (err) {
-        return { success: false, error: err.response?.data }
+        return { success: false, error: getApiError(err), status: err.response?.status }
     }
 }

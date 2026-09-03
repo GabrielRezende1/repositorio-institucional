@@ -1,39 +1,34 @@
-import axios from 'axios'
+import apiClient, { getApiError } from '@/api/axios'
 
 export async function login(email, password) {
     try {
-        const res = await axios.post(
-            'http://localhost:3000/api/login',
+        const res = await apiClient.post(
+            '/login',
             {
                 email: email,
                 senha: password
             },
-            { withCredentials: true }
         )
-        return { success: true, data: res.data }
+        return { success: true, data: res.data, status: res.status }
     } catch (err) {
-        return { success: false, error: err.response.data }
+        return { success: false, error: getApiError(err), status: err.response?.status }
     }
 }
 
 export async function checkLogin() {
     try {
-        const res = await axios.get('http://localhost:3000/api/login', { withCredentials: true })
-        console.log(res.data)
-        return { success: true, data: res.data.token }
+        const res = await apiClient.get('/login')
+        return { success: true, data: res.data.token, status: res.status }
     } catch (err) {
-        console.log(err.response.data)
-        return { success: false, error: err.response.data }
+        return { success: false, error: getApiError(err), status: err.response?.status }
     }
 }
 
 export async function logout() {
     try {
-        const res = await axios.delete('http://localhost:3000/api/logout', {
-            withCredentials: true
-        })
-        return { success: true, data: res.data }
+        const res = await apiClient.delete('/logout')
+        return { success: true, data: res.data, status: res.status }
     } catch (err) {
-        return { success: false, error: err.response.data }
+        return { success: false, error: getApiError(err), status: err.response?.status }
     }
 }
