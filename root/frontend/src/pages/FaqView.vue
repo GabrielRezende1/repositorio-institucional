@@ -1,18 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue'
 import { getFaq } from '@/services/contentService'
+import { useAsyncState } from '@/composables/useAsyncState'
 
-const data = ref({})
+const { data, execute } = useAsyncState({})
 
-onMounted(async () => {
-    const result = await getFaq()
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    data.value = result.data;
-    console.log(data.value);
-})
+execute(getFaq)
 </script>
 
 <template>

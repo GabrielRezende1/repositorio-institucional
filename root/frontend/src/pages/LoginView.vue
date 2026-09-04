@@ -1,14 +1,10 @@
 <script setup>
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { login } from '@/services/loginService'
 import { useAuthStore } from '@/stores/authStore'
-import { useAuthCheck } from '@/composables/useAuthCheck'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const authCheck = useAuthCheck()
-authCheck.checkIn()
 
 const form = reactive({
     // use reactive() instead of ref() for object data
@@ -18,12 +14,11 @@ const form = reactive({
 })
 
 async function loginUser() {
-    const result = await login(form.email, form.senha)
+    const result = await authStore.loginUser(form.email, form.senha)
     if (!result.success) {
         form.senhaErrada = 'Usuário ou senha incorretos!'
         return
     }
-    authStore.connected = true
     router.push('/')
 }
 </script>

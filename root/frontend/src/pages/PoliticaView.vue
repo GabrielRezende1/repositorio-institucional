@@ -1,24 +1,16 @@
 <script setup>
-import { ref, onMounted } from 'vue'
 import { getPoliticas } from '@/services/contentService'
 import { useFileDownload } from '@/composables/useFileDownload'
+import { useAsyncState } from '@/composables/useAsyncState'
 
-const politica = ref({})
+const { data: politica, execute } = useAsyncState({})
 const { downloadPolicy } = useFileDownload()
 
 async function downloadFile(nome_arq) {
     await downloadPolicy(nome_arq)
 }
 
-onMounted(async () => {
-    const result = await getPoliticas()
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    politica.value = result.data;
-    console.log(politica.value);
-})
+execute(getPoliticas)
 </script>
 
 <template>

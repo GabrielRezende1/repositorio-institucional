@@ -1,15 +1,12 @@
 <script setup>
 import { computed, reactive, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAuthCheck } from '@/composables/useAuthCheck'
 import { useFormValidation } from '@/composables/useFormValidation'
 import MenuBar from '@/components/MenuBar.vue'
 import { getDocumentForEdit, updateDocument } from '@/services/documentService'
 
 const route = useRoute()
 const router = useRouter()
-const auth = useAuthCheck()
-auth.checkOut()
 
 const { formErrors, formSuccess, setError, setSuccess, clearMessages } = useFormValidation()
 const isStudent = ref(false)

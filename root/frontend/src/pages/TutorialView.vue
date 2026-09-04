@@ -1,24 +1,16 @@
 <script setup>
-import { ref, onMounted } from 'vue'
 import { getTutorial } from '@/services/contentService'
 import { useFileDownload } from '@/composables/useFileDownload'
+import { useAsyncState } from '@/composables/useAsyncState'
 
-const tutorial = ref({})
+const { data: tutorial, execute } = useAsyncState({})
 const { downloadTutorial } = useFileDownload()
 
 async function downloadFile(nome_arq) {
     await downloadTutorial(nome_arq)
 }
 
-onMounted(async () => {
-    const result = await getTutorial()
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    tutorial.value = result.data;
-    console.log(tutorial.value);
-})
+execute(getTutorial)
 </script>
 
 <template>

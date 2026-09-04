@@ -1,13 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthCheck } from '@/composables/useAuthCheck'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { registerUser } from '@/services/userService'
 
 const router = useRouter()
-const auth = useAuthCheck()
-auth.checkIn()
 
 const { formErrors, validatePasswordMatch, setError } = useFormValidation()
 

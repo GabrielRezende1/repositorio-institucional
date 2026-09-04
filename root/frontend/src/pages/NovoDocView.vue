@@ -1,15 +1,12 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthCheck } from '@/composables/useAuthCheck'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { createDocument } from '@/services/documentService'
 import { getNewDocumentForm } from '@/services/documentService'
 import MenuBar from '@/components/MenuBar.vue'
 
 const router = useRouter()
-const auth = useAuthCheck()
-auth.checkOut()
 
 const { formErrors, formSuccess, setError, setSuccess, clearMessages } = useFormValidation()
 

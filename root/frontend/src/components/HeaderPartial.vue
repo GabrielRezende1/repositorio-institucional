@@ -3,27 +3,20 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import IconUser from '@/components/icons/IconUser.vue'
-import { logout, checkLogin } from '@/services/loginService'
 import { useAuthStore } from '@/stores/authStore'
 
 const router = useRouter()
 const auth = useAuthStore()
 
 async function logoutRes() {
-    const result = await logout()
+    const result = await auth.logoutUser()
     if (result.success) {
-        auth.connected = false
         router.push('/')
     }
 }
 
 onMounted(async () => {
-    const result = await checkLogin()
-    if (result.success && result.data) {
-        auth.connected = true
-    } else {
-        auth.connected = false
-    }
+    await auth.initialize()
 })
 </script>
 

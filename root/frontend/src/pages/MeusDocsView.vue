@@ -2,13 +2,9 @@
 import MenuBar from '@/components/MenuBar.vue'
 import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router'
-import { useAuthCheck } from '@/composables/useAuthCheck'
 import { useFileDownload } from '@/composables/useFileDownload'
 import { getUserDocuments } from '@/services/userService'
 import { deleteDocument } from '@/services/documentService'
-
-const auth = useAuthCheck()
-auth.checkOut()
 
 const documents = ref([])
 const { downloadDocumentFile } = useFileDownload()
