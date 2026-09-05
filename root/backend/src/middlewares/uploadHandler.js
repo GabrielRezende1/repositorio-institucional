@@ -11,7 +11,7 @@ module.exports = async function upload(req, res, next) {
             });
         }
         res.status(500).json({
-            msg: `Não é possível carregar o arquivo: ${req.file.originalname}. ${err}`,
+            msg: `Não é possível carregar o arquivo: ${req.file?.originalname}. ${err}`,
         });
     }
 };
