@@ -1,15 +1,21 @@
 <script setup>
-import { ref, computed, onBeforeMount } from 'vue'
+import { ref, onBeforeMount, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getDocumentsByType } from '@/services/documentService'
 import { useFileDownload } from '@/composables/useFileDownload'
-import { usePagination } from '@/composables/usePagination'
+import { useDocumentList } from '@/composables/useDocumentList'
 
 const route = useRoute()
 const docType = ref(route.params.tipo.replace(/\+/g, ' '))
-const documents = ref({})
 const { downloadDocumentFile } = useFileDownload()
-const { currentPage, previousPage, nextPage, getPaginatedItems, getTotalPages, resetPagination } = usePagination(5)
+const {
+    paginatedDocuments,
+    totalPages,
+    currentPage,
+    load,
+    previousPage,
+    handleNextPage
+} = useDocumentList(getDocumentsByType)
 const docTypeLabels = {
     'artigo de evento': 'Artigo de Evento',
     'artigo de periodico': 'Artigo de Periódico',
@@ -22,39 +28,20 @@ const docTypeLabels = {
 }
 
 async function fetchDocuments(tipo) {
-    const result = await getDocumentsByType(tipo)
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    documents.value = result.data;
+    await load(tipo)
     docType.value = tipo.replace(/\+/g, ' ');
-    resetPagination();
-    console.log(result.data);
 }
 
 async function downloadFile(id_doc, nome_arq) {
     await downloadDocumentFile(id_doc, nome_arq)
 }
 
-function handlePreviousPage() {
-    previousPage()
-}
-
-function handleNextPage() {
-    nextPage(documents.value.pagination.total_documents)
-}
-
-const paginatedDocuments = computed(() => {
-    return getPaginatedItems(documents.value.docRows);
-})
-
-const totalPages = computed(() => {
-    return getTotalPages(documents.value.docRows.length);
-})
-
 onBeforeMount(() => {
     fetchDocuments(route.params.tipo);
+})
+
+watch(() => route.params.tipo, (tipo) => {
+    fetchDocuments(tipo)
 })
 </script>
 
@@ -108,8 +95,8 @@ onBeforeMount(() => {
         </nav>
 
         <div v-if="paginatedDocuments.length" class="documents-list">
-            <div v-for="documento in paginatedDocuments" :key="documento.documento_id" class="doc-card">
-                <h3>{{ documento.titulo }}</h3>
+            <div v-for="documento in paginatedDocuments" :key="documento.id_documento" class="doc-card">
+                <h3>{{ documento.nome_doc }}</h3>
                 <div v-if="documento.Discente">
                     <p><strong>Autores:</strong> {{ documento.Discente.nome }}</p>
                 </div>
@@ -117,9 +104,9 @@ onBeforeMount(() => {
                     <p><strong>Autores:</strong> {{ documento.Docente.nome }}</p>
                 </div>
                 <p><strong>Data:</strong> {{ documento.data }}</p>
-                <p><strong>Resumo:</strong> {{ documento.resumo.substring(0, 150) }}...</p>
+                <p><strong>Resumo:</strong> {{ documento.resumo?.substring(0, 150) }}...</p>
                 <div class="actions">
-                    <RouterLink :to="'/documento/' + documento.id_documento" class="action-btn">Ver Detalhes
+                    <RouterLink :to="'/documento/id/' + documento.id_documento" class="action-btn">Ver Detalhes
                     </RouterLink>
                     <button @click="downloadFile(documento.id_documento, documento.nome_arq)" class="action-btn download-btn">Download</button>
                 </div>
@@ -130,7 +117,7 @@ onBeforeMount(() => {
         </div>
 
         <div v-if="totalPages > 1" class="pagination">
-            <button @click="handlePreviousPage" :disabled="currentPage === 1" class="pagination-btn">← Anterior</button>
+            <button @click="previousPage" :disabled="currentPage === 1" class="pagination-btn">← Anterior</button>
             <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
             <button @click="handleNextPage" :disabled="currentPage === totalPages" class="pagination-btn">Próxima →</button>
         </div>

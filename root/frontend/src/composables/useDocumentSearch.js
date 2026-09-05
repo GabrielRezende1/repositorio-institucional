@@ -11,8 +11,17 @@ import { ref } from 'vue'
  */
 export function useDocumentSearch() {
     const searchInput = ref('')
-    //TODO Discente.nome not working
-    function searchDocuments(allDocuments, searchFields = ['nome_arq', 'Discente.nome', 'resumo']) {
+    function getFieldValue(document, field) {
+        return field.split('.').reduce((value, key) => value?.[key], document)
+    }
+
+    function searchDocuments(allDocuments, searchFields = [
+        'nome_doc',
+        'Doc_tipo.tipo',
+        'Discente.nome',
+        'Docente.nome',
+        'resumo'
+    ]) {
         if (!searchInput.value) {
             return allDocuments
         }
@@ -20,7 +29,7 @@ export function useDocumentSearch() {
         const searchTerm = searchInput.value.toLowerCase()
         return allDocuments.filter((doc) => {
             return searchFields.some((field) => {
-                const fieldValue = doc[field]?.toString().toLowerCase() || ''
+                const fieldValue = getFieldValue(doc, field)?.toString().toLowerCase() || ''
                 return fieldValue.includes(searchTerm)
             })
         })

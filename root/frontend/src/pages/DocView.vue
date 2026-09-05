@@ -1,22 +1,22 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getAllDocuments } from '@/services/documentService'
 import { useFileDownload } from '@/composables/useFileDownload'
-import { usePagination } from '@/composables/usePagination'
-import { useDocumentSearch } from '@/composables/useDocumentSearch'
+import { useDocumentList } from '@/composables/useDocumentList'
 
 const route = useRoute()
-const allDocuments = ref([])
-const displayedDocuments = ref([])
 const { downloadDocumentFile } = useFileDownload()
-const { currentPage, previousPage, nextPage, getPaginatedItems, getTotalPages, resetPagination } = usePagination(5)
-const { searchInput, searchDocuments } = useDocumentSearch()
-
-function search() {
-    displayedDocuments.value = searchDocuments(allDocuments.value)
-    resetPagination()
-}
+const {
+    paginatedDocuments,
+    totalPages,
+    currentPage,
+    searchInput,
+    load,
+    search,
+    previousPage,
+    handleNextPage
+} = useDocumentList(getAllDocuments)
 
 async function downloadFile(id_doc, nome_arq) {
     await downloadDocumentFile(id_doc, nome_arq)
@@ -26,32 +26,13 @@ function handlePreviousPage() {
     previousPage()
 }
 
-function handleNextPage() {
-    nextPage(displayedDocuments.value.length)
-}
-
-const paginatedDocuments = computed(() => {
-    return getPaginatedItems(displayedDocuments.value);
-})
-
-const totalPages = computed(() => {
-    return getTotalPages(displayedDocuments.value.length);
-})
-
 onMounted(async () => {
     const searchQuery = route.query.search;
-    const result = await getAllDocuments()
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    allDocuments.value = result.data.docRows;
-    displayedDocuments.value = result.data.docRows;
     if (searchQuery) {
         searchInput.value = searchQuery;
-        search();
     }
-    console.log(result.data);
+    await load()
+    if (searchQuery) search()
 })
 </script>
 
