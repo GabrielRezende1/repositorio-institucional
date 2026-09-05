@@ -31,16 +31,6 @@ function getStoragePath(typeId) {
 }
 
 /**
- * Get storage path for document type
- * @param {number} typeId - Document type ID
- * @returns {string} Storage directory path
- */
-function getStoragePath(typeId) {
-    const dir = DOCUMENT_STORAGE_MAPPING[typeId] || "";
-    return `${__basedir}../../storage/${dir}`;
-}
-
-/**
  * Move file from temporary storage to type-specific directory
  * @param {string} fileName - File name
  * @param {number} typeId - Document type ID
@@ -336,7 +326,7 @@ async function getNewDocumentForm(email) {
  */
 async function createDocument(email, documentData, fileName) {
     try {
-        const { titulo, resumo, data, orientador, tipo, palavraChave } = documentData;
+        const { title, description, date, advisor, type, keywords } = documentData;
 
         const user = await db.Usuario.findOne({ where: { email } });
 
@@ -344,8 +334,7 @@ async function createDocument(email, documentData, fileName) {
             fs.unlinkSync(`${__basedir}../../storage/${fileName}`);
             return { success: false, error: "Usuário não encontrado" };
         }
-
-        const typeRecord = await db.Doc_tipo.findOne({ where: { tipo } });
+        const typeRecord = await db.Doc_tipo.findOne({ where: { tipo: type } });
 
         if (!typeRecord) {
             fs.unlinkSync(`${__basedir}../../storage/${fileName}`);
@@ -357,9 +346,9 @@ async function createDocument(email, documentData, fileName) {
         // Admin can create restricted documents (Política, Tutorial)
         if (email === ADMIN_EMAIL) {
             const document = await db.Documento.create({
-                nome_doc: titulo,
+                nome_doc: title,
                 nome_arq: fileName,
-                data,
+                data: date,
                 fk_id_doc_tipo: typeId
             });
 
@@ -392,43 +381,57 @@ async function createDocument(email, documentData, fileName) {
                 return { success: false, error: "Perfil de estudante não encontrado" };
             }
 
-            const teacher = await db.Docente.findOne({
-                where: { nome: { [db.Sequelize.Op.like]: orientador } }
-            });
+            let teacher;
+            if (typeRecord.tipo.match(/Trabalho de Conclusão de Curso|Tese|Dissertação|Monografia/)) {
+                teacher = await db.Docente.findOne({
+                    where: { nome: { [db.Sequelize.Op.like]: advisor } }
+                });
 
-            if (!teacher) {
-                fs.unlinkSync(`${__basedir}../../storage/${fileName}`);
-                return { success: false, error: "Professor orientador não encontrado" };
+                if (!teacher) {
+                    fs.unlinkSync(`${__basedir}../../storage/${fileName}`);
+                    return { success: false, error: "Professor orientador não encontrado" };
+                }
+            }
+            // Process multiple keywords
+            const keywordsArr = keywords.split(",").map(p => p.trim());
+            const keywordsData = [];
+            for (const keyword of keywordsArr) {
+                const keywordRecord = await db.Palavra_chave.findOrCreate({
+                    where: { nome: keyword }
+                });
+                keywordsData.push(keywordRecord[0].dataValues.id_palavra_chave);
             }
 
-            const keyword = await db.Palavra_chave.findOrCreate({
-                where: { nome: palavraChave }
-            });
-
             const document = await db.Documento.create({
-                nome_doc: titulo,
+                nome_doc: title,
                 nome_arq: fileName,
-                resumo,
-                data,
+                resumo: description,
+                data: date,
                 fk_id_discente: student.id_discente,
-                fk_id_docente: teacher.id_docente,
+                fk_id_docente: teacher ? teacher.id_docente : null,
                 fk_id_doc_tipo: typeId
             });
-
+            console.log(document);
             // Move file to type-specific directory
             moveFileToTypeDirectory(fileName, typeId);
-
-            const docKeyword = await db.Doc_pal_chave.create({
-                fk_id_palavra_chave: keyword[0].dataValues.id_palavra_chave,
-                fk_id_documento: document.id_documento
-            });
+            // Update keywords
+            const docKeywords = [];
+            for (const keywordId of keywordsData) {
+                const docKeyword = await db.Doc_pal_chave.findOrCreate({
+                    where: {
+                        fk_id_palavra_chave: keywordId,
+                        fk_id_documento: document.id_documento
+                    }
+                });
+                docKeywords.push(docKeyword);
+            }
 
             return {
                 success: true,
                 data: {
                     msg: `Documento '${fileName}' criado com sucesso!`,
                     document,
-                    docKeyword
+                    docKeywords
                 }
             };
         }
@@ -444,13 +447,13 @@ async function createDocument(email, documentData, fileName) {
         }
 
         const keyword = await db.Palavra_chave.findOrCreate({
-            where: { nome: palavraChave }
+            where: { nome: keywords }
         });
 
         const document = await db.Documento.create({
-            nome_doc: titulo,
+            nome_doc: title,
             nome_arq: fileName,
-            resumo,
+            description,
             data,
             fk_id_docente: teacher.id_docente,
             fk_id_doc_tipo: typeId
