@@ -1,49 +1,37 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useFormValidation } from '@/composables/useFormValidation'
+import { useDocumentForm } from '@/composables/useDocumentForm'
 import { createDocument } from '@/services/documentService'
 import { getNewDocumentForm } from '@/services/documentService'
 import MenuBar from '@/components/MenuBar.vue'
 
 const router = useRouter()
 
-const { formErrors, formSuccess, setError, setSuccess, clearMessages } = useFormValidation()
-
-const title = ref('')
-const description = ref('')
-const type = ref('')
-const authors = ref('')
-const advisor = ref('')
-const date = ref(new Date().toISOString().split('T')[0])
-const file = ref(null)
+const {
+    form,
+    formErrors,
+    formSuccess,
+    submit,
+    handleFileUpload
+} = useDocumentForm({
+    title: '',
+    description: '',
+    type: '',
+    advisor: '',
+    keywords: '',
+    date: new Date().toISOString().split('T')[0]
+})
 
 const userData = ref({})
 
 async function createDoc() {
-    clearMessages()
-    const formData = new FormData();
-    formData.append('title', title.value);
-    formData.append('description', description.value);
-    formData.append('type', type.value);
-    formData.append('authors', authors.value);
-    formData.append('date', date.value);
-    formData.append('arquivo', file.value);
-
-    const result = await createDocument(formData)
-    if (!result.success && !result.status == 201) {
-        setError(result.error?.message || "Erro ao criar documento");
-        console.log(result.error);
-        return
+    const result = await submit(createDocument)
+    if (result.success) {
+        setTimeout(() => {
+            router.push('/minha-conta/meus-documentos')
+        }, 2000)
     }
-    setSuccess("Documento criado com sucesso!");
-    setTimeout(() => {
-        router.push("/meus-documentos");
-    }, 2000);
-}
-
-function handleFileUpload(event) {
-    file.value = event.target.files[0];
 }
 
 onBeforeMount(async () => {
@@ -63,37 +51,37 @@ onBeforeMount(async () => {
         <h2>Novo Documento</h2>
         <form action="" method="post" @submit.prevent="createDoc" enctype="multipart/form-data">
             <label for="title">TÍTULO:</label>
-            <input type="text" id="title" v-model="title" placeholder="Insira o título do documento..." />
+            <input type="text" id="title" v-model="form.title" placeholder="Insira o título do documento..." />
 
             <label for="description">DESCRIÇÃO:</label>
-            <textarea id="description" v-model="description" placeholder="Resumo do documento..."></textarea>
+            <textarea id="description" v-model="form.description" placeholder="Resumo do documento..."></textarea>
 
             <label for="type">TIPO DE DOCUMENTO:</label>
-            <select id="type" v-model="type">
+                <select id="type" v-model="form.type">
                 <option value="">Selecione uma opção</option>
-                <option value="artigo_de_evento">Artigo de Evento</option>
-                <option value="artigo_de_periodico">Artigo de Periódico</option>
-                <option value="capitulo_de_livro">Capítulo de Livro</option>
-                <option value="dissertacao">Dissertação</option>
-                <option value="livro">Livro</option>
-                <option value="monografia">Monografia</option>
-                <option value="tese">Tese</option>
-                <option value="tcc">Trabalho de Conclusão de Curso</option>
+                <option value="Artigo de Evento">Artigo de Evento</option>
+                <option value="Artigo de Periodico">Artigo de Periódico</option>
+                <option value="Capítulo de livro">Capítulo de Livro</option>
+                <option value="Dissertação">Dissertação</option>
+                <option value="Livro">Livro</option>
+                <option value="Monografia">Monografia</option>
+                <option value="Tese">Tese</option>
+                <option value="Trabalho de Conclusão de Curso">Trabalho de Conclusão de Curso</option>
             </select>
 
-            <label for="authors">AUTORES:</label>
-            <input type="text" id="authors" v-model="authors" placeholder="Insira os autores do documento..." />
-
-            <div v-if="type == 'tcc'">
+            <div v-if="form.type.match(/Trabalho de Conclusão de Curso|Tese|Dissertação|Monografia/)">
                 <label for="advisor">ORIENTADOR:</label>
-                <select id="advisor" v-model="advisor">
+                <select id="advisor" v-model="form.advisor">
                     <option value="" selected>Selecione uma opção</option>
                     <option v-for="advisor in userData.advisors" :key="advisor.Docente.id_docente" :value="advisor.Docente.nome">{{ advisor.Docente.nome }}</option>
                 </select>
             </div>
 
+            <label for="">PALAVRAS-CHAVE: (Separar por vírgulas)</label>
+            <input type="text" id="keywords" v-model="form.keywords" placeholder="Insira as palavras-chave separadas por vírgula...">
+
             <label for="data">DATA:</label>
-            <input type="date" id="data" v-model="date" placeholder="Insira a data do documento..." />
+            <input type="date" id="date" v-model="form.date" placeholder="Insira a data do documento..." />
 
             <label for="file">ARQUIVO (PDF):</label>
             <input type="file" id="file" @change="handleFileUpload" accept=".pdf" required />

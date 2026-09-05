@@ -1,14 +1,13 @@
 <script setup>
-import { computed, reactive, ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useFormValidation } from '@/composables/useFormValidation'
+import { useDocumentForm } from '@/composables/useDocumentForm'
 import MenuBar from '@/components/MenuBar.vue'
 import { getDocumentForEdit, updateDocument } from '@/services/documentService'
 
 const route = useRoute()
 const router = useRouter()
 
-const { formErrors, formSuccess, setError, setSuccess, clearMessages } = useFormValidation()
 const isStudent = ref(false)
 const student = ref('')
 const teacher = ref('')
@@ -17,7 +16,13 @@ const today = computed(() => {
     return new Date().toISOString().split('T')[0]
 })
 
-const form = reactive({
+const {
+    form,
+    formErrors,
+    formSuccess,
+    submit,
+    handleFileUpload
+} = useDocumentForm({
     title: '',
     abstract: '',
     type: '',
@@ -29,33 +34,12 @@ const form = reactive({
 })
 
 async function updateDoc() {
-    clearMessages()
-    const formData = new FormData();
-    formData.append('title', form.title);
-    formData.append('abstract', form.abstract);
-    formData.append('type', form.type);
-    formData.append('keywords', form.keywords);
-    formData.append('advisor', form.advisor);
-    formData.append('date', form.date);
-    if (form.file) {
-        formData.append('file', form.file);
-    }
-    console.log(formData)
-
-    const result = await updateDocument(form.doc_id, formData)
+    const result = await submit((formData) => updateDocument(form.doc_id, formData))
     if (result.success) {
-        setSuccess('Documento atualizado com sucesso!');
         setTimeout(() => {
             router.push('/minha-conta/meus-documentos')
         }, 2000);
-    } else {
-        setError(result.error);
-        console.log(result.error);
     }
-}
-
-function handleFileUpload(event) {
-    form.file = event.target.files[0];
 }
 
 onMounted(async () => {
