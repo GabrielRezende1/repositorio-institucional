@@ -13,6 +13,10 @@ dist
 dist-ssr
 coverage
 *.local
+.agents/skills/
+.agents/memory/
+.agents/logs/
+.agents/*.log
 
 /cypress/videos/
 /cypress/screenshots/
