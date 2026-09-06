@@ -1,38 +1,26 @@
 <script setup>
 import MenuBar from '@/components/MenuBar.vue'
-import { ref, onMounted } from 'vue';
 import { RouterLink } from 'vue-router'
 import { useFileDownload } from '@/composables/useFileDownload'
-import { getUserDocuments } from '@/services/userService'
-import { deleteDocument } from '@/services/documentService'
+import { useUserDocuments } from '@/composables/useUserDocuments'
 
-const documents = ref([])
+const { documents, loading, error, load, remove } = useUserDocuments()
 const { downloadDocumentFile } = useFileDownload()
 
 async function deleteDoc(documento_id) {
-    const result = await deleteDocument(documento_id)
-    if (!result.success && result.status != 200) {
-        alert(result.error || "Erro ao deletar documento");
-        console.log(result.error);
+    const result = await remove(documento_id)
+    if (!result.success) {
+        alert(result.error?.message || result.error || 'Erro ao deletar documento')
         return
     }
-    documents.value = documents.value.filter(d => d.id_documento !== documento_id);
-    alert("Documento deletado com sucesso!");
+    alert('Documento deletado com sucesso!')
 }
 
 async function downloadFile(id_doc, nome_arq) {
     await downloadDocumentFile(id_doc, nome_arq)
 }
 
-onMounted(async () => {
-    const result = await getUserDocuments()
-    if (!result.success) {
-        console.log(result.error);
-        return
-    }
-    documents.value = result.data.docs;
-    console.log(result.data);
-})
+load()
 
 </script>
 
@@ -40,7 +28,11 @@ onMounted(async () => {
     <MenuBar />
     <section>
         <h2>Meus Documentos</h2>
-        <table v-if="documents.length">
+        <p v-if="loading">Carregando documentos...</p>
+        <p v-else-if="error" class="error-message">
+            {{ error?.message || error }}
+        </p>
+        <table v-else-if="documents.length">
             <thead>
                 <tr>
                     <th>Título</th>
