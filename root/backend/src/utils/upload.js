@@ -4,6 +4,21 @@ const util = require("util");
 const multer = require("multer");
 const maxSize = 10 * 1024 * 1024; //10 MB
 
+function normalizeFilename(fileName) {
+    const decodedName = Buffer.from(fileName, "latin1").toString("utf8");
+    const hasMojibake = /[ÃÂâ€™â€œâ€�]/.test(fileName);
+    const normalizedName = hasMojibake && !decodedName.includes("\uFFFD")
+        ? decodedName
+        : fileName;
+
+    return normalizedName
+        .normalize("NFC")
+        .replace(/[\\/:?%*|"<>]/g, "_")
+        .replace(/[\u0000-\u001F\u007F]/g, "_")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
 // Document type to storage directory mapping
 const DOCUMENT_STORAGE_MAPPING = {
     1: "event_articles/",
@@ -49,24 +64,26 @@ let storage = multer.diskStorage({
     //If filename already exists in type directories, use filename(1), filename(2)...
     filename: (req, file, cb) => {
         let i = 0;
-        let originalName = file.originalname;
+        const originalName = normalizeFilename(file.originalname);
         
         // Check if file exists in any type-specific directory
         if (fileExistsInTypeDirectories(originalName)) {
             i++;
-            console.log(originalName.replace(".pdf", "") + `(${i}).pdf`);
-            while (fileExistsInTypeDirectories(originalName.replace(".pdf", `(${i}).pdf`))) {
+            const extensionIndex = originalName.toLowerCase().lastIndexOf(".pdf");
+            const nameWithoutExtension = extensionIndex === -1
+                ? originalName
+                : originalName.slice(0, extensionIndex);
+            const extension = extensionIndex === -1 ? "" : originalName.slice(extensionIndex);
+
+            while (fileExistsInTypeDirectories(`${nameWithoutExtension}(${i})${extension}`)) {
                 i++;
-                console.log("while: " + i);
             }
+
+            file.originalname = `${nameWithoutExtension}(${i})${extension}`;
+        } else {
+            file.originalname = originalName;
         }
 
-        if (i !== 0) {
-            file.originalname = originalName.replace(".pdf", `(${i}).pdf`);
-            console.log('Nome do arquivo: ' + file.originalname);
-            cb(null, file.originalname);
-            return;
-        }
         console.log('Nome do arquivo: ' + file.originalname);
         cb(null, file.originalname);
     }
