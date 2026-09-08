@@ -1,10 +1,52 @@
-/* color palette from <https://github.com/vuejs/theme> */
+/* Semantic design tokens for the institutional app */
 :root {
-    --blue: #0940caff;
-    --gray: #8a8e91ff;
-    --light-blue: #b8d4e3ff;
-    --yellow: #f7ff58ff;
-    --black: #2f242cff;
+    --color-primary: #0940caff;
+    --color-primary-strong: #061f9b;
+    --color-secondary: #b8d4e3ff;
+    --color-accent: #f7ff58ff;
+    --color-accent-strong: #dfe83a;
+    --color-text: #2f242cff;
+    --color-muted: #8a8e91ff;
+    --color-surface: #f9f9f9;
+    --color-surface-alt: #d6eeee;
+    --color-page-bg: #8a8e91ff;
+    --color-success-bg: rgba(0, 255, 0, 0.3);
+    --color-success-text: #0a7d32;
+    --color-error-bg: rgba(255, 0, 0, 0.3);
+    --color-error-text: #b00020;
+    --color-border: #d0d7de;
+    --color-focus-ring: rgba(9, 64, 207, 0.25);
+    --color-shadow: rgba(0, 0, 0, 0.15);
+
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+
+    --radius-sm: 5px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+
+    --shadow-soft: 0 4px 8px rgba(0, 0, 0, 0.12);
+    --shadow-focus: 0 0 0 3px var(--color-focus-ring);
+
+    --font-family-base: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+        Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    --font-size-body: 15px;
+    --line-height-base: 1.6;
+    --transition-base: 0.3s ease;
+    --max-page-width: 1280px;
+}
+
+:root {
+    --blue: var(--color-primary);
+    --gray: var(--color-page-bg);
+    --light-blue: var(--color-secondary);
+    --yellow: var(--color-accent);
+    --black: var(--color-text);
 }
 
 *,
@@ -16,16 +58,36 @@
     font-weight: normal;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     min-height: 100%;
-    color: var(--black);
-    background: var(--gray);
+    color: var(--color-text);
+    background: var(--color-page-bg);
     transition: color 0.5s, background-color 0.5s;
-    line-height: 1.6;
-    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-        Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    font-size: 15px;
+    line-height: var(--line-height-base);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-body);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button,
+a {
+    transition: var(--transition-base);
 }
