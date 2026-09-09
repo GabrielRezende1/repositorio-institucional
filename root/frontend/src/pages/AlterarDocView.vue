@@ -72,9 +72,9 @@ onMounted(async () => {
 
 <template>
     <MenuBar />
-    <section>
-        <h2>Alterar Documento</h2>
-        <form action="" method="put" @submit.prevent="updateDoc" enctype="multipart/form-data">
+    <section class="page-section">
+        <h2 class="page-heading">Alterar Documento</h2>
+        <form action="" method="put" @submit.prevent="updateDoc" enctype="multipart/form-data" class="page-form">
             <label for="title">TÍTULO:</label>
             <input type="text" id="title" v-model="form.title" placeholder="Insira o título do documento..." />
 
@@ -109,124 +109,18 @@ onMounted(async () => {
             <label for="file">ARQUIVO (PDF) - Deixar em branco para manter o atual:</label>
             <input type="file" id="file" @change="handleFileUpload" accept=".pdf" />
 
-            <input type="submit" value="ATUALIZAR DOCUMENTO" />
+            <div class="form-actions">
+                <input type="submit" value="ATUALIZAR DOCUMENTO" class="btn primary-btn" />
+            </div>
 
-            <span v-if="formSuccess" class="success">{{ formSuccess }}</span>
-            <span v-if="formErrors" class="error">{{ formErrors }}</span>
+            <span v-if="formSuccess" class="status-message success">{{ formSuccess }}</span>
+            <span v-if="formErrors" class="status-message error">{{ formErrors }}</span>
         </form>
     </section>
 </template>
 
 <style scoped>
-section {
-    width: 100%;
-    max-width: 1280px;
-    min-height: calc(100vh - 300px);
-    /** 150px from headerPartial and footer */
-    margin: 0 auto;
-}
-
-h2 {
-    padding: 2rem 1rem 0 1rem;
-    margin: 0;
-}
-
-form {
-    width: 100%;
-    padding: 1rem;
-}
-
-label {
-    font-size: 16px;
-    color: var(--black);
-    font-weight: 600;
-    display: block;
-    margin-top: 1rem;
-}
-
-input[type=text],
-input[type=number],
-select,
-textarea,
-input[type=file] {
-    display: block;
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 16px;
-    margin: 0.5rem 0 1rem 0;
-    border-radius: 5px;
-    outline: 0;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-
-    transition: 0.3s;
-}
-
-input[type=text]:focus,
-input[type=number]:focus,
-select:focus,
-textarea:focus {
-    border-color: var(--blue);
-    box-shadow: 0 0 5px rgba(0, 100, 200, 0.3);
-}
-
-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-input[type=submit] {
-    display: block;
-    width: 250px;
-    height: 48px;
-
-    font-size: 20px;
-    font-weight: 600;
-    margin: 2rem auto 1rem auto;
-    border-radius: 10px;
-    border: 0;
-    background-color: var(--yellow);
-    color: var(--black);
-    cursor: pointer;
-
-    transition: 0.4s;
-}
-
-input[type=submit]:hover {
-    background-color: var(--blue);
-    color: white;
-    font-size: 22px;
-}
-
-.success {
-    display: block;
-    margin: 1rem auto;
-    width: fit-content;
-    background-color: rgba(0, 255, 0, 0.3);
-    border-radius: 5px;
-    padding: 0 5px;
-    color: green;
-    font-weight: 600;
-}
-
-.error {
-    display: block;
-    margin: 1rem auto;
-    width: fit-content;
-    background-color: rgba(255, 0, 0, 0.3);
-    border-radius: 5px;
-    padding: 0 5px;
-    color: red;
-    font-weight: 600;
-}
-
-/** Media Queries
- */
-
-@media screen and (max-width: 800px) {
-    h2 {
-        text-align: center;
-        padding: 0;
-    }
+.page-form {
+    max-width: 1100px;
 }
 </style>
