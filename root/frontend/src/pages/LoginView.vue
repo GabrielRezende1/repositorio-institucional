@@ -24,8 +24,8 @@ async function loginUser() {
 </script>
 
 <template>
-    <section>
-        <form action="" method="get" @submit.prevent="loginUser">
+    <section class="page-section auth-page">
+        <form action="" method="get" @submit.prevent="loginUser" class="page-form auth-form">
             <label for="email">E-MAIL:</label>
             <input type="text" id="email" v-model="form.email" placeholder="Insira seu e-mail..." />
 
@@ -37,9 +37,11 @@ async function loginUser() {
                 placeholder="Insira sua senha..."
             />
 
-            <input type="submit" value="LOGAR" />
+            <div class="form-actions">
+                <input type="submit" value="LOGAR" class="btn primary-btn" />
+            </div>
 
-            <span v-if="form.senhaErrada">{{ form.senhaErrada }}</span>
+            <span v-if="form.senhaErrada" class="status-message error">{{ form.senhaErrada }}</span>
             <RouterLink to="/cadastro" class="RouterLink">
                 Não possui conta? Então cadastre-se
             </RouterLink>
@@ -48,136 +50,35 @@ async function loginUser() {
 </template>
 
 <style scoped>
-section {
-    width: 100%;
-    min-height: calc(100vh - 300px);
-    /** 150px from headerPartial and footer */
-
+.auth-page {
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
 }
 
-form {
-    width: 800px;
-
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.auth-form {
+    width: min(800px, 100%);
+    position: relative;
+    transform: none;
 }
 
-label {
-    font-size: 16px;
-    padding: 0 2rem;
-    color: var(--black);
-    font-weight: 600;
-}
-
-input[type='text'],
-input[type='password'] {
+.auth-form .RouterLink {
     display: block;
-    width: 85%;
-    height: 48px;
-
-    padding-left: 1rem;
-    font-size: 20px;
-    margin: 0.5rem auto 2rem auto;
-    border-radius: 10px;
-    outline: 0;
-    border: 0;
-
-    transition: 0.4s;
-}
-
-input[type='text']:focus,
-input[type='password']:focus {
-    font-size: 22px;
-}
-
-input[type='submit'] {
-    display: block;
-    width: 30%;
-    height: 48px;
-
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0 auto 1rem auto;
-    border-radius: 10px;
-    border: 0;
-    background-color: var(--yellow);
-    color: var(--black);
-    cursor: pointer;
-
-    transition: 0.4s;
-}
-
-input[type='submit']:hover {
-    background-color: var(--blue);
-    color: white;
-    font-size: 22px;
-}
-
-.RouterLink {
-    font-weight: 600;
-
-    display: block;
+    margin-top: 1rem;
     text-align: center;
+    font-weight: 700;
 }
 
-span {
-    display: block;
-    margin: 0 auto;
-    width: fit-content;
-    background-color: rgba(255, 0, 0, 0.3);
-    border-radius: 5px;
-    padding: 0 5px;
-
-    animation-name: blinkSpan;
-    animation-duration: 0.4s;
-    animation-iteration-count: 3;
+.auth-form .status-message.error {
+    animation: blinkSpan 0.4s ease 3;
 }
 
 @keyframes blinkSpan {
     50% {
-        background-color: red;
-    }
-}
-
-/** Media Queries
- */
-
-@media screen and (max-width: 800px) {
-    form {
-        width: 100%;
-    }
-
-    input[type='text'],
-    input[type='password'] {
-        width: 95%;
-
-        font-size: 18px;
-    }
-
-    input[type='text']:focus,
-    input[type='password']:focus {
-        font-size: 20px;
-    }
-
-    input[type='submit'] {
-        width: 40%;
-
-        font-size: 18px;
-    }
-
-    input[type='submit']:hover {
-        font-size: 20px;
-    }
-}
-
-@media screen and (max-width: 600px) {
-    label {
-        display: block;
-        text-align: center;
-        padding: 0;
+        background-color: var(--color-error-text);
+        color: #fff;
     }
 }
 </style>
