@@ -26,9 +26,9 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-    <section>
-        <div v-if="doc.doc[0].nome_doc" class="document-container">
-            <h2>{{ doc.doc[0].nome_doc }}</h2>
+    <section class="page-section">
+        <div v-if="doc.doc[0].nome_doc" class="document-card">
+            <h2 class="page-heading">{{ doc.doc[0].nome_doc }}</h2>
 
             <div class="doc-info">
                 <div class="info-group">
@@ -37,7 +37,6 @@ onBeforeMount(async () => {
                 </div>
 
                 <div class="info-group">
-                    <!--TODO: Create computed property to change name based on user role-->
                     <strong>Autores:</strong>
                     <p>{{ doc.doc[0].Discente.nome }}</p>
                 </div>
@@ -48,20 +47,19 @@ onBeforeMount(async () => {
                 </div>
 
                 <div class="info-group">
-                    <!--TODO: Only works if I enable timestamps in backend database-->
                     <strong>Data de Submissão:</strong>
                     <p>{{ new Date(doc.data_criacao).toLocaleDateString() }}</p>
                 </div>
 
-                <div class="info-group">
+                <div class="info-group description">
                     <strong>Descrição:</strong>
-                    <p class="description">{{ doc.doc[0].resumo }}</p>
+                    <p>{{ doc.doc[0].resumo }}</p>
                 </div>
             </div>
 
-            <div class="actions">
-                <button @click="downloadFile(doc.doc[0].id_documento, doc.doc[0].nome_arq)" class="download-btn">Download do Documento</button>
-                <RouterLink to="/documento" class="back-btn">Voltar à Lista</RouterLink>
+            <div class="page-actions">
+                <button @click="downloadFile(doc.doc[0].id_documento, doc.doc[0].nome_arq)" class="btn primary-btn">Download do Documento</button>
+                <RouterLink to="/documento" class="btn secondary-btn back-btn">Voltar à Lista</RouterLink>
             </div>
         </div>
         <div v-else class="loading">
@@ -71,105 +69,43 @@ onBeforeMount(async () => {
 </template>
 
 <style scoped>
-section {
-    width: 100%;
-    max-width: 1280px;
-    min-height: calc(100vh - 300px);
-    /** 150px from headerPartial and footer */
-    margin: 0 auto;
-    padding: 2rem 1rem;
+.document-card {
+    background-color: var(--color-surface);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    padding: 2rem;
 }
 
-.document-container {
-    background-color: #f9f9f9;
-    border: 2px solid var(--blue);
-    border-radius: 10px;
-    padding: 30px;
-}
-
-h2 {
-    color: var(--blue);
-    margin-top: 0;
-    border-bottom: 2px solid var(--blue);
-    padding-bottom: 15px;
+.document-card .page-heading {
+    border-bottom: 2px solid var(--color-primary);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .doc-info {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin: 20px 0;
+    gap: 1.25rem;
+    margin: 1.25rem 0;
 }
 
 .info-group {
     background-color: white;
-    padding: 15px;
-    border-radius: 5px;
-    border-left: 4px solid var(--yellow);
+    padding: 1rem;
+    border-radius: var(--radius-sm);
+    border-left: 4px solid var(--color-accent);
 }
 
 .info-group strong {
     display: block;
-    color: var(--blue);
-    margin-bottom: 8px;
-    font-size: 16px;
-}
-
-.info-group p {
-    margin: 0;
-    font-size: 15px;
-    line-height: 1.6;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
 }
 
 .description {
-    text-align: justify;
     grid-column: 1 / -1;
-}
-
-.actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-    justify-content: center;
-}
-
-.download-btn,
-.back-btn {
-    padding: 12px 30px;
-    font-size: 16px;
-    font-weight: 600;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.download-btn {
-    background-color: var(--yellow);
-    color: var(--black);
-}
-
-.download-btn:hover {
-    background-color: var(--blue);
-    color: white;
-}
-
-.back-btn {
-    background-color: var(--blue);
-    color: white;
-    display: inline-block;
-}
-
-.back-btn:hover {
-    background-color: darkblue;
-}
-
-.loading {
-    text-align: center;
-    padding: 50px;
-    font-size: 18px;
-    color: var(--blue);
+    text-align: justify;
 }
 
 @media screen and (max-width: 600px) {
@@ -177,13 +113,8 @@ h2 {
         grid-template-columns: 1fr;
     }
 
-    .actions {
+    .page-actions {
         flex-direction: column;
-    }
-
-    .download-btn,
-    .back-btn {
-        width: 100%;
     }
 }
 </style>
